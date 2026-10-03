@@ -88,7 +88,9 @@ The old permissions (`exyliasurvivalcore.economy`, `.pay`, `.others`, `.admin`) 
 
 ## Download
 
-Every release is on the [releases page](https://github.com/Exylia-Plugins/ExyliaEconomy/releases). Put the jar in `plugins/` next to ExyliaLib.
+Download `ExyliaEconomy.jar` from the [latest release](https://github.com/Exylia-Plugins/ExyliaEconomy/releases/latest) and put it in `plugins/`.
+
+ExyliaLib is installed automatically on the first start if it is missing: the plugin downloads it and asks for one restart. From then on ExyliaLib keeps itself and ExyliaEconomy up to date, applying new releases on restart. Turn that off with `plugin-updates` in `plugins/ExyliaLib/config.yml`.
 
 ## Building
 

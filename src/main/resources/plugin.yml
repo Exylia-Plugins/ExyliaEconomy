@@ -1,17 +1,22 @@
 name: ExyliaEconomy
 version: '${version}'
-main: net.exylia.exyliaEconomy.ExyliaEconomy
+main: net.exylia.exyliaEconomy.ExyliaEconomyPlugin
 api-version: '1.21'
 authors: [ DiGround ]
 website: https://github.com/Exylia-Plugins/ExyliaEconomy
 description: Server currencies kept in the database and shared across a network, with Vault support.
 
+# Kept up to date by ExyliaLib from this repository's GitHub releases.
+exylia-updates: Exylia-Plugins/ExyliaEconomy
+# The oldest ExyliaLib this build runs on; ExyliaLib holds back an update that needs a newer one.
+exylia-lib: '${exyliaLibVersion}'
+
 folia-supported: true
 
-depend:
-  - ExyliaLib
-
 softdepend:
+  # Required, but soft so this plugin still starts without it: it then downloads ExyliaLib
+  # and asks for a restart.
+  - ExyliaLib
   # Published as the Vault economy when present.
   - Vault
   - PlaceholderAPI

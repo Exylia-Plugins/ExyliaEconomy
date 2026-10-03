@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'net.exylia'
-version = '1.0.0'
+version = '1.0.1'
 
 repositories {
     // A locally published ExyliaLib wins, so a change to both can be built before the library is released.
@@ -61,7 +61,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 processResources {
-    def props = [version: version]
+    def props = [version: version, exyliaLibVersion: exyliaLibVersion]
     inputs.properties props
     filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {

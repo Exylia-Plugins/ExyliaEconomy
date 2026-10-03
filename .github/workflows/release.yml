@@ -23,5 +23,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           version="${GITHUB_REF_NAME#v}"
-          gh release create "$GITHUB_REF_NAME" "build/libs/ExyliaEconomy-${version}.jar" \
+          # The fixed name is what ExyliaLib's updater downloads: releases/latest/download/ExyliaEconomy.jar.
+          cp "build/libs/ExyliaEconomy-${version}.jar" build/libs/ExyliaEconomy.jar
+          gh release create "$GITHUB_REF_NAME" "build/libs/ExyliaEconomy-${version}.jar" build/libs/ExyliaEconomy.jar \
             --title "ExyliaEconomy ${version}" --generate-notes
