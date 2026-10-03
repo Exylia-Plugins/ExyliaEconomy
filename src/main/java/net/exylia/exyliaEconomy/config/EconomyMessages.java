@@ -82,6 +82,16 @@ public record EconomyMessages(
         String importFailed,
         @Comment("The networked switch of a currency whose balances would be left behind. Placeholder: %id%.")
         String currencyNetworkedLocked,
+        @Comment("A payment with a transfer tax. 'paid' is sent when there is none. Placeholders: %player% %amount% %tax%.")
+        String paidTaxed,
+        @Comment("Why a payment was refused when the currency named no reason of its own.")
+        String payRefused,
+        @Comment("A currency whose leaderboard is turned off, or that this plugin does not rank. Placeholder: %currency%.")
+        String topDisabled,
+        @Comment("A console command that needs a player name. Placeholder: %command%.")
+        String playerRequired,
+        @Comment("A currency change that could not be written to the database. Placeholder: %id%.")
+        String currencyWriteFailed,
         @Comment("")
         @Comment("The currency editor of /economyadmin: its prompts, forms and the words its screens show.")
         CurrencyAdmin admin) {
@@ -90,7 +100,7 @@ public record EconomyMessages(
         this("{primary}&lECONOMY {letters_black}•<reset>",
                 "%prefix% {letters}Your {highlight}%currency%{letters}: {success}%amount%",
                 "%prefix% {highlight}%player%{letters}'s {highlight}%currency%{letters}: {success}%amount%",
-                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}You paid {highlight}%amount% {success}to {highlight}%player%{success}. {letters_black}Tax: %tax%",
+                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}You paid {highlight}%amount% {success}to {highlight}%player%{success}.",
                 "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {highlight}%player% {success}paid you {highlight}%amount%{success}.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}You cannot pay yourself.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}cannot be sent to other players.",
@@ -155,6 +165,13 @@ public record EconomyMessages(
                         + " Run it again with {highlight}again{error}: nobody is paid twice.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%id% {error}already holds balances, so it"
                         + " cannot switch between networked and per-server: they would be left behind.",
+                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}You paid {highlight}%amount% {success}to"
+                        + " {highlight}%player%{success}. {letters_black}Tax: {info}%tax%",
+                "The payment was refused.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}has no leaderboard.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Name a player{letters_black}: {highlight}/%command% <player>",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Could not save {highlight}%id% {error}to the database."
+                        + " Check the console and try again.",
                 new CurrencyAdmin());
     }
 

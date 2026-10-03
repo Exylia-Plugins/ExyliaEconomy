@@ -22,7 +22,7 @@ filler:
     hide_tooltip: true
   pagination:
     material: LIGHT_GRAY_STAINED_GLASS_PANE
-    name: "{muted}Nada ainda"
+    name: "{letters_black}&lNADA AINDA"
     lore:
       - ""
       - " {letters_black}▎ {letters}Só moedas que este servidor guarda"
@@ -41,8 +41,7 @@ pagination:
       - "{secondary}Movimento:"
       - " {letters_black}▎ {letters}Restante {letters_black}» {info}%entry_balance%"
       - " {letters_black}▎ {letters}Motivo {letters_black}» {highlight}%entry_reason%"
-      - ""
-      - " {letters_black}▎ {letters_black}%entry_when%"
+      - " {letters_black}▎ {letters}Quando {letters_black}» {info}%entry_when% ⌚"
       - ""
 
   navigation:

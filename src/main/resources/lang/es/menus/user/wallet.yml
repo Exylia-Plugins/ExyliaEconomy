@@ -22,7 +22,7 @@ filler:
     hide_tooltip: true
   pagination:
     material: LIGHT_GRAY_STAINED_GLASS_PANE
-    name: "{muted}Sin monedas"
+    name: "{letters_black}&lSIN MONEDAS"
     lore:
       - ""
       - " {letters_black}▎ {letters}Este servidor no tiene monedas"

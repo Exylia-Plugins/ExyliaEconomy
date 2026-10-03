@@ -47,7 +47,7 @@ public final class EconomyCommand {
 
     @Subcommand("balance")
     public void balance(CommandSender sender,
-                        @Optional @SuggestWith(CurrencySuggestionProvider.class) String currency,
+                        @Optional @SuggestWith(CurrencySuggestionProvider.WithPlayers.class) String currency,
                         @Optional PlayerTarget player) {
         if (player == null && namesAPlayer(currency)) {
             actions.balance(sender, null, currency);
@@ -77,12 +77,17 @@ public final class EconomyCommand {
     public void top(CommandSender sender,
                     @Optional @SuggestWith(CurrencySuggestionProvider.class) String currency,
                     @Default("1") int page) {
+        // '/eco top 2' is the second page of the default board, not a currency called 2.
+        if (currency != null && currency.matches("\\d{1,9}") && EconomyActions.currency(currency).isEmpty()) {
+            actions.top(sender, null, Integer.parseInt(currency));
+            return;
+        }
         actions.top(sender, currency, page);
     }
 
     @Subcommand("history")
     public void history(CommandSender sender,
-                        @Optional @SuggestWith(CurrencySuggestionProvider.class) String currency,
+                        @Optional @SuggestWith(CurrencySuggestionProvider.WithPlayers.class) String currency,
                         @Optional PlayerTarget player) {
         if (player == null && namesAPlayer(currency)) {
             actions.history(sender, null, currency);

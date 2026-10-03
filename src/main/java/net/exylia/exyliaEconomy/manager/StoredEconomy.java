@@ -156,6 +156,8 @@ public final class StoredEconomy implements Listener {
     private volatile Map<String, StoredCurrency> stored = Map.of();
     private volatile List<Extra> extras = List.of();
     private final Map<String, CachedTop> tops = new ConcurrentHashMap<>();
+    /** The latest leaderboard read per currency key, so a first ask can wait for it. */
+    private final Map<String, CompletableFuture<List<TopEntry>>> topLoads = new ConcurrentHashMap<>();
     private final Map<String, Snapshot> offline = new ConcurrentHashMap<>();
     /** The names of the players held here, stamped on every row written. */
     private final Map<UUID, String> names = new ConcurrentHashMap<>();
@@ -1345,8 +1347,8 @@ public final class StoredEconomy implements Listener {
         if (cached == null || now - cached.at() > TOP_CACHE_MILLIS) {
             // Refreshed in the background; whoever asked gets what was there.
             economy.tops.put(key, new CachedTop(now, cached == null ? List.of() : cached.entries()));
-            economy.balances.where("currency", key).orderByDescending("amount").limit(100).find()
-                    .thenAccept(rows -> {
+            economy.topLoads.put(key, economy.balances.where("currency", key).orderByDescending("amount").limit(100).find()
+                    .thenApply(rows -> {
                         List<TopEntry> entries = new ArrayList<>(rows.size());
                         int position = 1;
                         for (BalanceRow row : rows) {
@@ -1354,11 +1356,27 @@ public final class StoredEconomy implements Listener {
                                     ExyliaPlayers.nameOr(row.uuid(), row.name()), row.amount()));
                         }
                         economy.tops.put(key, new CachedTop(System.currentTimeMillis(), entries));
-                    });
+                        return entries;
+                    }));
             if (cached == null) return List.of();
         }
         List<TopEntry> entries = cached == null ? List.of() : cached.entries();
         return entries.subList(0, Math.min(Math.max(0, limit), entries.size()));
+    }
+
+    /**
+     * {@link #top}, but a board nobody has read yet is waited for instead of
+     * answered empty. Completes off the server thread when it had to wait.
+     */
+    public static @NotNull CompletableFuture<List<TopEntry>> topLater(String id, int limit) {
+        List<TopEntry> now = top(id, limit);
+        StoredEconomy economy = instance;
+        StoredCurrency currency = economy == null ? null : economy.currency(id);
+        if (!now.isEmpty() || currency == null) return CompletableFuture.completedFuture(now);
+        CompletableFuture<List<TopEntry>> load = economy.topLoads.get(economy.key(currency));
+        if (load == null) return CompletableFuture.completedFuture(now);
+        return load.handle((entries, failure) -> failure != null ? List.<TopEntry>of()
+                : entries.subList(0, Math.min(Math.max(0, limit), entries.size())));
     }
 
     /**

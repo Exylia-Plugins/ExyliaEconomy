@@ -22,7 +22,7 @@ filler:
     hide_tooltip: true
   pagination:
     material: LIGHT_GRAY_STAINED_GLASS_PANE
-    name: "{muted}Nobody has any yet"
+    name: "{letters_black}&lNOBODY HAS ANY YET"
     lore:
       - ""
       - " {letters_black}▎ {letters}Be the first to earn some."
@@ -34,7 +34,7 @@ pagination:
 
   item_template:
     material: 'playerhead-%top_player%'
-    name: "{highlight}&l#%top_position% {primary}%top_player%"
+    name: "{primary}&l%top_player% &8[{highlight}#%top_position%&8]"
     lore:
       - ""
       - "{secondary}Place:"

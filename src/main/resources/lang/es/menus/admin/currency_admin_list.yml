@@ -95,6 +95,7 @@ items:
     name: "{primary}&lAJUSTES DE ECONOMÍA"
     lore:
       - ""
+      - "{secondary}Información:"
       - " {letters_black}▎ {letters}Monedas de experiencia, el registro"
       - " {letters_black}▎ {letters}y la economía de Vault."
       - ""

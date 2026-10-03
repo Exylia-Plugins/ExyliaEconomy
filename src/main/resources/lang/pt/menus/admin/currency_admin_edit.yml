@@ -51,6 +51,7 @@ items:
     name: "{primary}&lÍCONE"
     lore:
       - ""
+      - "{secondary}Informação:"
       - " {letters_black}▎ {letters}Como carteiras e listas a exibem."
       - ""
       - "{warning}➥ Clique para escolher um"
@@ -86,6 +87,7 @@ items:
     name: "{primary}&lCOMANDOS"
     lore:
       - ""
+      - "{secondary}Informação:"
       - " {letters_black}▎ {letters}Nomes {letters_black}» {highlight}%currency_aliases%"
       - " {letters_black}▎ {letters_black}O primeiro é o comando; o resto, aliases."
       - ""
@@ -122,6 +124,7 @@ items:
     name: "{primary}&lITEM"
     lore:
       - ""
+      - "{secondary}Informação:"
       - " {letters_black}▎ {letters}Item {letters_black}» %currency_item_state%"
       - " {letters_black}▎ {letters_black}Só contam pilhas idênticas a ele:"
       - " {letters_black}▎ {letters_black}nome, descrição e modelo incluídos."
@@ -138,6 +141,7 @@ items:
     name: "{primary}&lTAXAS DE CÂMBIO"
     lore:
       - ""
+      - "{secondary}Informação:"
       - " {letters_black}▎ {letters}Taxas {letters_black}» {info}%currency_rates%"
       - " {letters_black}▎ {letters_black}shards=0.01 significa que 1 desta vale 0.01 shards."
       - " {letters_black}▎ {letters_black}Só é usado com o câmbio ativado."
@@ -153,6 +157,7 @@ items:
     name: "{primary}&lORDEM DE EXIBIÇÃO"
     lore:
       - ""
+      - "{secondary}Informação:"
       - " {letters_black}▎ {letters}Atual {letters_black}» {info}%currency_sort_order%"
       - " {letters_black}▎ {letters_black}Menor aparece primeiro."
       - ""
@@ -168,6 +173,7 @@ items:
     name: "{primary}&lTRANSFERÊNCIAS"
     lore:
       - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Atual {letters_black}» %transferable_status%"
       - " {letters_black}▎ {letters_black}Se os jogadores podem pagar uns aos outros."
       - ""
@@ -183,6 +189,7 @@ items:
     name: "{primary}&lCÂMBIO"
     lore:
       - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Atual {letters_black}» %exchangeable_status%"
       - " {letters_black}▎ {letters_black}Se pode ser trocada pelas suas taxas."
       - ""
@@ -198,6 +205,7 @@ items:
     name: "{primary}&lRANKING"
     lore:
       - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Atual {letters_black}» %leaderboard_status%"
       - " {letters_black}▎ {letters_black}Se o top e os placeholders funcionam."
       - ""
@@ -213,6 +221,7 @@ items:
     name: "{primary}&lCOMPARTILHADA ENTRE SERVIDORES"
     lore:
       - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Atual {letters_black}» %networked_status%"
       - " {letters_black}▎ {letters_black}Ativado, um saldo em toda a rede;"
       - " {letters_black}▎ {letters_black}desativado, um por servidor. Cada um é"
@@ -230,6 +239,7 @@ items:
     name: "{primary}&lCOMANDOS ATIVADOS"
     lore:
       - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Atual {letters_black}» %commands_status%"
       - " {letters_black}▎ {letters_black}Se os nomes de comando existem."
       - ""
@@ -245,6 +255,7 @@ items:
     name: "{primary}&lECONOMIA DO VAULT"
     lore:
       - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Atual {letters_black}» %vault_status%"
       - " {letters_black}▎ {letters_black}Publica como a economia Vault do servidor,"
       - " {letters_black}▎ {letters_black}substituindo a moeda que estava antes."
@@ -274,6 +285,7 @@ items:
     name: "{error}&lEXCLUIR MOEDA"
     lore:
       - ""
+      - "{secondary}Informação:"
       - " {letters_black}▎ {letters}Remove a moeda. Os saldos salvos"
       - " {letters_black}▎ {letters}ficam no banco de dados, sem uso."
       - " {letters_black}▎ {letters_black}Você precisará confirmar."

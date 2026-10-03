@@ -26,16 +26,27 @@ Optional: Vault, PlaceholderAPI, ExyliaAnalytics.
 | --- | --- | --- |
 | `/balance [player]` (`/bal`, `/money`) | `exyliaeconomy.use` | Your balance in the default currency |
 | `/wallet [player]` (`/balances`) | `exyliaeconomy.use` | Every balance on one screen |
-| `/baltop [page]` (`/balancetop`, `/moneytop`) | `exyliaeconomy.use` | The richest players |
+| `/baltop [page]` (`/balancetop`, `/moneytop`) | `exyliaeconomy.use` | The richest players: a screen for players, ten lines per page for the console |
 | `/pay <player> <amount> [currency]` | `exyliaeconomy.pay` | Send money |
-| `/economy` (`/eco`) `balance\|wallet\|currencies\|top\|history\|exchange` | `exyliaeconomy.use` | Everything above, for any currency |
-| `/<currency>` `[pay\|top\|history\|exchange]` | `exyliaeconomy.use` | One currency's command, named in `/economyadmin` |
+| `/economy` (`/eco`) `balance\|wallet\|currencies\|top\|history\|exchange` | `exyliaeconomy.use` | Everything above, for any currency. `/eco top 2` is page 2 of the default currency |
+| `/<currency> [player]` | `exyliaeconomy.use` | One currency's balance; naming a player needs `exyliaeconomy.others` |
+| `/<currency> pay\|top\|history\|exchange` | `exyliaeconomy.use` | That currency's own command, named in `/economyadmin` (`pay` needs `exyliaeconomy.pay`) |
+| `/<currency> give\|take\|set\|reset <player> [amount]` | `exyliaeconomy.admin` | Change a balance in that currency |
 | `/economyadmin` (`/ecoadmin`, `/eadmin`) | `exyliaeconomy.admin` | Create and edit currencies |
+| `/economyadmin currencies` | `exyliaeconomy.admin` | List every currency with its id and kind |
 | `/economyadmin give\|take\|set\|reset <player> ...` | `exyliaeconomy.admin` | Change a balance, online or not |
 | `/economyadmin import <from> <into> [again]` | `exyliaeconomy.admin` | Add every balance of one currency to another |
 | `/economyadmin reload` | `exyliaeconomy.admin` | Reload files, menus and currencies |
 
-`exyliaeconomy.others` lets a player read somebody else's balance, wallet or history. `exyliaeconomy.use` and `exyliaeconomy.pay` are given to everyone by default. A currency may also name its own permission.
+`exyliaeconomy.others` lets a player read somebody else's balance, wallet or history. `exyliaeconomy.use` and `exyliaeconomy.pay` are given to everyone by default. `exyliaeconomy.admin` includes `use`, `pay` and `others`, and `exyliaeconomy.*` grants everything. A currency may also name its own permission.
+
+A currency whose leaderboard is turned off answers `top` with a message rather than an empty board.
+
+### Notes for admins
+
+- **Imports.** `/economyadmin import <from> <into>` runs once per pair. Adding `again` imports only the players not imported yet, so nobody is paid twice, even after an import that stopped partway.
+- **Networked switch.** A stored currency can switch between networked and per-server only while nothing but starting balances would be left behind. Once balances have moved, the switch is locked.
+- **Hard ceiling.** No balance can pass 10^18 (1,000,000,000,000,000,000), whatever the currency's own ceiling, including `-1` for no ceiling. A change that would pass it is refused.
 
 ## Placeholders
 

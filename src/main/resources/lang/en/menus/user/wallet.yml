@@ -22,7 +22,7 @@ filler:
     hide_tooltip: true
   pagination:
     material: LIGHT_GRAY_STAINED_GLASS_PANE
-    name: "{muted}No currencies"
+    name: "{letters_black}&lNO CURRENCIES"
     lore:
       - ""
       - " {letters_black}▎ {letters}This server runs no currency"

@@ -34,6 +34,7 @@ items:
     name: "{primary}&lNIVELES DE EXPERIENCIA"
     lore:
       - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Actual {letters_black}» %experience_levels_status%"
       - " {letters_black}▎ {letters_black}Hace de xp_levels una moneda para tiendas."
       - ""
@@ -48,6 +49,7 @@ items:
     name: "{primary}&lPUNTOS DE EXPERIENCIA"
     lore:
       - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Actual {letters_black}» %experience_points_status%"
       - " {letters_black}▎ {letters_black}Hace de xp_points una moneda para tiendas."
       - ""
@@ -62,6 +64,7 @@ items:
     name: "{primary}&lREGISTRO"
     lore:
       - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Actual {letters_black}» %ledger_status%"
       - " {letters_black}▎ {letters_black}Anota cada operación guardada"
       - " {letters_black}▎ {letters_black}para la pantalla de historial."
@@ -77,6 +80,7 @@ items:
     name: "{primary}&lVAULT POR ENCIMA"
     lore:
       - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Actual {letters_black}» %vault_force_status%"
       - " {letters_black}▎ {letters_black}Sirve Vault aunque haya otro plugin"
       - " {letters_black}▎ {letters_black}de economía instalado."
@@ -92,6 +96,7 @@ items:
     name: "{primary}&lRETENCIÓN DEL REGISTRO"
     lore:
       - ""
+      - "{secondary}Información:"
       - " {letters_black}▎ {letters}Se guarda {letters_black}» {info}%ledger_days%"
       - " {letters_black}▎ {letters_black}Lo antiguo se borra cada hora."
       - ""
@@ -106,6 +111,7 @@ items:
     name: "{primary}&lECONOMÍA DE VAULT"
     lore:
       - ""
+      - "{secondary}Información:"
       - " {letters_black}▎ {letters}Publicada {letters_black}» {highlight}%vault_provide%"
       - " {letters_black}▎ {letters_black}Elígela en la pantalla de una moneda guardada."
       - ""

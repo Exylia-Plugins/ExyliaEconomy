@@ -34,6 +34,7 @@ items:
     name: "{primary}&lEXPERIENCE LEVELS"
     lore:
       - ""
+      - "{secondary}Status:"
       - " {letters_black}▎ {letters}Current {letters_black}» %experience_levels_status%"
       - " {letters_black}▎ {letters_black}Makes xp_levels a currency shops can price in."
       - ""
@@ -48,6 +49,7 @@ items:
     name: "{primary}&lEXPERIENCE POINTS"
     lore:
       - ""
+      - "{secondary}Status:"
       - " {letters_black}▎ {letters}Current {letters_black}» %experience_points_status%"
       - " {letters_black}▎ {letters_black}Makes xp_points a currency shops can price in."
       - ""
@@ -62,6 +64,7 @@ items:
     name: "{primary}&lLEDGER"
     lore:
       - ""
+      - "{secondary}Status:"
       - " {letters_black}▎ {letters}Current {letters_black}» %ledger_status%"
       - " {letters_black}▎ {letters_black}Writes down every stored operation"
       - " {letters_black}▎ {letters_black}for the history screen."
@@ -77,6 +80,7 @@ items:
     name: "{primary}&lVAULT ON TOP"
     lore:
       - ""
+      - "{secondary}Status:"
       - " {letters_black}▎ {letters}Current {letters_black}» %vault_force_status%"
       - " {letters_black}▎ {letters_black}Serves Vault even when another economy"
       - " {letters_black}▎ {letters_black}plugin is installed."
@@ -92,6 +96,7 @@ items:
     name: "{primary}&lLEDGER RETENTION"
     lore:
       - ""
+      - "{secondary}Information:"
       - " {letters_black}▎ {letters}Kept for {letters_black}» {info}%ledger_days%"
       - " {letters_black}▎ {letters_black}Older lines are deleted every hour."
       - ""
@@ -106,6 +111,7 @@ items:
     name: "{primary}&lVAULT ECONOMY"
     lore:
       - ""
+      - "{secondary}Information:"
       - " {letters_black}▎ {letters}Published {letters_black}» {highlight}%vault_provide%"
       - " {letters_black}▎ {letters_black}Choose it from a stored currency's screen."
       - ""

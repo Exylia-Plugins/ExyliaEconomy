@@ -22,7 +22,7 @@ filler:
     hide_tooltip: true
   pagination:
     material: LIGHT_GRAY_STAINED_GLASS_PANE
-    name: "{muted}Nothing yet"
+    name: "{letters_black}&lNOTHING YET"
     lore:
       - ""
       - " {letters_black}▎ {letters}Only currencies this server stores"
@@ -41,8 +41,7 @@ pagination:
       - "{secondary}Movement:"
       - " {letters_black}▎ {letters}Left {letters_black}» {info}%entry_balance%"
       - " {letters_black}▎ {letters}Reason {letters_black}» {highlight}%entry_reason%"
-      - ""
-      - " {letters_black}▎ {letters_black}%entry_when%"
+      - " {letters_black}▎ {letters}Time {letters_black}» {info}%entry_when% ⌚"
       - ""
 
   navigation:

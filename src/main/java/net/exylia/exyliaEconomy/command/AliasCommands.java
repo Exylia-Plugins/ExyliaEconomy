@@ -99,9 +99,11 @@ public final class AliasCommands {
             String sub = args[0].toLowerCase(Locale.ROOT);
             switch (sub) {
                 case "pay" -> {
-                    if (args.length < 3 || !(sender instanceof Player player)) {
+                    if (!sender.hasPermission(Permissions.PAY)) {
+                        denied(sender);
+                    } else if (args.length < 3 || !(sender instanceof Player player)) {
                         usage(sender, label);
-                    } else if (sender.hasPermission(Permissions.PAY)) {
+                    } else {
                         actions.pay(player, currency, args[1], args[2]);
                     }
                 }
@@ -115,7 +117,10 @@ public final class AliasCommands {
                     }
                 }
                 case "give", "take", "set", "reset" -> {
-                    if (!sender.hasPermission(Permissions.ADMIN)) return true;
+                    if (!sender.hasPermission(Permissions.ADMIN)) {
+                        denied(sender);
+                        return true;
+                    }
                     if (args.length < 2 || (!sub.equals("reset") && args.length < 3)) {
                         usage(sender, label);
                         return true;
@@ -144,7 +149,8 @@ public final class AliasCommands {
         public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias,
                                                  @NotNull String[] args) {
             if (args.length == 1) {
-                List<String> options = new ArrayList<>(List.of("pay", "top", "history", "exchange"));
+                List<String> options = new ArrayList<>(List.of("top", "history", "exchange"));
+                if (sender.hasPermission(Permissions.PAY)) options.add(0, "pay");
                 if (sender.hasPermission(Permissions.ADMIN)) {
                     options.addAll(List.of("give", "take", "set", "reset"));
                 }
@@ -155,11 +161,13 @@ public final class AliasCommands {
             }
             String sub = args[0].toLowerCase(Locale.ROOT);
             if (args.length == 2) {
-                return switch (sub) {
-                    case "pay", "give", "take", "set", "reset", "history" ->
-                            Suggestions.matching(args[1], ExyliaPlayers.names());
-                    default -> List.of();
+                boolean allowed = switch (sub) {
+                    case "pay" -> sender.hasPermission(Permissions.PAY);
+                    case "give", "take", "set", "reset" -> sender.hasPermission(Permissions.ADMIN);
+                    case "history" -> sender.hasPermission(Permissions.OTHERS);
+                    default -> false;
                 };
+                return allowed ? Suggestions.matching(args[1], ExyliaPlayers.names()) : List.of();
             }
             if (args.length == 3 && sub.equals("exchange")) {
                 List<String> ids = new ArrayList<>();
@@ -169,6 +177,10 @@ public final class AliasCommands {
                 return Suggestions.matching(args[2], ids);
             }
             return List.of();
+        }
+
+        private static void denied(CommandSender sender) {
+            Messages.send(sender, EconomyMessages.get().permissionDenied());
         }
 
         private static void usage(CommandSender sender, String label) {

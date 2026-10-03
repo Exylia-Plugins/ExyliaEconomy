@@ -25,8 +25,14 @@ public final class TopMenu {
 
     public static void open(Player viewer, String currency) {
         CurrencyInfo info = Economy.info(currency);
-        // Cached for a minute, so paging back and forth is free.
-        List<StoredEconomy.TopEntry> entries = StoredEconomy.top(currency, DEPTH);
+        // Cached for a minute, so paging back and forth is free; the first
+        // board after a start waits for its read instead of opening empty.
+        StoredEconomy.topLater(currency, DEPTH).thenAccept(entries ->
+                ExyliaEconomy.getInstance().getTasks().runAtEntity(viewer, () -> open(viewer, currency, info, entries)));
+    }
+
+    private static void open(Player viewer, String currency, CurrencyInfo info, List<StoredEconomy.TopEntry> entries) {
+        if (!viewer.isOnline()) return;
         List<UiEntry> rows = entries.stream().map(entry -> {
             UiEntry.Builder row = UiEntry.of(entry);
             row.with("top_position", entry.position());

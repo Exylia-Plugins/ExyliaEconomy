@@ -51,6 +51,7 @@ items:
     name: "{primary}&lICON"
     lore:
       - ""
+      - "{secondary}Information:"
       - " {letters_black}▎ {letters}What wallets and lists draw it as."
       - ""
       - "{warning}➥ Click to choose one"
@@ -86,6 +87,7 @@ items:
     name: "{primary}&lCOMMANDS"
     lore:
       - ""
+      - "{secondary}Information:"
       - " {letters_black}▎ {letters}Names {letters_black}» {highlight}%currency_aliases%"
       - " {letters_black}▎ {letters_black}The first is the command, the rest aliases."
       - ""
@@ -122,6 +124,7 @@ items:
     name: "{primary}&lITEM"
     lore:
       - ""
+      - "{secondary}Information:"
       - " {letters_black}▎ {letters}Item {letters_black}» %currency_item_state%"
       - " {letters_black}▎ {letters_black}Only stacks exactly like it count:"
       - " {letters_black}▎ {letters_black}name, lore and model included."
@@ -138,6 +141,7 @@ items:
     name: "{primary}&lEXCHANGE RATES"
     lore:
       - ""
+      - "{secondary}Information:"
       - " {letters_black}▎ {letters}Rates {letters_black}» {info}%currency_rates%"
       - " {letters_black}▎ {letters_black}shards=0.01 means 1 of this is 0.01 shards."
       - " {letters_black}▎ {letters_black}Only used while exchange is on."
@@ -153,6 +157,7 @@ items:
     name: "{primary}&lSORT ORDER"
     lore:
       - ""
+      - "{secondary}Information:"
       - " {letters_black}▎ {letters}Current {letters_black}» {info}%currency_sort_order%"
       - " {letters_black}▎ {letters_black}Lower is shown first."
       - ""
@@ -168,6 +173,7 @@ items:
     name: "{primary}&lTRANSFERS"
     lore:
       - ""
+      - "{secondary}Status:"
       - " {letters_black}▎ {letters}Current {letters_black}» %transferable_status%"
       - " {letters_black}▎ {letters_black}Whether players can pay each other."
       - ""
@@ -183,6 +189,7 @@ items:
     name: "{primary}&lEXCHANGE"
     lore:
       - ""
+      - "{secondary}Status:"
       - " {letters_black}▎ {letters}Current {letters_black}» %exchangeable_status%"
       - " {letters_black}▎ {letters_black}Whether it can be swapped at its rates."
       - ""
@@ -198,6 +205,7 @@ items:
     name: "{primary}&lLEADERBOARD"
     lore:
       - ""
+      - "{secondary}Status:"
       - " {letters_black}▎ {letters}Current {letters_black}» %leaderboard_status%"
       - " {letters_black}▎ {letters_black}Whether its top list and placeholders work."
       - ""
@@ -213,6 +221,7 @@ items:
     name: "{primary}&lSHARED ACROSS SERVERS"
     lore:
       - ""
+      - "{secondary}Status:"
       - " {letters_black}▎ {letters}Current {letters_black}» %networked_status%"
       - " {letters_black}▎ {letters_black}On, one balance across the network;"
       - " {letters_black}▎ {letters_black}off, one per server. Each set is kept"
@@ -230,6 +239,7 @@ items:
     name: "{primary}&lCOMMANDS ENABLED"
     lore:
       - ""
+      - "{secondary}Status:"
       - " {letters_black}▎ {letters}Current {letters_black}» %commands_status%"
       - " {letters_black}▎ {letters_black}Whether its command names exist at all."
       - ""
@@ -245,6 +255,7 @@ items:
     name: "{primary}&lVAULT ECONOMY"
     lore:
       - ""
+      - "{secondary}Status:"
       - " {letters_black}▎ {letters}Current {letters_black}» %vault_status%"
       - " {letters_black}▎ {letters_black}Publishes it as the server's Vault economy,"
       - " {letters_black}▎ {letters_black}replacing whichever currency was."
@@ -274,6 +285,7 @@ items:
     name: "{error}&lDELETE CURRENCY"
     lore:
       - ""
+      - "{secondary}Information:"
       - " {letters_black}▎ {letters}Removes the currency. Stored balances"
       - " {letters_black}▎ {letters}stay in the database, unused."
       - " {letters_black}▎ {letters_black}You will be asked to confirm."

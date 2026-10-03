@@ -19,6 +19,7 @@ import net.exylia.lib.util.editor.EditorForm;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -123,8 +124,7 @@ public final class CurrencyAdminActions {
                                     askItem(player, store, row, true);
                                     return;
                                 }
-                                Messages.send(player, EconomyMessages.get().currencyCreated(), Values.of("id", id));
-                                save(player, store, row);
+                                save(player, store, row, EconomyMessages.get().currencyCreated());
                             },
                             () -> CurrencyAdminMenus.openList(player, store));
                 },
@@ -148,7 +148,7 @@ public final class CurrencyAdminActions {
                                 store.save(store.settings().withVaultProvide("")));
                     }
                     StoredEconomy.changed(written);
-                    Messages.send(player, EconomyMessages.get().currencyDeleted(), Values.of("id", row.id()));
+                    reported(player, written, row.id(), EconomyMessages.get().currencyDeleted());
                     CurrencyAdminMenus.openList(player, store);
                 },
                 () -> CurrencyAdminMenus.openEdit(player, row));
@@ -269,14 +269,11 @@ public final class CurrencyAdminActions {
                         else CurrencyAdminMenus.openEdit(player, row);
                         return;
                     }
-                    if (creating) {
-                        Messages.send(player, EconomyMessages.get().currencyCreated(), Values.of("id", row.id()));
-                    }
                     save(player, store, row.edit(draft -> {
                         draft.item = raw;
                         // A new item currency looks like its item until somebody picks otherwise.
                         if (creating) draft.icon = raw;
-                    }));
+                    }), creating ? EconomyMessages.get().currencyCreated() : EconomyMessages.get().currencySaved());
                 },
                 () -> {
                     if (creating) CurrencyAdminMenus.openList(player, store);
@@ -287,12 +284,18 @@ public final class CurrencyAdminActions {
     /** {@code currency_admin_toggle <id> <setting>}: flips one switch on a stored currency. */
     private void toggle(Player player, ActionArguments args, CurrencyStore store) {
         CurrencyRow row = store.get(args.string(0, "")).orElse(null);
-        if (row == null || row.kind() != CurrencyRow.Kind.STORED) return;
+        if (row == null) {
+            Messages.send(player, EconomyMessages.get().currencyNotFound(), Values.of("id", args.string(0, "")));
+            return;
+        }
+        if (row.kind() != CurrencyRow.Kind.STORED) return;
         String setting = args.string(1, "").toLowerCase(Locale.ROOT);
         if (setting.equals("vault")) {
             EconomySettingsRow settings = store.settings();
             String provide = row.id().equals(settings.vaultProvide()) ? "" : row.id();
-            StoredEconomy.changed(store.save(settings.withVaultProvide(provide)));
+            CompletableFuture<Void> written = store.save(settings.withVaultProvide(provide));
+            StoredEconomy.changed(written);
+            reported(player, written, row.id(), null);
             CurrencyAdminMenus.refreshEdit(player, row);
             return;
         }
@@ -309,7 +312,9 @@ public final class CurrencyAdminActions {
         };
         if (change == null) return;
         CurrencyRow changed = change.apply(row);
-        StoredEconomy.changed(store.save(changed));
+        CompletableFuture<Void> written = store.save(changed);
+        StoredEconomy.changed(written);
+        reported(player, written, row.id(), null);
         CurrencyAdminMenus.refreshEdit(player, changed);
     }
 
@@ -322,13 +327,18 @@ public final class CurrencyAdminActions {
         StoredEconomy.holdsBalances(row.id()).whenComplete((held, failure) -> plugin.getTasks().runAtEntity(player, () -> {
             if (failure != null) plugin.getDebug().error("Economy: could not count the balances of " + row.id() + ".", failure);
             CurrencyRow current = store.get(row.id()).orElse(null);
-            if (current == null) return;
+            if (current == null) {
+                Messages.send(player, EconomyMessages.get().currencyNotFound(), Values.of("id", row.id()));
+                return;
+            }
             if (failure != null || Boolean.TRUE.equals(held)) {
                 Messages.send(player, EconomyMessages.get().currencyNetworkedLocked(), Values.of("id", row.id()));
                 return;
             }
             CurrencyRow changed = current.edit(draft -> draft.networked = !draft.networked);
-            StoredEconomy.changed(store.save(changed));
+            CompletableFuture<Void> written = store.save(changed);
+            StoredEconomy.changed(written);
+            reported(player, written, row.id(), null);
             CurrencyAdminMenus.refreshEdit(player, changed);
         }));
     }
@@ -345,7 +355,9 @@ public final class CurrencyAdminActions {
             default -> null;
         };
         if (changed == null) return;
-        StoredEconomy.changed(store.save(changed));
+        CompletableFuture<Void> written = store.save(changed);
+        StoredEconomy.changed(written);
+        reported(player, written, "settings", null);
         CurrencyAdminMenus.refreshSettings(player, store);
     }
 
@@ -353,9 +365,27 @@ public final class CurrencyAdminActions {
 
     /** Writes a row, registers it everywhere, and puts the admin back on it. */
     private void save(Player player, CurrencyStore store, CurrencyRow row) {
-        StoredEconomy.changed(store.save(row));
-        Messages.send(player, EconomyMessages.get().currencySaved(), Values.of("id", row.id()));
+        save(player, store, row, EconomyMessages.get().currencySaved());
+    }
+
+    /** The same, confirming with {@code done} once the write has landed rather than before. */
+    private void save(Player player, CurrencyStore store, CurrencyRow row, String done) {
+        CompletableFuture<Void> written = store.save(row);
+        StoredEconomy.changed(written);
+        reported(player, written, row.id(), done);
         CurrencyAdminMenus.openEdit(player, row);
+    }
+
+    /**
+     * Tells the admin how a write ended, back on their thread: {@code done}
+     * once it landed (nothing when {@code null}), the failure whenever it did not.
+     */
+    private void reported(Player player, CompletableFuture<?> written, String id, @Nullable String done) {
+        written.whenComplete((ignored, failure) -> {
+            if (failure == null && done == null) return;
+            plugin.getTasks().runAtEntity(player, () -> Messages.send(player,
+                    failure == null ? done : EconomyMessages.get().currencyWriteFailed(), Values.of("id", id)));
+        });
     }
 
     /** One dialog over a row, saved when submitted and back to the row otherwise. */
@@ -378,7 +408,11 @@ public final class CurrencyAdminActions {
     private void button(String id, Button button) {
         actions.registerSync(id, (ctx, args) -> {
             Player player = ctx.player();
-            if (player == null || !player.hasPermission(Permissions.ADMIN)) return ActionResult.success();
+            if (player == null) return ActionResult.success();
+            if (!player.hasPermission(Permissions.ADMIN)) {
+                Messages.send(player, EconomyMessages.get().permissionDenied());
+                return ActionResult.success();
+            }
             CurrencyStore store = StoredEconomy.store();
             if (store == null) {
                 Messages.send(player, EconomyMessages.get().economyOff());

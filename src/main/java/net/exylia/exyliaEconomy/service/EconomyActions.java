@@ -74,7 +74,7 @@ public final class EconomyActions {
         CurrencyInfo info = Economy.info(currency);
         if (targetName == null || targetName.isBlank()) {
             if (!(sender instanceof Player self)) {
-                Messages.send(sender, text().usage(), Values.of().put("command", "economy"));
+                Messages.send(sender, text().playerRequired(), Values.of().put("command", "economy balance"));
                 return;
             }
             Messages.send(sender, text().balance(), Values.of().put("currency", info.namePlural())
@@ -128,6 +128,7 @@ public final class EconomyActions {
         };
         if (targetName == null || targetName.isBlank()) {
             if (sender instanceof Player self) show.accept(ExyliaPlayers.of(self));
+            else Messages.send(sender, text().playerRequired(), Values.of().put("command", "economy wallet"));
             return;
         }
         if (!sender.hasPermission(Permissions.OTHERS)) {
@@ -150,23 +151,31 @@ public final class EconomyActions {
     public void top(CommandSender sender, @Nullable String currencyId, int page) {
         String currency = resolved(sender, currencyId);
         if (currency == null) return;
+        CurrencyInfo info = Economy.info(currency);
+        // Only a stored currency with its leaderboard on is ranked: anything
+        // else would read as an empty board, as if nobody had any.
+        if (!StoredEconomy.rules(currency).map(CurrencyRules::leaderboard).orElse(false)) {
+            Messages.send(sender, text().topDisabled(), Values.of().put("currency", info.namePlural()));
+            return;
+        }
         if (sender instanceof Player viewer) {
             TopMenu.open(viewer, currency);
             return;
         }
-        CurrencyInfo info = Economy.info(currency);
         int size = 10;
         int from = Math.max(0, page - 1) * size;
-        List<StoredEconomy.TopEntry> entries = StoredEconomy.top(currency, from + size);
-        Messages.send(sender, text().topHeader(), Values.of().put("currency", info.namePlural()).put("page", page));
-        if (entries.size() <= from) {
-            Messages.send(sender, text().topEmpty());
-            return;
-        }
-        for (StoredEconomy.TopEntry entry : entries.subList(from, entries.size())) {
-            Messages.send(sender, text().topLine(), Values.of().put("position", entry.position())
-                    .put("player", entry.name()).put("amount", info.format(entry.amount())));
-        }
+        StoredEconomy.topLater(currency, from + size).thenAccept(entries ->
+                ExyliaEconomy.getInstance().getTasks().run(() -> {
+                    Messages.send(sender, text().topHeader(), Values.of().put("currency", info.namePlural()).put("page", page));
+                    if (entries.size() <= from) {
+                        Messages.send(sender, text().topEmpty());
+                        return;
+                    }
+                    for (StoredEconomy.TopEntry entry : entries.subList(from, entries.size())) {
+                        Messages.send(sender, text().topLine(), Values.of().put("position", entry.position())
+                                .put("player", entry.name()).put("amount", info.format(entry.amount())));
+                    }
+                }));
     }
 
     public void history(CommandSender sender, @Nullable String currencyId, @Nullable String targetName) {
@@ -196,6 +205,7 @@ public final class EconomyActions {
         };
         if (targetName == null || targetName.isBlank()) {
             if (sender instanceof Player self) show.accept(ExyliaPlayers.of(self));
+            else Messages.send(sender, text().playerRequired(), Values.of().put("command", "economy history"));
             return;
         }
         if (!sender.hasPermission(Permissions.OTHERS)) {
@@ -258,16 +268,21 @@ public final class EconomyActions {
                     Transaction.of("pay").by(sender.getUniqueId()));
             if (!result.isSuccess()) {
                 if (tax.signum() > 0) view.deposit(sender.getUniqueId(), tax, Transaction.of("pay:tax-refund"));
-                if (result.type() == TransferResult.Type.INSUFFICIENT_FUNDS || result.message() == null) {
-                    Messages.send(sender, text().notEnough(), Values.of().put("currency", info.namePlural())
-                            .put("amount", info.format(amount)));
-                } else {
-                    Messages.send(sender, text().refused(), Values.of().put("reason", result.message()));
+                switch (result.type()) {
+                    case INSUFFICIENT_FUNDS -> Messages.send(sender, text().notEnough(), Values.of()
+                            .put("currency", info.namePlural())
+                            .put("amount", info.format(amount.add(tax).subtract(view.balance(sender.getUniqueId())).max(BigDecimal.ZERO))));
+                    case INVALID_AMOUNT -> Messages.send(sender, text().invalidAmount());
+                    case NOT_AVAILABLE -> Messages.send(sender, text().notAvailable(), Values.of().put("currency", info.namePlural()));
+                    // The receiver's ceiling, or anything else the currency
+                    // refused: its own words, never a "you need more".
+                    default -> Messages.send(sender, text().refused(), Values.of().put("reason",
+                            result.message() == null ? text().payRefused() : result.message()));
                 }
                 return;
             }
-            Messages.send(sender, text().paid(), Values.of().put("player", found.name())
-                    .put("amount", info.format(amount)).put("tax", info.format(tax)));
+            Messages.send(sender, tax.signum() > 0 ? text().paidTaxed() : text().paid(), Values.of()
+                    .put("player", found.name()).put("amount", info.format(amount)).put("tax", info.format(tax)));
             Player receiver = found.here();
             if (receiver != null) {
                 Messages.send(receiver, text().received(), Values.of().put("player", sender.getName())
@@ -298,11 +313,12 @@ public final class EconomyActions {
         StoredEconomy.Exchange exchange = StoredEconomy.exchange(sender.getUniqueId(), from, toId, amount);
         EconomyResponse response = exchange.response();
         if (!response.isSuccess()) {
-            String reason = response.type() == EconomyResponse.Type.INSUFFICIENT_FUNDS
-                    ? Values.of().put("currency", Economy.info(from).namePlural())
-                            .put("amount", Economy.info(from).format(response.shortfall())).apply(text().notEnough())
-                    : String.valueOf(response.message());
-            Messages.send(sender, text().exchangeFailed(), Values.of().put("reason", reason));
+            if (response.type() == EconomyResponse.Type.INSUFFICIENT_FUNDS) {
+                Messages.send(sender, text().notEnough(), Values.of().put("currency", Economy.info(from).namePlural())
+                        .put("amount", Economy.info(from).format(response.shortfall())));
+                return;
+            }
+            Messages.send(sender, text().exchangeFailed(), Values.of().put("reason", String.valueOf(response.message())));
             return;
         }
         Messages.send(sender, text().exchanged(), Values.of().put("from", Economy.info(from).format(exchange.taken()))
@@ -388,8 +404,13 @@ public final class EconomyActions {
         if (currency == null) return;
         ExyliaPlayers.then(sender, targetName, found -> {
             BigDecimal start = StoredEconomy.rules(currency).map(CurrencyRules::start).orElse(BigDecimal.ZERO);
-            Economy.of(currency).set(found.id(), start, Transaction.of("admin:reset").by(initiator(sender)));
             CurrencyInfo info = Economy.info(currency);
+            EconomyResponse response = Economy.of(currency)
+                    .set(found.id(), start, Transaction.of("admin:reset").by(initiator(sender)));
+            if (!response.isSuccess()) {
+                refused(sender, response, info);
+                return;
+            }
             if (queues(found, currency)) {
                 queued(sender, found, "{highlight}= " + info.format(start));
                 return;

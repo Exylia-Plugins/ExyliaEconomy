@@ -45,8 +45,8 @@ pagination:
       - " {letters_black}▎ {letters}Looks like {letters_black}» {letters}%currency_preview%"
       - " {letters_black}▎ {letters}Sort order {letters_black}» {info}%currency_sort_order%"
       - ""
-      - "{warning}➥ Left-click to edit"
-      - "{warning}➥ Right-click to delete"
+      - "{warning}➥ Left click to edit"
+      - "{warning}➥ Right click to delete"
       - ""
     actions:
       - "left: exyliaeconomy:currency_admin_edit %currency_id%"
@@ -95,6 +95,7 @@ items:
     name: "{primary}&lECONOMY SETTINGS"
     lore:
       - ""
+      - "{secondary}Information:"
       - " {letters_black}▎ {letters}Experience currencies, the ledger"
       - " {letters_black}▎ {letters}and the Vault economy."
       - ""

@@ -34,6 +34,7 @@ items:
     name: "{primary}&lNÍVEIS DE EXPERIÊNCIA"
     lore:
       - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Atual {letters_black}» %experience_levels_status%"
       - " {letters_black}▎ {letters_black}Faz de xp_levels uma moeda para as lojas."
       - ""
@@ -48,6 +49,7 @@ items:
     name: "{primary}&lPONTOS DE EXPERIÊNCIA"
     lore:
       - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Atual {letters_black}» %experience_points_status%"
       - " {letters_black}▎ {letters_black}Faz de xp_points uma moeda para as lojas."
       - ""
@@ -62,6 +64,7 @@ items:
     name: "{primary}&lREGISTRO"
     lore:
       - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Atual {letters_black}» %ledger_status%"
       - " {letters_black}▎ {letters_black}Anota cada operação salva"
       - " {letters_black}▎ {letters_black}para a tela de histórico."
@@ -77,6 +80,7 @@ items:
     name: "{primary}&lVAULT POR CIMA"
     lore:
       - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Atual {letters_black}» %vault_force_status%"
       - " {letters_black}▎ {letters_black}Atende o Vault mesmo com outro plugin"
       - " {letters_black}▎ {letters_black}de economia instalado."
@@ -92,6 +96,7 @@ items:
     name: "{primary}&lRETENÇÃO DO REGISTRO"
     lore:
       - ""
+      - "{secondary}Informação:"
       - " {letters_black}▎ {letters}Mantido por {letters_black}» {info}%ledger_days%"
       - " {letters_black}▎ {letters_black}Linhas antigas são apagadas a cada hora."
       - ""
@@ -106,6 +111,7 @@ items:
     name: "{primary}&lECONOMIA DO VAULT"
     lore:
       - ""
+      - "{secondary}Informação:"
       - " {letters_black}▎ {letters}Publicada {letters_black}» {highlight}%vault_provide%"
       - " {letters_black}▎ {letters_black}Escolha na tela de uma moeda salva."
       - ""

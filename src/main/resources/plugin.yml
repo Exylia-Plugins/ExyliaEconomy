@@ -48,6 +48,15 @@ permissions:
   exyliaeconomy.admin:
     description: Change balances and edit the currencies with /economyadmin.
     default: op
+    children:
+      exyliaeconomy.use: true
+      exyliaeconomy.pay: true
+      exyliaeconomy.others: true
+  exyliaeconomy.*:
+    description: Every ExyliaEconomy permission.
+    default: op
+    children:
+      exyliaeconomy.admin: true
   # What staff were granted while the economy lived in ExyliaSurvivalCore keeps working.
   exyliasurvivalcore.economy:
     description: The ExyliaSurvivalCore name of exyliaeconomy.use.
