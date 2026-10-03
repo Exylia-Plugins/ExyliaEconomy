@@ -34,6 +34,7 @@ import net.exylia.lib.util.reward.PluginRewards;
 import net.exylia.lib.util.reward.Rewards;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
+import net.exylia.exyliaEconomy.command.PlayerArguments;
 import revxrsal.commands.bukkit.BukkitLamp;
 
 /**
@@ -111,7 +112,7 @@ public final class ExyliaEconomy {
         StoredEconomy.init(plugin, () -> AliasCommands.install(plugin, new EconomyActions()));
         EconomyPlaceholder.register(plugin);
 
-        var lamp = BukkitLamp.builder(plugin).build();
+        var lamp = PlayerArguments.install(BukkitLamp.builder(plugin)).build();
         lamp.register(new EconomyCommand());
         lamp.register(new EconomyAdminCommand());
         // The spellings every player already knows, all on the default currency: the
