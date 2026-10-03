@@ -1,0 +1,130 @@
+prefix: '{primary}&lECONOMIA {letters_black}•<reset>'
+balance: '%prefix% {letters}Seu saldo de {highlight}%currency%{letters}: {success}%amount%'
+balance-other: '%prefix% {letters}Saldo de {highlight}%currency% {letters}de {highlight}%player%: {success}%amount%'
+paid: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Você pagou {highlight}%amount% {success}a {highlight}%player%{success}. {letters_black}Taxa: %tax%'
+received: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {highlight}%player% {success}pagou {highlight}%amount% {success}a você.'
+pay-self: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Você não pode pagar a si mesmo.'
+pay-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}não pode ser enviada a outros jogadores.'
+pay-minimum: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}O mínimo que você pode enviar é {highlight}%amount%{error}.'
+not-enough: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Você precisa de mais {highlight}%amount% {error}de {highlight}%currency%{error}.'
+invalid-amount: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Isso não é uma quantia. Tente {highlight}100{error}, {highlight}2.5k {error}ou {highlight}1m{error}.'
+no-currency: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Não existe moeda chamada {highlight}%currency%{error}.'
+no-permission: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Você não pode usar {highlight}%currency%{error}.'
+not-available: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}não está disponível agora.'
+given: '%prefix% {success}{highlight}%amount% {success}dado a {highlight}%player%{success}. {letters_black}Agora: %balance%'
+given-notify: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}Você recebeu {highlight}%amount%{success}.'
+taken: '%prefix% {warning}{highlight}%amount% {warning}retirado de {highlight}%player%{warning}. {letters_black}Agora: %balance%'
+taken-notify: '[sound:BLOCK_NOTE_BLOCK_BASS|1.0|0.8]%prefix% {warning}{highlight}%amount% {warning}foi retirado de você.'
+set: '%prefix% {success}{highlight}%currency% {success}de {highlight}%player% {success}agora é {highlight}%amount%{success}.'
+reset: '%prefix% {warning}{highlight}%currency% {warning}de {highlight}%player% {warning}foi redefinido.'
+queued: '%prefix% {letters}%amount% {letters}na fila para {highlight}%player%{letters}. {letters_black}Está ausente; chega quando for visto de novo.'
+top-header: '{primary}&lTOP {highlight}%currency% {muted}página %page%'
+top-line: ' {letters_black}#%position% {highlight}%player% {letters_black}» {success}%amount%'
+top-empty: ' {letters_black}Ninguém tem ainda.'
+history-header: '{primary}&lHISTÓRICO {highlight}%currency% {letters_black}· {letters}%player%'
+history-line: ' {letters_black}%date% %delta% {letters_black}» {info}%reason% {letters_black}(%balance%)'
+history-empty: ' {letters_black}Nada ainda.'
+exchanged: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Você trocou {highlight}%from% {success}por {highlight}%to%{success}.'
+exchange-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}%reason%'
+wallet-header: '{primary}&lCARTEIRA {letters_black}· {letters}%player%'
+wallet-line: ' {letters_black}▎ {letters}%currency% {letters_black}» {success}%amount%'
+currencies-header: '{primary}&lMOEDAS'
+currencies-line: ' {letters_black}▎ {highlight}%id% {letters_black}» {letters}%currency% {letters_black}(%kind%)'
+import-started: '%prefix% {letters}Importando saldos de {highlight}%from% {letters}para {highlight}%currency%{letters}…'
+import-done: '%prefix% {success}{highlight}%count% {success}saldos importados para {highlight}%currency%{success}.'
+usage: '%prefix% {letters}Uso{letters_black}: {highlight}/%command% {letters_black}[pay <player> <amount> | top | history | exchange <amount> <to>]'
+currency-created: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.0]%prefix% {success}Moeda {highlight}%id% {success}criada.'
+currency-deleted: '%prefix% {warning}Moeda {highlight}%id% {warning}excluída.'
+currency-saved: '[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}Moeda {highlight}%id% {success}salva.'
+currency-not-found: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Moeda {highlight}%id% {error}não encontrada.'
+currency-exists: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}A moeda {highlight}%id% {error}já existe.'
+currency-invalid-id: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%id% {error}não é um ID de moeda válido. Use letras minúsculas, dígitos e underlines, até 32.'
+currency-invalid-rates: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Não foi possível ler essas taxas: {highlight}%reason%{error}. Escreva como {highlight}shards=0.01, gems=2{error}.'
+still-loading: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {warning}Seu saldo ainda está carregando. Tente de novo em instantes.'
+import-already: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Os saldos de {highlight}%from% {error}já foram importados para {highlight}%currency%{error}. Adicione {highlight}again {error}ao comando para somá-los por cima.'
+import-same: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%from% {error}e {highlight}%currency% {error}são a mesma moeda, então não há nada para importar.'
+reasons:
+  api: Plugin
+  vault: Plugin
+  pay: Pagamento
+  pay:tax: Taxa de transferência
+  pay:tax-refund: Reembolso de taxa
+  shop: Loja
+  shop:buy: Compra na loja
+  shop:sell: Venda na loja
+  worth: Valor
+  worth:sell: Venda por valor
+  market: Mercado
+  market:buy: Compra no mercado
+  market:sale: Venda no mercado
+  market:fee: Taxa do mercado
+  auctions: Leilões
+  auctions:bid: Lance em leilão
+  auctions:sale: Venda em leilão
+  orders: Pedidos
+  trade: Troca
+  exchange: Câmbio
+  admin: Staff
+  import: Importação
+kinds:
+  stored: Moeda do servidor
+  item: Item
+  experience: Experiência
+  external: Outro plugin
+  unknown: Desconhecida
+exchange-not-allowed: Essa moeda não pode ser trocada.
+exchange-no-rate: Não há taxa de %from% para %to%.
+exchange-over-ceiling: Isso passaria seu %currency% do máximo que você pode ter.
+at-ceiling: O saldo está no limite de %amount%.
+permission-denied: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Você não tem permissão para fazer isso.'
+economy-off: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}A economia não está funcionando.'
+rewards-delivered: '[sound:ENTITY_PLAYER_LEVELUP|1.0|1.4]%prefix% {success}Foram entregues {highlight}%amount% {success}pagamentos que esperavam por você.'
+admin:
+  icon-prompt: '{warning}Escolha um ícone'
+  id-prompt: '{primary}Digite um ID para a moeda, como {highlight}gems{primary}:'
+  kind-prompt: '{primary}Que tipo de moeda é {highlight}%id%{primary}?'
+  item-prompt: '{warning}Coloque o item exato que esta moeda representa'
+  delete-prompt: '{error}Excluir a moeda {highlight}%id%{error}?'
+  delete-stored-warning: ' {letters}Os saldos ficam no banco de dados, mas ninguém pode usá-los até existir de novo uma moeda com este ID.'
+  appearance-title: '{primary}&lAPARÊNCIA {letters_black}» {highlight}%id%'
+  rules-title: '{primary}&lREGRAS {letters_black}» {highlight}%id%'
+  rates-title: '{primary}&lTAXAS DE CÂMBIO {letters_black}» {highlight}%id%'
+  commands-title: '{primary}&lCOMANDOS {letters_black}» {highlight}%id%'
+  sort-title: '{primary}&lORDEM {letters_black}» {highlight}%id%'
+  name: Nome
+  name-hint: Uma unidade. Placeholders de cor funcionam.
+  plural: Plural
+  symbol: Símbolo
+  symbol-hint: Em branco para nenhum.
+  decimals: Decimais
+  decimals-hint: 0 para números inteiros, até 8.
+  decimals-provider-hint: 0 a 8, ou -1 para manter o do provedor.
+  format: Formato
+  format-hint: '%amount% %symbol% %name%'
+  compact-format: Formato compacto
+  compact-format-hint: O mesmo para scoreboards, onde %amount% mostra 1.2k.
+  start: Saldo inicial
+  max: Limite de saldo
+  max-hint: -1 para sem limite.
+  permission: Permissão
+  permission-hint: 'Necessária para usar seus comandos. Em branco: ninguém precisa.'
+  minimum-transfer: Mínimo que um jogador pode enviar
+  tax: Taxa de transferência, porcentagem
+  tax-hint: Retida de cada transferência. 0 para nenhuma.
+  rates: Taxas
+  rates-hint: outro_id=taxa, separados por vírgulas. shards=0.01 quer dizer que 1 desta vale 0.01 shards.
+  aliases: Nomes do comando
+  aliases-hint: Separados por vírgulas, sem a barra. O primeiro é o comando, o resto são aliases.
+  sort-order: Ordem de exibição
+  sort-order-hint: Menor aparece primeiro, em carteiras e listas.
+  none: '{letters_black}Nenhum'
+  provider-decimals: '{letters_black}Do provedor'
+  item-set: '{success}Definido'
+  item-not-set: '{error}Não definido'
+  'on': '{success}✔ Ligado'
+  'off': '{error}✘ Desligado'
+  ledger-forever: Para sempre
+  ledger-days: '%days% dias ⌚'
+  kind-stored: Armazenada
+  kind-item: Item
+  kind-display: Só exibição

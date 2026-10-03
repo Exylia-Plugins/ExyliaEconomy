@@ -1,0 +1,104 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# Every currency the server runs, kept in the database. /economyadmin
+
+title: "{primary}&lMONEDAS {muted}%current_page%/%total_pages%"
+size: 54
+type: PAGINATION
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: BLACK_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+  custom:
+    frame:
+      material: GRAY_STAINED_GLASS_PANE
+      hide_tooltip: true
+      slots: "45-53"
+
+  pagination:
+    material: LIGHT_GRAY_STAINED_GLASS_PANE
+    name: "{letters_black}&lAÚN NO HAY MONEDAS"
+    lore:
+      - ""
+      - " {letters_black}▎ {letters}Crea una con el botón de abajo."
+      - ""
+
+pagination:
+  slots: '0-35'
+
+  item_template:
+    material: "%currency_icon%"
+    name: "{primary}&l%currency_name% {letters_black}%currency_id%"
+    lore:
+      - ""
+      - "{secondary}Moneda:"
+      - " {letters_black}▎ {letters}Tipo {letters_black}» {info}%currency_kind%"
+      - " {letters_black}▎ {letters}Se ve así {letters_black}» {letters}%currency_preview%"
+      - " {letters_black}▎ {letters}Orden {letters_black}» {info}%currency_sort_order%"
+      - ""
+      - "{warning}➥ Clic izq. para editar"
+      - "{warning}➥ Clic der. para eliminar"
+      - ""
+    actions:
+      - "left: exyliaeconomy:currency_admin_edit %currency_id%"
+      - "right: exyliaeconomy:currency_admin_delete %currency_id%"
+
+  navigation:
+    previous:
+      slot: 48
+      sound: "minecraft:item.book.page_turn|1.0|1.0"
+      material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0='
+      name: '{error}&l← PÁGINA ANTERIOR'
+      lore:
+        - ""
+        - " {letters_black}▎ {letters}Página {info}%current_page%{letters_black}/{info}%total_pages%"
+        - ""
+    next:
+      slot: 50
+      sound: "minecraft:item.book.page_turn|1.0|1.0"
+      material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0='
+      name: '{success}&lPÁGINA SIGUIENTE →'
+      lore:
+        - ""
+        - " {letters_black}▎ {letters}Página {info}%current_page%{letters_black}/{info}%total_pages%"
+        - ""
+
+items:
+  create:
+    slot: 45
+    material: EMERALD
+    name: "{success}&lCREAR MONEDA"
+    lore:
+      - ""
+      - "{secondary}Tipos:"
+      - " {letters_black}▎ {info}Guardada {letters_black}» {letters}saldos en la base de datos"
+      - " {letters_black}▎ {info}Ítem {letters_black}» {letters}un ítem exacto que se lleva"
+      - " {letters_black}▎ {info}Solo visual {letters_black}» {letters}reestiliza la de otro plugin"
+      - ""
+      - "{warning}➥ Clic para crear"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_create"
+
+  settings:
+    slot: 53
+    material: COMPARATOR
+    name: "{primary}&lAJUSTES DE ECONOMÍA"
+    lore:
+      - ""
+      - " {letters_black}▎ {letters}Monedas de experiencia, el registro"
+      - " {letters_black}▎ {letters}y la economía de Vault."
+      - ""
+      - "{warning}➥ Clic para abrir"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings"

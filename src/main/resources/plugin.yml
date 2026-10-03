@@ -1,0 +1,83 @@
+name: ExyliaEconomy
+version: '${version}'
+main: net.exylia.exyliaEconomy.ExyliaEconomy
+api-version: '1.21'
+authors: [ DiGround ]
+website: https://github.com/Exylia-Plugins/ExyliaEconomy
+description: Server currencies kept in the database and shared across a network, with Vault support.
+
+folia-supported: true
+
+depend:
+  - ExyliaLib
+
+softdepend:
+  # Published as the Vault economy when present.
+  - Vault
+  - PlaceholderAPI
+  # Handed the money supply when present.
+  - ExyliaAnalytics
+
+# Plugins that look for a Vault economy during their own enable: they must find ours there.
+loadbefore:
+  - ExyliaSurvivalCore
+  - ExyliaMines
+  - ShopGUIPlus
+  - EconomyShopGUI
+  - ChestShop
+  - QuickShop
+  - Jobs
+  - zAuctionHouseV3
+  - AuctionHouse
+
+permissions:
+  exyliaeconomy.use:
+    description: Read your balances with /balance, /wallet, /baltop, /economy and the currency commands.
+    default: true
+  exyliaeconomy.pay:
+    description: Send money to another player.
+    default: true
+  exyliaeconomy.others:
+    description: Read another player's balance, wallet or history.
+    default: op
+  exyliaeconomy.admin:
+    description: Change balances and edit the currencies with /economyadmin.
+    default: op
+  # What staff were granted while the economy lived in ExyliaSurvivalCore keeps working.
+  exyliasurvivalcore.economy:
+    description: The ExyliaSurvivalCore name of exyliaeconomy.use.
+    default: true
+    children:
+      exyliaeconomy.use: true
+  exyliasurvivalcore.economy.pay:
+    description: The ExyliaSurvivalCore name of exyliaeconomy.pay.
+    default: true
+    children:
+      exyliaeconomy.pay: true
+  exyliasurvivalcore.economy.others:
+    description: The ExyliaSurvivalCore name of exyliaeconomy.others.
+    default: op
+    children:
+      exyliaeconomy.others: true
+  exyliasurvivalcore.economy.admin:
+    description: The ExyliaSurvivalCore name of exyliaeconomy.admin.
+    default: op
+    children:
+      exyliaeconomy.admin: true
+
+libraries:
+  # The same list ExyliaLib declares, in the same order and the same versions.
+  # The server's library loader fetches each one once and shares it, so a plugin
+  # naming a driver it never opens itself costs nothing, while a plugin missing
+  # one that ExyliaLib later needs is a server that starts and then cannot write.
+  - 'io.github.revxrsal:lamp.common:4.0.0-rc.17'
+  - 'io.github.revxrsal:lamp.bukkit:4.0.0-rc.17'
+  - 'com.github.ben-manes.caffeine:caffeine:3.2.4'
+  - 'com.zaxxer:HikariCP:5.1.0'
+  - 'com.h2database:h2:2.2.224'
+  - 'com.mysql:mysql-connector-j:8.4.0'
+  - 'org.mariadb.jdbc:mariadb-java-client:3.4.1'
+  - 'org.postgresql:postgresql:42.7.4'
+  - 'org.mongodb:mongodb-driver-sync:4.11.1'
+  - 'redis.clients:jedis:5.1.0'
+  - 'org.apache.commons:commons-pool2:2.12.0'

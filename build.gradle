@@ -1,0 +1,89 @@
+plugins {
+    id 'java'
+    id 'com.gradleup.shadow' version '8.3.0'
+    id 'io.freefair.lombok' version '8.14'
+}
+
+group = 'net.exylia'
+version = '1.0.0'
+
+repositories {
+    // A locally published ExyliaLib wins, so a change to both can be built before the library is released.
+    mavenLocal()
+    mavenCentral()
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+    maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
+    maven { url = 'https://repo.codemc.io/repository/maven-releases/' }
+    // ExyliaLib is attached to every release on GitHub; this reads it from there.
+    ivy {
+        name = 'ExyliaLib releases'
+        url = 'https://github.com/DiGround-s/ExyliaLib/releases/download/'
+        patternLayout { artifact 'v[revision]/[module]-[revision].[ext]' }
+        metadataSources { artifact() }
+        content { includeModule('net.exylia', 'ExyliaLib') }
+    }
+}
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT'
+    // Installed on the server as its own plugin, never shaded: one copy, one cache.
+    compileOnly "net.exylia:ExyliaLib:${exyliaLibVersion}"
+    compileOnly 'io.github.revxrsal:lamp.common:4.0.0-rc.17'
+    compileOnly 'io.github.revxrsal:lamp.bukkit:4.0.0-rc.17'
+    compileOnly 'com.github.ben-manes.caffeine:caffeine:3.2.4'
+
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // A real database for the tests that race servers on one row; ExyliaLib's pool touches Redis classes.
+    testRuntimeOnly 'com.h2database:h2:2.2.224'
+    testRuntimeOnly 'com.zaxxer:HikariCP:5.1.0'
+    testRuntimeOnly 'redis.clients:jedis:5.1.0'
+}
+
+// Tests see what the plugin compiles against: the server API and the library.
+configurations {
+    testImplementation.extendsFrom(compileOnly)
+}
+
+test {
+    useJUnitPlatform()
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+    options.release.set(21)
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
+
+shadowJar {
+    archiveBaseName.set('ExyliaEconomy')
+    archiveClassifier.set('')
+    // Set exyliaOutputDir in ~/.gradle/gradle.properties to drop the jar straight into a server.
+    if (project.hasProperty('exyliaOutputDir')) {
+        destinationDirectory = file("${exyliaOutputDir}/plugins")
+    }
+    exclude 'META-INF/versions/**'
+}
+
+tasks.named('build') {
+    dependsOn shadowJar
+}
+
+// The plain jar keeps its own name, so build/libs holds one ExyliaEconomy-<version>.jar: the one to install.
+jar {
+    archiveClassifier.set('plain')
+}
