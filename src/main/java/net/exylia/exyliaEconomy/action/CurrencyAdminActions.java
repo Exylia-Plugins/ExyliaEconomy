@@ -296,11 +296,14 @@ public final class CurrencyAdminActions {
             CurrencyAdminMenus.refreshEdit(player, row);
             return;
         }
+        if (setting.equals("networked")) {
+            toggleNetworked(player, store, row);
+            return;
+        }
         UnaryOperator<CurrencyRow> change = switch (setting) {
             case "transferable" -> current -> current.edit(draft -> draft.transferable = !draft.transferable);
             case "exchangeable" -> current -> current.edit(draft -> draft.exchangeable = !draft.exchangeable);
             case "leaderboard" -> current -> current.edit(draft -> draft.leaderboard = !draft.leaderboard);
-            case "networked" -> current -> current.edit(draft -> draft.networked = !draft.networked);
             case "commands" -> current -> current.edit(draft -> draft.commands = !draft.commands);
             default -> null;
         };
@@ -308,6 +311,26 @@ public final class CurrencyAdminActions {
         CurrencyRow changed = change.apply(row);
         StoredEconomy.changed(store.save(changed));
         CurrencyAdminMenus.refreshEdit(player, changed);
+    }
+
+    /**
+     * Networked or not is which rows hold the balances, so the switch is only
+     * thrown while nothing but starting balances would stay behind: refused
+     * otherwise, never a quiet reset of everybody's money.
+     */
+    private void toggleNetworked(Player player, CurrencyStore store, CurrencyRow row) {
+        StoredEconomy.holdsBalances(row.id()).whenComplete((held, failure) -> plugin.getTasks().runAtEntity(player, () -> {
+            if (failure != null) plugin.getDebug().error("Economy: could not count the balances of " + row.id() + ".", failure);
+            CurrencyRow current = store.get(row.id()).orElse(null);
+            if (current == null) return;
+            if (failure != null || Boolean.TRUE.equals(held)) {
+                Messages.send(player, EconomyMessages.get().currencyNetworkedLocked(), Values.of("id", row.id()));
+                return;
+            }
+            CurrencyRow changed = current.edit(draft -> draft.networked = !draft.networked);
+            StoredEconomy.changed(store.save(changed));
+            CurrencyAdminMenus.refreshEdit(player, changed);
+        }));
     }
 
     /** {@code currency_admin_settings_toggle <setting>}: flips one of the economy-wide switches. */

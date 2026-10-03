@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * {@code currencies.yml}: the defaults a fresh server gets, the owner's edits,
- * and the copy ExyliaLib kept before the currencies moved here.
+ * and the copy the survival core kept before the currencies moved here.
  */
 class CurrencyFileTest {
 
@@ -81,35 +81,20 @@ class CurrencyFileTest {
     }
 
     @Test
-    @DisplayName("the library's file is copied over once, with the owner's edits, and left where it was")
-    void adoptsTheLibraryFile() throws Exception {
-        Path legacy = plugins.resolve(CurrencyFile.LEGACY);
-        Files.createDirectories(legacy.getParent());
-        Files.writeString(legacy, "stored:\n  gems:\n    name: Gem\n    plural: Gems\nvault:\n  provide: gems\n");
-
-        CurrencyFile.Contents read = CurrencyFile.load(folder, LOGGER);
-        assertEquals(1, read.stored().size());
-        assertEquals("Gems", read.stored().get("gems").info().namePlural());
-        assertEquals("gems", read.vaultProvide());
-        assertEquals(Files.readString(legacy), Files.readString(file));
-        assertTrue(Files.exists(legacy), "the old file is the backup nobody had to take");
-
-        // Copied once: what the owner edits here from now on is what is read.
-        Files.writeString(legacy, "stored: {}\n");
-        assertEquals(1, CurrencyFile.load(folder, LOGGER).stored().size());
-    }
-
-    @Test
-    @DisplayName("the survival core's file comes before the library's")
+    @DisplayName("the survival core's file is copied over once, with the owner's edits, and left where it was")
     void adoptsTheSurvivalCoreFile() throws Exception {
         Path core = plugins.resolve(CurrencyFile.SURVIVAL_CORE);
-        Path library = plugins.resolve(CurrencyFile.LEGACY);
         Files.createDirectories(core.getParent());
-        Files.createDirectories(library.getParent());
-        Files.writeString(core, "stored:\n  coins:\n    name: Coin\n");
-        Files.writeString(library, "stored:\n  gems:\n    name: Gem\n");
+        Files.writeString(core, "stored:\n  coins:\n    name: Coin\nvault:\n  provide: coins\n");
 
         CurrencyFile.Contents read = CurrencyFile.load(folder, LOGGER);
         assertEquals(java.util.Set.of("coins"), read.stored().keySet());
+        assertEquals("coins", read.vaultProvide());
+        assertEquals(Files.readString(core), Files.readString(file));
+        assertTrue(Files.exists(core), "the old file is the backup nobody had to take");
+
+        // Copied once: what the owner edits here from now on is what is read.
+        Files.writeString(core, "stored: {}\n");
+        assertEquals(1, CurrencyFile.load(folder, LOGGER).stored().size());
     }
 }

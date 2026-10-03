@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -18,9 +19,9 @@ import java.util.logging.Logger;
  * <ul>
  *   <li><b>{@code database.yml}.</b> The balances, the pending rows and the ledger are already in
  *       the survival core's database, under the same tables: this plugin has to open that
- *       database, not a new empty one. Copied as it is, so the Redis server id is the same too,
- *       and an embedded H2 file is pointed back at the survival core's folder, because its path
- *       is read relative to the plugin that owns the file.</li>
+ *       database, not a new empty one. Copied as it is, so the Redis server id is the same too.
+ *       An embedded H2 file is copied into this plugin's folder under the same path, so deleting
+ *       the survival core's folder never takes the balances with it.</li>
  *   <li><b>Messages.</b> Each language's {@code modules/economy/messages.yml} has the keys this
  *       plugin's {@code messages.yml} has, so it is copied where this plugin has none.</li>
  *   <li><b>Players' menus.</b> The wallet, the leaderboard and the history, which the owner may
@@ -31,13 +32,17 @@ import java.util.logging.Logger;
  * <p>Runs before anything opens the database: the library reads {@code database.yml} when this
  * plugin first asks for its database or its Redis channels, and a file written afterwards would
  * only apply on the next start. Done once: a marker file is written, and from then on nothing is
- * read again. Never deletes or changes anything in the survival core's folder.
+ * read again — except that a {@code database.yml} an earlier version pointed at the survival
+ * core's H2 file gets the same copy on the next start. Never deletes or changes anything in the
+ * survival core's folder.
  */
 public final class SurvivalCoreImport {
 
     private static final String SOURCE = "ExyliaSurvivalCore";
     private static final String MARKER = ".imported-survivalcore";
     private static final String DEFAULT_H2_FILE = "database/h2";
+    /** What H2 adds to {@code database.h2.file}: the current store, and the one before it. */
+    private static final List<String> H2_SUFFIXES = List.of(".mv.db", ".h2.db");
     private static final List<String> MENUS = List.of("wallet", "top", "history");
 
     private SurvivalCoreImport() {
@@ -47,8 +52,16 @@ public final class SurvivalCoreImport {
     /** Copies the files where this plugin has none of its own, once. */
     public static void files(Plugin plugin) {
         File folder = plugin.getDataFolder();
-        if (new File(folder, MARKER).exists()) return;
         Logger logger = plugin.getLogger();
+        if (new File(folder, MARKER).exists()) {
+            try {
+                relocate(folder, logger);
+            } catch (IOException | InvalidConfigurationException | RuntimeException failure) {
+                logger.severe("Could not copy the database of " + SOURCE + " here: " + failure + ". The balances"
+                        + " are still read from plugins/" + SOURCE + "; do not delete that folder.");
+            }
+            return;
+        }
         File source = new File(folder.getParentFile(), SOURCE);
         if (source.isDirectory()) {
             try {
@@ -80,12 +93,68 @@ public final class SurvivalCoreImport {
         database.load(from);
         String file = database.getString("database.h2.file", DEFAULT_H2_FILE);
         if (file == null || file.isBlank()) file = DEFAULT_H2_FILE;
-        // The library resolves the path against this plugin's folder, and opens the survival
-        // core's file as the same database only when both resolve to the same place.
-        if (!Path.of(file).isAbsolute()) database.set("database.h2.file", "../" + SOURCE + "/" + file);
+        // The library resolves the path against this plugin's folder: the same path here is the
+        // copy. A file of this plugin's own already there is never written over, and the survival
+        // core's stays the one read.
+        if (!Path.of(file).isAbsolute()) {
+            database.set("database.h2.file", copyH2(source, folder, file, logger) ? file : "../" + SOURCE + "/" + file);
+        }
         Files.createDirectories(folder.toPath());
         database.save(to);
         logger.info("Using the database of " + SOURCE + ": its database.yml was copied here.");
+    }
+
+    /**
+     * A {@code database.yml} an earlier version wrote, still opening the survival core's H2 file:
+     * given a copy of its own, so that folder can go.
+     */
+    static void relocate(File folder, Logger logger) throws IOException, InvalidConfigurationException {
+        File config = new File(folder, "database.yml");
+        if (!config.isFile()) return;
+        YamlConfiguration database = new YamlConfiguration();
+        database.load(config);
+        String file = database.getString("database.h2.file", "");
+        String prefix = "../" + SOURCE + "/";
+        if (file == null || !file.startsWith(prefix)) return;
+        String own = file.substring(prefix.length());
+        if (!copyH2(new File(folder.getParentFile(), SOURCE), folder, own, logger)) return;
+        database.set("database.h2.file", own);
+        database.save(config);
+        logger.info("database.yml now opens this plugin's own copy of the database; the one in plugins/"
+                + SOURCE + " is no longer read.");
+    }
+
+    /**
+     * Copies the survival core's H2 file into this plugin's folder, under the same path.
+     *
+     * <p>Through a temporary file moved into place, so a copy cut short is never mistaken for a
+     * database on the next start.
+     *
+     * @return whether the copy is in place; {@code false} when there is no file to copy, or this
+     *         plugin already has one there
+     */
+    static boolean copyH2(File source, File folder, String file, Logger logger) throws IOException {
+        for (String suffix : H2_SUFFIXES) {
+            Path to = new File(folder, file + suffix).toPath();
+            if (Files.exists(to)) {
+                logger.warning("Not copying the database of " + SOURCE + ": " + to + " already exists, so the"
+                        + " survival core's file stays the one read.");
+                return false;
+            }
+        }
+        boolean copied = false;
+        for (String suffix : H2_SUFFIXES) {
+            Path from = new File(source, file + suffix).toPath();
+            Path to = new File(folder, file + suffix).toPath();
+            if (!Files.isRegularFile(from)) continue;
+            Files.createDirectories(to.getParent());
+            Path partial = to.resolveSibling(to.getFileName() + ".importing");
+            Files.copy(from, partial, StandardCopyOption.REPLACE_EXISTING);
+            Files.move(partial, to);
+            logger.info("Copied the database " + from + " to " + to + ".");
+            copied = true;
+        }
+        return copied;
     }
 
     /** Each language's messages and players' menus, where this plugin has none. */

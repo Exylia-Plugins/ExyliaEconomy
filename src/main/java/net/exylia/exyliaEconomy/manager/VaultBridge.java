@@ -1,6 +1,7 @@
 package net.exylia.exyliaEconomy.manager;
 
 import io.papermc.paper.plugin.provider.classloader.ConfiguredPluginClassLoader;
+import net.exylia.lib.economy.CurrencyInfo;
 import net.exylia.lib.economy.Economy;
 import net.exylia.lib.economy.EconomyResponse;
 import net.exylia.lib.economy.Transaction;
@@ -18,6 +19,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -191,6 +193,16 @@ final class VaultBridge {
         Bukkit.getServicesManager().unregister((Class) economyClass, proxy);
     }
 
+    /**
+     * Vault's double as the currency's amount, rounded half up to its
+     * decimals: {@code 2.3 * 3} is {@code 6.8999999999999995}, and cutting it
+     * down would charge 6.89. {@code null} for no amount at all.
+     */
+    static @Nullable BigDecimal money(CurrencyInfo info, double amount) {
+        if (!Double.isFinite(amount) || amount < 0D) return null;
+        return BigDecimal.valueOf(amount).setScale(info.scaleDigits(), RoundingMode.HALF_UP);
+    }
+
     /** Answers Vault's interface with the library's operations, on whichever currency is served. */
     private final class Handler implements InvocationHandler {
 
@@ -217,8 +229,8 @@ final class VaultBridge {
                 case "currencyNameSingular" -> { return currency.info().name(); }
                 case "getBalance" -> { return balance(currency, player(args[0])); }
                 case "has" -> { return balance(currency, player(args[0])) >= amount(args); }
-                case "depositPlayer" -> { return response(deposit(currency, player(args[0]), amount(args)), amount(args)); }
-                case "withdrawPlayer" -> { return response(withdraw(currency, player(args[0]), amount(args)), amount(args)); }
+                case "depositPlayer" -> { return response(deposit(currency, player(args[0]), amount(args))); }
+                case "withdrawPlayer" -> { return response(withdraw(currency, player(args[0]), amount(args))); }
                 default -> { return unsupported(method); }
             }
         }
@@ -263,13 +275,16 @@ final class VaultBridge {
             return 0D;
         }
 
+        /** In memory for a player held here; read from the row, in line, for anybody else. */
         private double balance(StoredCurrency currency, @Nullable UUID player) {
-            return player == null ? 0D : Economy.of(currency.id()).balance(player).doubleValue();
+            return player == null ? 0D : currency.balanceNow(player).doubleValue();
         }
 
         private EconomyResponse deposit(StoredCurrency currency, @Nullable UUID player, double amount) {
             if (player == null) return EconomyResponse.failure("Unknown player.");
-            return Economy.of(currency.id()).deposit(player, BigDecimal.valueOf(amount), caller());
+            BigDecimal money = money(currency.info(), amount);
+            if (money == null) return EconomyResponse.invalidAmount();
+            return Economy.of(currency.id()).deposit(player, money, caller());
         }
 
         /**
@@ -282,7 +297,9 @@ final class VaultBridge {
             if (!currency.isLoaded(player)) {
                 return EconomyResponse.failure("Only the balance of a player on this server can be charged.");
             }
-            return Economy.of(currency.id()).withdraw(player, BigDecimal.valueOf(amount), caller());
+            BigDecimal money = money(currency.info(), amount);
+            if (money == null) return EconomyResponse.invalidAmount();
+            return Economy.of(currency.id()).withdraw(player, money, caller());
         }
 
         /**
@@ -300,9 +317,10 @@ final class VaultBridge {
             return Transaction.of(name.isEmpty() ? "vault" : "vault:" + name);
         }
 
-        private Object response(EconomyResponse ours, double asked) throws ReflectiveOperationException {
+        /** What actually moved, never what was asked: a deposit refused at a ceiling is a failure. */
+        private Object response(EconomyResponse ours) throws ReflectiveOperationException {
             String type = ours.isSuccess() ? "SUCCESS" : "FAILURE";
-            return vaultResponse(asked, ours.balance().doubleValue(), type, ours.message());
+            return vaultResponse(ours.amount().doubleValue(), ours.balance().doubleValue(), type, ours.message());
         }
 
         @SuppressWarnings({"unchecked", "rawtypes"})

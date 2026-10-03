@@ -72,6 +72,16 @@ public record EconomyMessages(
         String economyOff,
         @Comment("Item and experience payments that waited for a player's join. Placeholder: %amount%.")
         String rewardsDelivered,
+        @Comment("A deposit or set refused because the balance would pass its ceiling. Placeholder: %amount%.")
+        String overCeiling,
+        @Comment("An admin change or payment the currency refused. Placeholder: %reason%.")
+        String refused,
+        @Comment("An import between the same two currencies is already running.")
+        String importRunning,
+        @Comment("An import stopped partway; running it again skips whoever was already paid.")
+        String importFailed,
+        @Comment("The networked switch of a currency whose balances would be left behind. Placeholder: %id%.")
+        String currencyNetworkedLocked,
         @Comment("")
         @Comment("The currency editor of /economyadmin: its prompts, forms and the words its screens show.")
         CurrencyAdmin admin) {
@@ -120,7 +130,7 @@ public record EconomyMessages(
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%id% {error}is not a currency id. Use lowercase letters, digits and underscores, up to 32.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Those rates could not be read: {highlight}%reason%{error}. Write them as {highlight}shards=0.01, gems=2{error}.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {warning}Your balance is still loading. Try again in a moment.",
-                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Balances from {highlight}%from% {error}were already imported into {highlight}%currency%{error}. Add {highlight}again {error}to the command to import them on top.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Balances from {highlight}%from% {error}were already imported into {highlight}%currency%{error}. Add {highlight}again {error}to the command to import the players not imported yet.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%from% {error}and {highlight}%currency% {error}are the same currency, so there is nothing to import.",
                 labels("api", "Plugin", "vault", "Plugin", "pay", "Payment", "pay:tax", "Transfer tax",
                         "pay:tax-refund", "Tax refund", "shop", "Shop", "shop:buy", "Shop purchase",
@@ -138,6 +148,13 @@ public record EconomyMessages(
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}The economy is not running.",
                 "[sound:ENTITY_PLAYER_LEVELUP|1.0|1.4]%prefix% {success}Delivered {highlight}%amount% "
                         + "{success}payments that were waiting for you.",
+                "That would take the balance over its ceiling of %amount%.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}%reason%",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {warning}That import is already running.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}The import into {highlight}%currency% {error}stopped partway."
+                        + " Run it again with {highlight}again{error}: nobody is paid twice.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%id% {error}already holds balances, so it"
+                        + " cannot switch between networked and per-server: they would be left behind.",
                 new CurrencyAdmin());
     }
 

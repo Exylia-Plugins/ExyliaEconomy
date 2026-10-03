@@ -41,7 +41,7 @@ currency-exists: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}A moeda {hig
 currency-invalid-id: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%id% {error}não é um ID de moeda válido. Use letras minúsculas, dígitos e underlines, até 32.'
 currency-invalid-rates: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Não foi possível ler essas taxas: {highlight}%reason%{error}. Escreva como {highlight}shards=0.01, gems=2{error}.'
 still-loading: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {warning}Seu saldo ainda está carregando. Tente de novo em instantes.'
-import-already: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Os saldos de {highlight}%from% {error}já foram importados para {highlight}%currency%{error}. Adicione {highlight}again {error}ao comando para somá-los por cima.'
+import-already: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Os saldos de {highlight}%from% {error}já foram importados para {highlight}%currency%{error}. Adicione {highlight}again {error}ao comando para importar os jogadores que ainda faltam.'
 import-same: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%from% {error}e {highlight}%currency% {error}são a mesma moeda, então não há nada para importar.'
 reasons:
   api: Plugin
@@ -79,6 +79,11 @@ at-ceiling: O saldo está no limite de %amount%.
 permission-denied: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Você não tem permissão para fazer isso.'
 economy-off: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}A economia não está funcionando.'
 rewards-delivered: '[sound:ENTITY_PLAYER_LEVELUP|1.0|1.4]%prefix% {success}Foram entregues {highlight}%amount% {success}pagamentos que esperavam por você.'
+over-ceiling: Isso passaria o saldo do limite de %amount%.
+refused: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}%reason%'
+import-running: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {warning}Essa importação já está em andamento.'
+import-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}A importação para {highlight}%currency% {error}parou no meio. Execute-a de novo com {highlight}again{error}: ninguém recebe duas vezes.'
+currency-networked-locked: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%id% {error}já tem saldos, então não pode alternar entre compartilhada na rede e por servidor: eles ficariam para trás.'
 admin:
   icon-prompt: '{warning}Escolha um ícone'
   id-prompt: '{primary}Digite um ID para a moeda, como {highlight}gems{primary}:'

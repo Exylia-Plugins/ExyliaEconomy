@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** The survival core's database.yml, copied so this plugin opens the very same database. */
 class SurvivalCoreImportTest {
@@ -39,7 +40,7 @@ class SurvivalCoreImportTest {
     }
 
     @Test
-    @DisplayName("the default embedded file and an absolute one both stay on the survival core's database")
+    @DisplayName("with no H2 file to copy, the embedded path still points at the survival core's database")
     void defaultAndAbsolute() throws Exception {
         File source = plugins.resolve("ExyliaSurvivalCore").toFile();
         File folder = plugins.resolve("ExyliaEconomy").toFile();
@@ -54,5 +55,45 @@ class SurvivalCoreImportTest {
         Files.writeString(source.toPath().resolve("database.yml"), "database:\n  type: postgresql\n");
         SurvivalCoreImport.database(source, folder, LOGGER);
         assertFalse(Files.readString(folder.toPath().resolve("database.yml")).contains("postgresql"));
+    }
+
+    @Test
+    @DisplayName("an embedded H2 file is copied here and opened here, so the survival core's folder can go")
+    void embeddedFileIsCopied() throws Exception {
+        File source = plugins.resolve("ExyliaSurvivalCore").toFile();
+        File folder = plugins.resolve("ExyliaEconomy").toFile();
+        Files.createDirectories(source.toPath().resolve("database"));
+        Files.writeString(source.toPath().resolve("database.yml"), "database:\n  type: h2\n");
+        Files.writeString(source.toPath().resolve("database/h2.mv.db"), "balances");
+
+        SurvivalCoreImport.database(source, folder, LOGGER);
+
+        String file = YamlConfiguration.loadConfiguration(new File(folder, "database.yml")).getString("database.h2.file");
+        assertEquals(folder.toPath().resolve("database/h2").normalize(), folder.toPath().resolve(file).normalize());
+        assertEquals("balances", Files.readString(folder.toPath().resolve("database/h2.mv.db")));
+        assertTrue(Files.exists(source.toPath().resolve("database/h2.mv.db")), "the survival core's file was touched");
+    }
+
+    @Test
+    @DisplayName("a database.yml an earlier version pointed at the survival core gets its own copy")
+    void earlierImportIsRelocated() throws Exception {
+        File source = plugins.resolve("ExyliaSurvivalCore").toFile();
+        File folder = plugins.resolve("ExyliaEconomy").toFile();
+        Files.createDirectories(source.toPath().resolve("database"));
+        Files.createDirectories(folder.toPath());
+        Files.writeString(source.toPath().resolve("database/h2.mv.db"), "balances");
+        Files.writeString(folder.toPath().resolve("database.yml"),
+                "database:\n  type: h2\n  h2:\n    file: ../ExyliaSurvivalCore/database/h2\n");
+
+        SurvivalCoreImport.relocate(folder, LOGGER);
+
+        assertEquals("database/h2", YamlConfiguration.loadConfiguration(new File(folder, "database.yml"))
+                .getString("database.h2.file"));
+        assertEquals("balances", Files.readString(folder.toPath().resolve("database/h2.mv.db")));
+
+        // Already ours: nothing more to do, and nothing written over.
+        Files.writeString(folder.toPath().resolve("database/h2.mv.db"), "newer");
+        SurvivalCoreImport.relocate(folder, LOGGER);
+        assertEquals("newer", Files.readString(folder.toPath().resolve("database/h2.mv.db")));
     }
 }

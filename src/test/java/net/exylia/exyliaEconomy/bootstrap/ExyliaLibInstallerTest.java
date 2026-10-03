@@ -19,14 +19,16 @@ class ExyliaLibInstallerTest {
     Path dir;
 
     @Test
-    void acceptsOnlyAJarWhosePluginYmlNamesExyliaLib() throws IOException {
-        assertTrue(ExyliaLibInstaller.isExyliaLibJar(jar("lib.jar", "name: ExyliaLib\nversion: '1.0'\n")));
-        assertTrue(ExyliaLibInstaller.isExyliaLibJar(jar("quoted.jar", "version: 1\nname: 'ExyliaLib'\n")));
-        assertFalse(ExyliaLibInstaller.isExyliaLibJar(jar("other.jar", "name: SomethingElse\n")));
-        assertFalse(ExyliaLibInstaller.isExyliaLibJar(jar("nested.jar", "name: Other\nx:\n  name: ExyliaLib\n")));
-        assertFalse(ExyliaLibInstaller.isExyliaLibJar(jar("empty.jar", null)));
+    void acceptsOnlyAJarWhosePluginYmlNamesExyliaLibAtTheRequiredVersion() throws IOException {
+        assertTrue(ExyliaLibInstaller.isExyliaLibJar(jar("lib.jar", "name: ExyliaLib\nversion: '1.236.0'\n"), "1.236.0"));
+        assertTrue(ExyliaLibInstaller.isExyliaLibJar(jar("newer.jar", "version: 1.240.2\nname: 'ExyliaLib'\n"), "1.236.0"));
+        assertFalse(ExyliaLibInstaller.isExyliaLibJar(jar("older.jar", "name: ExyliaLib\nversion: '1.99.0'\n"), "1.236.0"));
+        assertFalse(ExyliaLibInstaller.isExyliaLibJar(jar("unversioned.jar", "name: ExyliaLib\n"), "1.236.0"));
+        assertFalse(ExyliaLibInstaller.isExyliaLibJar(jar("other.jar", "name: SomethingElse\nversion: 9\n"), "1.0"));
+        assertFalse(ExyliaLibInstaller.isExyliaLibJar(jar("nested.jar", "name: Other\nx:\n  name: ExyliaLib\n"), "1.0"));
+        assertFalse(ExyliaLibInstaller.isExyliaLibJar(jar("empty.jar", null), "1.0"));
         Path html = Files.writeString(dir.resolve("page.jar"), "<html>not found</html>");
-        assertFalse(ExyliaLibInstaller.isExyliaLibJar(html));
+        assertFalse(ExyliaLibInstaller.isExyliaLibJar(html, "1.0"));
     }
 
     @Test

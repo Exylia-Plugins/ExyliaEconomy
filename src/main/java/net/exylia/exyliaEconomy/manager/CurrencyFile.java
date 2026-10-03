@@ -31,10 +31,9 @@ import java.util.logging.Logger;
  *
  * <h2>Where it came from</h2>
  * The economy module of ExyliaSurvivalCore kept it as
- * {@code plugins/ExyliaSurvivalCore/modules/economy/currencies.yml}, and before
- * ExyliaLib 1.159.0 the library kept it as {@code plugins/ExyliaLib/currencies.yml}.
- * A server that has one of those and not this one gets it copied over once,
- * edits and all, rather than the defaults. A survival core that already moved
+ * {@code plugins/ExyliaSurvivalCore/modules/economy/currencies.yml}. A server
+ * that has that one and not this one gets it copied over once, edits and all,
+ * rather than the defaults. A survival core that already moved
  * its file into its tables renamed it, and those tables are copied instead
  * (see {@code LegacyTables}).
  *
@@ -52,10 +51,7 @@ public final class CurrencyFile {
 
     public static final String FILE = "currencies.yml";
 
-    /** Where ExyliaLib kept the file, relative to the plugins folder. */
-    static final String LEGACY = "ExyliaLib/currencies.yml";
-
-    /** Where ExyliaSurvivalCore kept it, relative to the plugins folder; asked before ExyliaLib's. */
+    /** Where ExyliaSurvivalCore kept it, relative to the plugins folder. */
     static final String SURVIVAL_CORE = "ExyliaSurvivalCore/modules/economy/currencies.yml";
 
     /** One currency this plugin stores. */
@@ -110,7 +106,7 @@ public final class CurrencyFile {
     }
 
     /**
-     * Reads the file, bringing the library's copy over or writing the defaults
+     * Reads the file, bringing the survival core's copy over or writing the defaults
      * first when it is missing.
      *
      * @param dataFolder this plugin's data folder
@@ -123,7 +119,6 @@ public final class CurrencyFile {
         if (!file.exists()) {
             File plugins = dataFolder.getAbsoluteFile().getParentFile();
             File legacy = plugins == null ? null : new File(plugins, SURVIVAL_CORE);
-            if (legacy != null && !legacy.isFile()) legacy = new File(plugins, LEGACY);
             if (legacy != null && legacy.isFile()) {
                 // A copy that failed is read where it is, once more: the owner's
                 // currencies this start, and another try at the next.
@@ -185,9 +180,9 @@ public final class CurrencyFile {
     }
 
     /**
-     * Copies the file ExyliaLib kept into this plugin's folder.
+     * Copies the file the survival core kept into this plugin's folder.
      *
-     * <p>Copied, not moved: the library no longer reads it, and leaving it
+     * <p>Copied, not moved: nothing reads it there any more, and leaving it
      * where it was is the backup nobody had to take.
      *
      * @return whether the copy is in place

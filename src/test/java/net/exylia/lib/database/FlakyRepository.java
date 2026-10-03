@@ -101,6 +101,34 @@ public final class FlakyRepository {
         return new Repository<>(liar, model);
     }
 
+    /**
+     * The same rows, but the next {@code failures} calls of one storage method
+     * report failure; with {@code commit}, each one is carried out first.
+     *
+     * <p>A database that drops a handful of writes and then recovers, which is
+     * what a retry has to survive without losing or doubling anything.
+     *
+     * @param method   the storage method that fails, such as {@code updateIf} or {@code insert}
+     * @param failures how many more calls fail; counted down by each one
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Repository<T> failing(Repository<T> real, String method, boolean commit,
+                                            java.util.concurrent.atomic.AtomicInteger failures)
+            throws ReflectiveOperationException {
+        Storage storage = (Storage) read(real, "storage");
+        EntityModel<T> model = (EntityModel<T>) read(real, "model");
+        Storage liar = (Storage) Proxy.newProxyInstance(FlakyRepository.class.getClassLoader(),
+                new Class<?>[]{Storage.class}, (self, method2, args) -> {
+                    if (!method2.getName().equals(method) || failures.getAndDecrement() <= 0) {
+                        return method2.invoke(storage, args);
+                    }
+                    if (commit) ((CompletableFuture<?>) method2.invoke(storage, args)).join();
+                    return CompletableFuture.failedFuture(
+                            new IllegalStateException("The database stopped answering."));
+                });
+        return new Repository<>(liar, model);
+    }
+
     @SuppressWarnings("unchecked")
     private static <T> Repository<T> over(Repository<T> real, Set<String> failing, boolean commit)
             throws ReflectiveOperationException {

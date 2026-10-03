@@ -3,6 +3,7 @@ package net.exylia.exyliaEconomy.manager;
 import net.exylia.exyliaEconomy.ExyliaEconomy;
 import net.exylia.exyliaEconomy.database.BalanceRow;
 import net.exylia.exyliaEconomy.database.CurrencyRow;
+import net.exylia.exyliaEconomy.database.ImportedRow;
 import net.exylia.exyliaEconomy.database.LedgerRow;
 import net.exylia.exyliaEconomy.common.Values;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
@@ -21,6 +22,7 @@ import net.exylia.lib.economy.EconomyResponse;
 import net.exylia.lib.economy.ExperienceCurrency;
 import net.exylia.lib.economy.ItemCurrency;
 import net.exylia.lib.economy.Transaction;
+import net.exylia.lib.format.Amounts;
 import net.exylia.lib.player.ExyliaPlayers;
 import net.exylia.lib.redis.Channel;
 import net.exylia.lib.redis.Channels;
@@ -119,8 +121,14 @@ public final class StoredEconomy implements Listener {
     private static final long HANDOVER_MILLIS = 5_000L;
     private static final long HANDOVER_RETRY_TICKS = 5L;
     private static final int TAKE_ATTEMPTS = 60;
-    // ponytail: a crash loses at most this window of balance changes; shorten it if that ever matters more than write volume.
+    // ponytail: a crash loses at most this window of deposits; withdrawals skip it (see written), shorten it if that ever matters more than write volume.
     private static final long COALESCE_TICKS = 10L;
+    /** How long a write the database refused waits before it is tried again. */
+    private static final long RETRY_TICKS = 20L;
+    /** How many tries a write still gets once the plugin stops and no tick will space them out. */
+    private static final int STOPPING_ATTEMPTS = 3;
+    /** How long a Vault read of somebody not held here may wait for their row. */
+    private static final long VAULT_READ_MILLIS = 2_000L;
     private static final long SHUTDOWN_WAIT_SECONDS = 10L;
     private static final int PURGE_PAGE = 500;
     private static final int MAX_PURGE_DAYS = 400;
@@ -140,6 +148,7 @@ public final class StoredEconomy implements Listener {
     private final Repository<BalanceRow> balances;
     private final Repository<PendingRow> pending;
     private final Repository<LedgerRow> ledger;
+    private final Repository<ImportedRow> imported;
     private final String server;
 
     private volatile CurrencyFile.Contents contents;
@@ -173,6 +182,9 @@ public final class StoredEconomy implements Listener {
     private final Runnable afterLoad;
     private volatile boolean ready;
     private volatile boolean stopping;
+    private boolean warnedName;
+    /** The first day the ledger purge has not deleted yet, since this start. */
+    private volatile long purgedBefore;
     private Channel channel;
     private Channel.Subscription subscription;
     private TaskHandle sweeper;
@@ -183,7 +195,8 @@ public final class StoredEconomy implements Listener {
 
     private record CachedTop(long at, List<TopEntry> entries) { }
 
-    private record Snapshot(long at, BigDecimal amount) { }
+    /** A balance read from the database; {@code amount} is {@code null} while the first read is on its way. */
+    private record Snapshot(long at, @Nullable BigDecimal amount) { }
 
     /** An item or experience currency, with the settings it was built from. */
     private record Extra(CurrencyProvider provider, @Nullable CurrencyFile.Item item) { }
@@ -213,6 +226,7 @@ public final class StoredEconomy implements Listener {
         this.balances = Databases.of(plugin).repository(BalanceRow.class);
         this.pending = Databases.of(plugin).repository(PendingRow.class);
         this.ledger = Databases.of(plugin).repository(LedgerRow.class);
+        this.imported = Databases.of(plugin).repository(ImportedRow.class);
         this.server = Redis.serverId(plugin);
         this.vault = new VaultBridge(plugin);
     }
@@ -367,6 +381,27 @@ public final class StoredEconomy implements Listener {
                 s.exchangeable(), s.rates(), s.leaderboard(), s.commands()));
     }
 
+    /**
+     * Whether a stored currency holds balances that switching it between
+     * networked and per-server would leave behind: a row under the key it
+     * uses now with anything but the starting balance in it.
+     *
+     * <p>ponytail: only the rows this server can name, the shared key or its
+     * own {@code id@server}, because the database is only asked by equality;
+     * another server's per-server rows are not seen. A key column per row
+     * kind would let it ask for all of them.
+     */
+    public static @NotNull CompletableFuture<Boolean> holdsBalances(@NotNull String id) {
+        StoredEconomy economy = instance;
+        StoredCurrency currency = economy == null ? null : economy.currency(id);
+        if (currency == null) return CompletableFuture.completedFuture(false);
+        String key = economy.key(currency);
+        BigDecimal start = currency.clamp(currency.settings().start());
+        return economy.balances.where("currency", key).count()
+                .thenCombine(economy.balances.where("currency", key).where("amount", start).count(),
+                        (rows, untouched) -> rows > untouched);
+    }
+
     boolean isReady() {
         return ready;
     }
@@ -398,19 +433,25 @@ public final class StoredEconomy implements Listener {
         Map<String, StoredCurrency> next = new LinkedHashMap<>();
         for (CurrencyFile.Stored settings : read.stored().values()) {
             StoredCurrency kept = before.get(settings.id());
-            if (kept != null) {
+            if (kept != null && kept.settings().networked() == settings.networked()) {
                 kept.settings(settings);
                 next.put(settings.id(), kept);
                 continue;
             }
+            // Networked or not is which rows the balances live in: a currency
+            // switched over is another set of balances. The old instance lets
+            // go of its rows under its old key below, and this one claims the
+            // new ones after that, in each player's chain.
+            if (kept != null) Economy.unregister(kept.id());
             StoredCurrency created = new StoredCurrency(settings, this);
             if (register(created)) next.put(settings.id(), created);
         }
         for (StoredCurrency gone : before.values()) {
             if (next.get(gone.id()) == gone) continue;
-            Economy.unregister(gone.id());
+            if (!next.containsKey(gone.id())) Economy.unregister(gone.id());
             for (UUID player : gone.loadedPlayers()) {
-                if (gone.unload(player)) chain(player, () -> release(gone, player));
+                BigDecimal last = gone.unload(player);
+                if (last != null) chain(player, () -> release(gone, player, last));
             }
         }
         stored = Collections.unmodifiableMap(next);
@@ -432,9 +473,10 @@ public final class StoredEconomy implements Listener {
             logger.warning("Economy: Vault is set to '" + provide + "', which is not a stored currency.");
         }
         // ExyliaLib's default currency is 'vault'. With no economy plugin behind
-        // Vault, leaving it empty leaves the whole server without money, so the
-        // first stored currency serves it instead.
-        StoredCurrency published = named != null || vault.othersServe()
+        // Vault, a name that is no currency (any more) leaves the whole server
+        // without money, so the first stored currency serves it instead. Blank
+        // is an admin who turned Vault off, and stays off.
+        StoredCurrency published = named != null || provide.isBlank() || vault.othersServe()
                 ? named : next.values().stream().findFirst().orElse(null);
         if (published != named) {
             logger.warning("Economy: no currency is set for Vault and no economy plugin is installed, so '"
@@ -453,6 +495,24 @@ public final class StoredEconomy implements Listener {
                 + ((read.experienceLevels() ? 1 : 0) + (read.experiencePoints() ? 1 : 0))
                 + " experience currencies.");
         safely("install the currency commands", afterLoad);
+        warnSharedName(next.values());
+    }
+
+    /**
+     * Says so once when servers sharing balances may all be {@code server-1}.
+     *
+     * <p>Ownership of a networked balance is by server id: two servers with
+     * the default one both think they hold the player and write over each
+     * other. One server on its own file has nobody to share with.
+     */
+    private void warnSharedName(Collection<StoredCurrency> currencies) {
+        if (warnedName || !"server-1".equals(server)) return;
+        boolean shared = Redis.isActive() || !"h2".equalsIgnoreCase(Databases.of(plugin).engine());
+        if (!shared || currencies.stream().noneMatch(currency -> currency.settings().networked())) return;
+        warnedName = true;
+        logger.warning("Economy: this server's id is the default 'server-1' while balances are shared through"
+                + " Redis or a network database. Give every server its own server-id in database.yml, or two"
+                + " servers will write over each other's balances.");
     }
 
     /** Where the owner put a currency in the list, from its row; unarranged ones come last. */
@@ -553,13 +613,6 @@ public final class StoredEconomy implements Listener {
         return stored.get(id.toLowerCase(Locale.ROOT));
     }
 
-    private @Nullable CurrencyProvider extra(String id) {
-        for (Extra extra : extras) {
-            if (extra.provider().id().equals(id)) return extra.provider();
-        }
-        return null;
-    }
-
     // --------------------------------------------------------------- players
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -599,7 +652,8 @@ public final class StoredEconomy implements Listener {
             }
         }
         for (StoredCurrency currency : stored.values()) {
-            if (currency.unload(player)) chain(player, () -> release(currency, player));
+            BigDecimal last = currency.unload(player);
+            if (last != null) chain(player, () -> release(currency, player, last));
         }
         chain(player, () -> {
             // Kept when they are already back: the next stay reuses them.
@@ -701,12 +755,69 @@ public final class StoredEconomy implements Listener {
                 : balances.updateIf(row, "version", null));
     }
 
-    /** The last write of a player's stay: the balance with nobody's name on it. */
-    private CompletableFuture<Void> release(StoredCurrency currency, UUID player) {
+    /**
+     * The last write of a player's stay: the balance with nobody's name on it.
+     *
+     * @param amount what they held as they were unloaded, which is what the
+     *               row must say even when an earlier write never landed
+     */
+    private CompletableFuture<Void> release(StoredCurrency currency, UUID player, BigDecimal amount) {
         StoredCurrency.Written last = currency.forgetWritten(player);
         if (last == null) return DONE;
-        BalanceRow row = new BalanceRow(player, name(player), key(currency), last.amount(), "", last.version() + 1);
-        return balances.updateIf(row, "version", last.version()).thenApply(ignored -> null);
+        BalanceRow row = new BalanceRow(player, name(player), key(currency), amount, "", last.version() + 1);
+        return write(row, last.version(), 0).thenApply(ignored -> null);
+    }
+
+    /** How a balance write ended once its answer was made sure of. */
+    private enum Wrote { YES, LOST, UNKNOWN }
+
+    /**
+     * Writes a balance row over the version this server last wrote, and makes
+     * sure of the answer.
+     *
+     * <p>A write that failed may have committed — the connection went away
+     * before the answer came back — and a compare-and-set that missed may
+     * have missed this server's own earlier try. So anything but a clean yes
+     * reads the row back: this write's version, owner and amount is this
+     * write; the version it expected is nothing written, tried again every
+     * second; anything else is another server's.
+     *
+     * @return {@link Wrote#UNKNOWN} only once the plugin stops with the
+     *         database still not answering
+     */
+    private CompletableFuture<Wrote> write(BalanceRow row, long expected, int attempt) {
+        return balances.updateIf(row, "version", expected)
+                .handle((won, failure) -> Boolean.TRUE.equals(won)
+                        ? CompletableFuture.completedFuture(Wrote.YES)
+                        : verify(row, expected, attempt, failure))
+                .thenCompose(outcome -> outcome);
+    }
+
+    private CompletableFuture<Wrote> verify(BalanceRow row, long expected, int attempt, @Nullable Throwable failure) {
+        return balances.find(row.id()).handle((found, unread) -> {
+            if (unread == null) {
+                if (found.isEmpty()) return CompletableFuture.completedFuture(Wrote.LOST);
+                BalanceRow now = found.get();
+                if (now.version() == row.version() && now.owner().equals(row.owner())
+                        && now.amount().compareTo(row.amount()) == 0) {
+                    return CompletableFuture.completedFuture(Wrote.YES);
+                }
+                if (now.version() != expected) return CompletableFuture.completedFuture(Wrote.LOST);
+            }
+            Throwable cause = unread != null ? unread : failure != null ? failure
+                    : new IllegalStateException("the row was not written");
+            if (stopping && attempt >= STOPPING_ATTEMPTS) {
+                logger.severe("Economy: gave up writing the " + row.currency() + " balance of " + row.player()
+                        + ": it is " + row.amount().toPlainString() + ", and the database may still hold an older"
+                        + " amount. Set it by hand if it does (" + cause + ").");
+                return CompletableFuture.completedFuture(Wrote.UNKNOWN);
+            }
+            if (attempt == 0) {
+                logger.warning("Economy: could not write the " + row.currency() + " balance of " + row.player()
+                        + " (" + cause + "); trying again every second.");
+            }
+            return later(RETRY_TICKS).thenCompose(ignored -> write(row, expected, attempt + 1));
+        }).thenCompose(outcome -> outcome);
     }
 
     /**
@@ -726,20 +837,32 @@ public final class StoredEconomy implements Listener {
 
     private CompletableFuture<Void> claimRow(UUID player, PendingRow row) {
         StoredCurrency currency = pendingCurrency(row.currency());
-        CurrencyProvider extra = currency == null ? extra(row.currency()) : null;
-        if (currency == null ? extra == null || !isHere(player) : !currency.isLoaded(player)) return DONE;
-        return pending.delete(row.id()).thenCompose(taken -> {
-            if (!Boolean.TRUE.equals(taken)) return DONE;
-            if (currency != null && currency.applyPending(player, row)) return DONE;
-            if (extra != null) {
-                Transaction transaction = new Transaction(row.reason() == null ? "api" : row.reason(),
-                        row.initiator() == null ? null : UUID.fromString(row.initiator()));
-                if (extra.deposit(player, row.amount(), transaction).isSuccess()) return DONE;
-            }
+        if (currency == null || !currency.isLoaded(player)) return DONE;
+        return takePending(row).thenCompose(taken -> {
+            if (!taken || currency.applyPending(player, row)) return DONE;
             // Ours now, and not applied: back in the queue rather than away.
             return insertPending(new PendingRow(player, row.currency(), row.amount(), row.absolute(), row.reason(),
                     row.initiator() == null ? null : UUID.fromString(row.initiator())));
         });
+    }
+
+    /**
+     * Deletes a queued row, and answers whether this server took it.
+     *
+     * <p>A delete that failed may have committed: a row gone afterwards was
+     * taken by this hand, and is applied rather than lost.
+     */
+    private CompletableFuture<Boolean> takePending(PendingRow row) {
+        return pending.delete(row.id()).handle((taken, failure) -> failure == null
+                        ? CompletableFuture.completedFuture(Boolean.TRUE.equals(taken))
+                        : pending.exists(row.id()).thenApply(still -> !still))
+                .thenCompose(taken -> taken)
+                .exceptionally(failure -> {
+                    logger.severe("Economy: could not tell whether the queued change " + row.amount().toPlainString()
+                            + " " + row.currency() + " for " + row.player() + " (row " + row.id() + ") was taken;"
+                            + " if that row is gone, apply it by hand (" + failure + ").");
+                    return false;
+                });
     }
 
     /** A message from another server: somebody's balance has something waiting. */
@@ -787,11 +910,18 @@ public final class StoredEconomy implements Listener {
                  Transaction transaction) {
         Batch batch = batches.computeIfAbsent(player, ignored -> new Batch());
         CompletableFuture<Void> due;
+        // A withdrawal is written at once, not gathered: it paid for something
+        // already handed over, and a crash before it lands is that thing for free.
+        boolean now = moved.signum() < 0;
         synchronized (batch) {
             batch.amounts.put(currency, after);
             if (moved.signum() != 0) batch.moves.add(new Move(currency, moved, after, transaction));
-            if (batch.due != null) return;
-            due = later(COALESCE_TICKS);
+            if (batch.due != null) {
+                if (now) batch.due.complete(null);
+                return;
+            }
+            due = now ? new CompletableFuture<>() : later(COALESCE_TICKS);
+            if (now) due.complete(null);
             batch.due = due;
         }
         chain(player, () -> due.thenCompose(ignored -> flush(player, batch)));
@@ -823,16 +953,20 @@ public final class StoredEconomy implements Listener {
         if (last == null) return requeue(currency, player, moves);
         long version = last.version() + 1;
         BalanceRow row = new BalanceRow(player, name(player), key(currency), amount, server, version);
-        return balances.updateIf(row, "version", last.version()).thenCompose(won -> {
-            if (won) {
+        return write(row, last.version(), 0).thenCompose(outcome -> switch (outcome) {
+            case YES -> {
                 currency.wrote(player, new StoredCurrency.Written(version, amount));
                 announce(player, moves);
-                return writeLedger(player, moves);
+                yield writeLedger(player, moves);
             }
-            logger.warning("Economy: another server took over the " + currency.id() + " balance of " + player
-                    + "; the changes made here are queued for it.");
-            currency.lost(player);
-            return requeue(currency, player, moves);
+            case LOST -> {
+                logger.warning("Economy: another server took over the " + currency.id() + " balance of " + player
+                        + "; the changes made here are queued for it.");
+                currency.lost(player);
+                yield requeue(currency, player, moves);
+            }
+            // Already logged with the amount; the row says whatever it says.
+            case UNKNOWN -> DONE;
         });
     }
 
@@ -1006,8 +1140,8 @@ public final class StoredEconomy implements Listener {
     void queue(StoredCurrency currency, UUID player, BigDecimal amount, boolean absolute,
                Transaction transaction) {
         offline.remove(BalanceRow.id(player, key(currency)));
-        pending.insert(new PendingRow(player, key(currency), amount, absolute, transaction.reason(),
-                transaction.initiator())).thenAccept(id -> {
+        insertPending(new PendingRow(player, key(currency), amount, absolute, transaction.reason(),
+                transaction.initiator())).thenRun(() -> {
             if (isHere(player)) {
                 // Still being read here: folded in right after the load, not at the next sweep.
                 chain(player, () -> claimPending(player));
@@ -1017,8 +1151,52 @@ public final class StoredEconomy implements Listener {
         });
     }
 
+    /**
+     * Queues a change, and keeps at it until it is in the table.
+     *
+     * <p>Whoever asked was already told it was paid. A failed insert is tried
+     * again every second, after looking for the row first: an insert that
+     * failed may have committed, and a second one would pay twice. A plugin
+     * that stops first logs the change at SEVERE with everything needed to
+     * make it by hand. Never fails.
+     */
     private CompletableFuture<Void> insertPending(PendingRow row) {
-        return pending.insert(row).thenApply(id -> null);
+        return insertPending(row, 0);
+    }
+
+    private CompletableFuture<Void> insertPending(PendingRow row, int attempt) {
+        CompletableFuture<Boolean> there = attempt == 0 ? CompletableFuture.completedFuture(false) : queued(row);
+        return there.thenCompose(found -> found ? DONE : pending.insert(row).thenApply(id -> (Void) null))
+                .handle((ignored, failure) -> {
+                    if (failure == null) return DONE;
+                    if (stopping && attempt >= STOPPING_ATTEMPTS) {
+                        logger.severe("Economy: could not queue " + (row.absolute() ? "a set to " : "")
+                                + row.amount().toPlainString() + " " + row.currency() + " for " + row.player()
+                                + " (" + row.reason() + ", by " + row.initiator() + "). Apply it by hand (" + failure + ").");
+                        return DONE;
+                    }
+                    if (attempt == 0) {
+                        logger.warning("Economy: could not queue a change for " + row.player() + " (" + failure
+                                + "); trying again every second.");
+                    }
+                    return later(RETRY_TICKS).thenCompose(next -> insertPending(row, attempt + 1));
+                })
+                .thenCompose(step -> step);
+    }
+
+    /**
+     * Whether an insert that reported failure is in the table after all.
+     *
+     * <p>ponytail: matched by player, millisecond and contents, so a second
+     * identical change in the same millisecond whose own insert failed reads
+     * as already queued, and a row claimed between the commit and this look
+     * reads as never queued. A token column would close both.
+     */
+    private CompletableFuture<Boolean> queued(PendingRow row) {
+        return pending.where("player", row.player()).where("created_at", row.createdAt()).find()
+                .thenApply(rows -> rows.stream().anyMatch(other -> other.currency().equals(row.currency())
+                        && other.amount().compareTo(row.amount()) == 0 && other.absolute() == row.absolute()
+                        && Objects.equals(other.reason(), row.reason())));
     }
 
     private String name(UUID player) {
@@ -1047,10 +1225,32 @@ public final class StoredEconomy implements Listener {
         long now = System.currentTimeMillis();
         if (known == null || now - known.at() > OFFLINE_CACHE_MILLIS) {
             // Marked fresh before the read, so a scoreboard asking every tick fetches once.
-            offline.put(id, new Snapshot(now, known == null ? BigDecimal.ZERO : known.amount()));
+            offline.put(id, new Snapshot(now, known == null ? null : known.amount()));
             snapshotLater(currency, player);
         }
-        return known == null ? BigDecimal.ZERO : known.amount();
+        return known == null || known.amount() == null ? BigDecimal.ZERO : known.amount();
+    }
+
+    /**
+     * The same snapshot, read in line when memory has no real one.
+     *
+     * <p>For Vault, whose callers take the number the call returns as the
+     * truth — EssentialsX and CMI load an offline account in line too. Waits
+     * at most {@link #VAULT_READ_MILLIS}, then answers like {@link #snapshot}.
+     */
+    BigDecimal snapshotNow(StoredCurrency currency, UUID player) {
+        Snapshot known = offline.get(BalanceRow.id(player, key(currency)));
+        if (known != null && known.amount() != null && System.currentTimeMillis() - known.at() <= OFFLINE_CACHE_MILLIS) {
+            return known.amount();
+        }
+        try {
+            return snapshotLater(currency, player).get(VAULT_READ_MILLIS, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException | TimeoutException unread) {
+            // Answered from memory below.
+        }
+        return snapshot(currency, player);
     }
 
     /**
@@ -1073,35 +1273,37 @@ public final class StoredEconomy implements Listener {
     /**
      * Deletes ledger lines past the retention set in {@code /economyadmin}.
      *
-     * <p>A day at a time by {@code created_day}, one statement per day. Lines
-     * written before that column existed have none, and go one by one from
-     * the oldest, once.
+     * <p>A day at a time by {@code created_day}, one statement per day: up to
+     * {@link #MAX_PURGE_DAYS} on the first run, then only the days that
+     * expired since. Lines written before that column existed have none, and
+     * go one by one from the oldest; a recent one among them is skipped, not
+     * a reason to stop.
      */
     private void purgeLedger() {
         int days = store.settings().keptLedgerDays();
         if (days <= 0) return;
         long cutoff = System.currentTimeMillis() / LedgerRow.DAY_MILLIS - days;
-        ledger.all().orderBy("id").limit(PURGE_PAGE).find().thenCompose(oldest -> {
-            CompletableFuture<Void> step = DONE;
-            long firstDay = 0L;
-            int legacy = 0;
-            for (LedgerRow row : oldest) {
-                if (row.createdDay() > 0) {
-                    firstDay = row.createdDay();
-                    break;
-                }
-                if (row.createdAt() / LedgerRow.DAY_MILLIS >= cutoff) break;
-                legacy++;
-                step = step.thenCompose(ignored -> ledger.delete(row.id()).thenApply(deleted -> null));
-            }
-            for (long day = Math.max(firstDay, cutoff - MAX_PURGE_DAYS); firstDay > 0 && day < cutoff; day++) {
-                long expired = day;
-                step = step.thenCompose(ignored -> ledger.where("created_day", expired).delete().thenApply(n -> null));
-            }
-            return legacy == PURGE_PAGE ? step.thenRun(this::purgeLedger) : step;
-        }).exceptionally(failure -> {
+        CompletableFuture<Void> step = purgeLegacy(cutoff * LedgerRow.DAY_MILLIS);
+        for (long day = Math.max(purgedBefore, cutoff - MAX_PURGE_DAYS); day < cutoff; day++) {
+            long expired = day;
+            step = step.thenCompose(ignored -> ledger.where("created_day", expired).delete().thenApply(n -> null));
+        }
+        step.thenRun(() -> purgedBefore = Math.max(purgedBefore, cutoff)).exceptionally(failure -> {
             debug.error("Economy: could not delete old ledger lines.", failure);
             return null;
+        });
+    }
+
+    private CompletableFuture<Void> purgeLegacy(long cutoffMillis) {
+        return ledger.all().orderBy("id").limit(PURGE_PAGE).find().thenCompose(oldest -> {
+            CompletableFuture<Void> step = DONE;
+            int expired = 0;
+            for (LedgerRow row : oldest) {
+                if (row.createdDay() > 0 || row.createdAt() >= cutoffMillis) continue;
+                expired++;
+                step = step.thenCompose(ignored -> ledger.delete(row.id()).thenApply(deleted -> null));
+            }
+            return expired == PURGE_PAGE ? step.thenCompose(ignored -> purgeLegacy(cutoffMillis)) : step;
         });
     }
 
@@ -1187,6 +1389,7 @@ public final class StoredEconomy implements Listener {
             return Exchange.refused(EconomyResponse.failure(Values.of("from", from.id()).put("to", toId)
                     .apply(EconomyMessages.get().exchangeNoRate())));
         }
+        if (!Amounts.bounded(typed)) return Exchange.refused(EconomyResponse.invalidAmount());
         BigDecimal typedAmount = from.info().scale(typed);
         if (typedAmount.signum() <= 0) return Exchange.refused(EconomyResponse.invalidAmount());
         BigDecimal received = Economy.info(to).scale(typedAmount.multiply(rate));
@@ -1197,17 +1400,33 @@ public final class StoredEconomy implements Listener {
         EconomyResponse taken = Economy.of(from.id()).withdraw(player, amount, transaction);
         if (!taken.isSuccess()) return Exchange.refused(taken);
         EconomyResponse given = Economy.of(to).deposit(player, received, transaction);
-        if (given.isSuccess() && given.amount().compareTo(received) < 0
-                && Economy.of(to).withdraw(player, given.amount(), Transaction.of("exchange:refund").by(player)).isSuccess()) {
-            // A ceiling let only part of it in: undone rather than paid for in full.
+        if (given.isSuccess() && given.amount().compareTo(received) < 0) {
+            // A target that cuts a deposit to its ceiling let only part of it
+            // in: undone, or, when it cannot be taken back, kept and only what
+            // arrived paid for.
+            if (!Economy.of(to).withdraw(player, given.amount(), Transaction.of("exchange:refund").by(player)).isSuccess()) {
+                BigDecimal paid = given.amount().divide(rate, from.info().scaleDigits(), RoundingMode.UP).min(amount);
+                economy.refund(from, player, amount.subtract(paid));
+                return new Exchange(EconomyResponse.success(given.amount(), given.balance()), paid);
+            }
             given = EconomyResponse.failure(Values.of("currency", Economy.info(to).namePlural())
                     .apply(EconomyMessages.get().exchangeOverCeiling()));
         }
         if (!given.isSuccess()) {
-            Economy.of(from.id()).deposit(player, amount, Transaction.of("exchange:refund").by(player));
+            economy.refund(from, player, amount);
             return Exchange.refused(given);
         }
         return new Exchange(EconomyResponse.success(received, given.balance()), amount);
+    }
+
+    /** Gives back what an exchange took and could not deliver; a refund refused is logged with its amount. */
+    private void refund(StoredCurrency from, UUID player, BigDecimal amount) {
+        if (amount.signum() <= 0) return;
+        EconomyResponse back = Economy.of(from.id()).deposit(player, amount, Transaction.of("exchange:refund").by(player));
+        if (!back.isSuccess()) {
+            logger.severe("Economy: an exchange could not refund " + amount.toPlainString() + " " + from.id()
+                    + " to " + player + " (" + back.message() + "). Give it back by hand.");
+        }
     }
 
     /**
@@ -1231,29 +1450,50 @@ public final class StoredEconomy implements Listener {
      * message each, folded in on their next load or within a minute on the
      * server they are on.
      *
-     * @return how many balances were imported, completing off the server thread
+     * <p>Once per player: each one paid is written down first, so a run that
+     * failed halfway, or one asked for again, skips whoever was already paid.
+     * A crash between the note and the payment misses that player rather than
+     * paying them twice.
+     *
+     * @return how many balances were imported, completing off the server
+     *         thread; failed when the run stopped short
      */
     public static @NotNull CompletableFuture<Integer> importBalances(@NotNull String from, @NotNull String into,
                                                                      @NotNull List<UUID> players,
                                                                      @Nullable UUID initiator) {
         StoredEconomy economy = instance;
         StoredCurrency target = economy == null ? null : economy.currency(into);
-        if (target == null) return CompletableFuture.completedFuture(0);
+        if (target == null) return CompletableFuture.failedFuture(new IllegalStateException("no stored currency " + into));
         Transaction transaction = Transaction.of("import:" + from).by(initiator);
         AtomicInteger count = new AtomicInteger();
         CompletableFuture<Void> step = DONE;
         for (UUID player : players) {
-            step = step.thenCompose(ignored -> Economy.of(from).balanceLater(player).thenCompose(balance -> {
-                BigDecimal amount = target.info().scale(balance);
-                if (amount.signum() <= 0) return DONE;
-                count.incrementAndGet();
-                if (target.isLoaded(player)) {
-                    target.deposit(player, amount, transaction);
-                    return DONE;
-                }
-                return economy.insertPending(new PendingRow(player, economy.key(target), amount, false,
-                        transaction.reason(), initiator));
-            }));
+            String id = ImportedRow.id(from, into, player);
+            step = step.thenCompose(ignored -> economy.imported.exists(id)).thenCompose(done -> done ? DONE
+                    : Economy.of(from).balanceLater(player).thenCompose(balance -> {
+                        BigDecimal amount = target.info().scale(balance);
+                        if (amount.signum() <= 0) return DONE;
+                        if (amount.compareTo(target.ceiling()) > 0) {
+                            economy.logger.warning("Economy: the " + from + " balance of " + player + " ("
+                                    + amount.toPlainString() + ") is over the ceiling of " + into + "; not imported.");
+                            return DONE;
+                        }
+                        return economy.imported.save(new ImportedRow(id, System.currentTimeMillis())).thenCompose(noted -> {
+                            if (target.isLoaded(player)) {
+                                EconomyResponse paid = target.deposit(player, amount, transaction);
+                                if (paid.isSuccess()) {
+                                    count.incrementAndGet();
+                                } else {
+                                    economy.logger.warning("Economy: could not import " + amount.toPlainString() + " "
+                                            + from + " for " + player + " (" + paid.message() + ").");
+                                }
+                                return DONE;
+                            }
+                            count.incrementAndGet();
+                            return economy.insertPending(new PendingRow(player, economy.key(target), amount, false,
+                                    transaction.reason(), initiator));
+                        });
+                    }));
         }
         return step.thenApply(ignored -> count.get());
     }

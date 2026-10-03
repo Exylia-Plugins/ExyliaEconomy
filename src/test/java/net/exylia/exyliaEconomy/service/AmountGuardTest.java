@@ -13,7 +13,7 @@ class AmountGuardTest {
     void refusesAmountsNoBalanceCanHold() {
         assertNull(EconomyActions.amount("1e99999999"));
         assertNull(EconomyActions.amount("1E5"));
-        assertNull(EconomyActions.amount("1000000000000000000000"));
+        assertNull(EconomyActions.amount("1000000000000000000000000000000000"));
         assertNull(EconomyActions.amount("0.00000000001"));
     }
 

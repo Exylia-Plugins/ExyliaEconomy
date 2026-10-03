@@ -35,8 +35,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -50,6 +52,8 @@ import java.util.function.Consumer;
 public final class EconomyActions {
 
     private static final Duration PAY_COOLDOWN = Duration.ofSeconds(1);
+    /** The imports running now, {@code from>into}. */
+    private static final Set<String> IMPORTING = ConcurrentHashMap.newKeySet();
 
     private static EconomyMessages text() {
         return EconomyMessages.get();
@@ -254,8 +258,12 @@ public final class EconomyActions {
                     Transaction.of("pay").by(sender.getUniqueId()));
             if (!result.isSuccess()) {
                 if (tax.signum() > 0) view.deposit(sender.getUniqueId(), tax, Transaction.of("pay:tax-refund"));
-                Messages.send(sender, text().notEnough(), Values.of().put("currency", info.namePlural())
-                        .put("amount", info.format(amount)));
+                if (result.type() == TransferResult.Type.INSUFFICIENT_FUNDS || result.message() == null) {
+                    Messages.send(sender, text().notEnough(), Values.of().put("currency", info.namePlural())
+                            .put("amount", info.format(amount)));
+                } else {
+                    Messages.send(sender, text().refused(), Values.of().put("reason", result.message()));
+                }
                 return;
             }
             Messages.send(sender, text().paid(), Values.of().put("player", found.name())
@@ -309,7 +317,7 @@ public final class EconomyActions {
             EconomyResponse response = Economy.of(currency)
                     .deposit(found.id(), amount, Transaction.of("admin:give").by(initiator(sender)));
             if (!response.isSuccess()) {
-                Messages.send(sender, text().notAvailable(), Values.of().put("currency", info.namePlural()));
+                refused(sender, response, info);
                 return;
             }
             if (queues(found, currency)) {
@@ -335,7 +343,7 @@ public final class EconomyActions {
                 } else if (StoredEconomy.loading(found.id(), currency)) {
                     Messages.send(sender, text().stillLoading());
                 } else {
-                    Messages.send(sender, text().notAvailable(), Values.of().put("currency", info.namePlural()));
+                    refused(sender, response, info);
                 }
                 return;
             }
@@ -363,7 +371,7 @@ public final class EconomyActions {
             EconomyResponse response = Economy.of(currency)
                     .set(found.id(), amount, Transaction.of("admin:set").by(initiator(sender)));
             if (!response.isSuccess()) {
-                Messages.send(sender, text().notAvailable(), Values.of().put("currency", info.namePlural()));
+                refused(sender, response, info);
                 return;
             }
             if (queues(found, currency)) {
@@ -396,8 +404,9 @@ public final class EconomyActions {
      *
      * <p>Walks the server's own player list, because neither Vault nor
      * PlayerPoints can list balances: what has played here is what can be
-     * imported. Additive, so each pair is remembered and a second run is
-     * refused unless the admin says {@code again}.
+     * imported. Each pair is remembered once a run finishes, and a second run
+     * is refused unless the admin says {@code again}; even then nobody already
+     * paid is paid twice.
      */
     public void importFrom(CommandSender sender, String fromId, String intoId, boolean again) {
         String from = currency(fromId).orElse(null);
@@ -423,14 +432,28 @@ public final class EconomyActions {
             Messages.send(sender, text().importAlready(), names);
             return;
         }
-        // Marked before it runs: a second run typed while this one reads is refused too.
-        store.save(store.settings().withImport(from, into));
+        // A second run typed while this one reads is refused; one after it
+        // skips whoever this one paid.
+        String pair = from + ">" + into;
+        if (!IMPORTING.add(pair)) {
+            Messages.send(sender, text().importRunning(), names);
+            return;
+        }
         Messages.send(sender, text().importStarted(), names);
         List<UUID> players = Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getUniqueId).toList();
         StoredEconomy.importBalances(from, into, players, initiator(sender)).whenComplete((count, failure) ->
-                ExyliaEconomy.getInstance().getTasks().run(() -> Messages.send(sender, text().importDone(),
-                        Values.of().put("count", count == null ? 0 : count)
-                                .put("currency", Economy.info(into).namePlural()))));
+                ExyliaEconomy.getInstance().getTasks().run(() -> {
+                    IMPORTING.remove(pair);
+                    if (failure != null) {
+                        ExyliaEconomy.getInstance().getDebug().error("Economy: the import from " + from + " into "
+                                + into + " stopped.", failure);
+                        Messages.send(sender, text().importFailed(), names);
+                        return;
+                    }
+                    store.save(store.settings().withImport(from, into));
+                    Messages.send(sender, text().importDone(), Values.of().put("count", count)
+                            .put("currency", Economy.info(into).namePlural()));
+                }));
     }
 
     // -------------------------------------------------------------- inside
@@ -452,17 +475,25 @@ public final class EconomyActions {
     }
 
     /**
-     * A typed amount, or {@code null} when it is not one a balance can hold.
+     * A typed amount, or {@code null} when it is not a positive one.
      *
-     * <p>Guarded here as well as in ExyliaLib: an older lib read
-     * {@code 1e99999999} as a number, and the first {@code add} on it builds a
-     * hundred-million-digit value on the main thread.
+     * <p>ExyliaLib's reading refuses exponents and anything past 30 whole
+     * digits or 10 decimals; what a balance may actually hold is the
+     * currency's to refuse, with its ceiling.
      */
     static @Nullable BigDecimal amount(@Nullable String typed) {
-        if (typed == null || typed.indexOf('e') >= 0 || typed.indexOf('E') >= 0) return null;
-        BigDecimal amount = Economy.parseAmount(typed);
-        if (amount == null || amount.precision() - amount.scale() > 20 || amount.scale() > 10) return null;
-        return amount;
+        return Economy.parseAmount(typed);
+    }
+
+    /** Why a change was refused, in the currency's own words when it gave any. */
+    private static void refused(CommandSender sender, EconomyResponse response, CurrencyInfo info) {
+        if (response.type() == EconomyResponse.Type.FAILURE && response.message() != null) {
+            Messages.send(sender, text().refused(), Values.of().put("reason", response.message()));
+        } else if (response.type() == EconomyResponse.Type.INVALID_AMOUNT) {
+            Messages.send(sender, text().invalidAmount());
+        } else {
+            Messages.send(sender, text().notAvailable(), Values.of().put("currency", info.namePlural()));
+        }
     }
 
     /** The currency asked for, told to the sender when it cannot be used. */

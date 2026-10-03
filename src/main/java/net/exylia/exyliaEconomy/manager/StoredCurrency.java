@@ -53,6 +53,16 @@ import java.util.function.BooleanSupplier;
  */
 public final class StoredCurrency implements CurrencyProvider {
 
+    /**
+     * The hard ceiling on any balance, whatever the currency's own max.
+     *
+     * <p>The column is {@code DECIMAL(38,10)}: 28 whole digits. A balance, a
+     * queued change, a sum over every balance for the money supply all have to
+     * fit, so nothing is let near that: a deposit that would pass this is
+     * refused, never written as a number the database rejects.
+     */
+    public static final BigDecimal LIMIT = new BigDecimal("1000000000000000000");
+
     private volatile CurrencyFile.Stored settings;
     private final StoredEconomy economy;
 
@@ -170,10 +180,11 @@ public final class StoredCurrency implements CurrencyProvider {
     /**
      * Forgets a player who has left.
      *
-     * @return whether they were held, and so have a row to let go of
+     * @return the balance they had, which is what the release writes; {@code null}
+     *         when they were not held, and so have no row to let go of
      */
-    synchronized boolean unload(@NotNull UUID player) {
-        return loaded.remove(player) != null;
+    synchronized @Nullable BigDecimal unload(@NotNull UUID player) {
+        return loaded.remove(player);
     }
 
     /** Another server took the balance over: nothing here may write it any more. */
@@ -208,6 +219,12 @@ public final class StoredCurrency implements CurrencyProvider {
         return economy.snapshot(this, player);
     }
 
+    /** {@link #balance}, with somebody not held here read from their row in line: what Vault's callers expect. */
+    @NotNull BigDecimal balanceNow(@NotNull UUID player) {
+        BigDecimal here = loaded.get(player);
+        return here != null ? here : economy.snapshotNow(this, player);
+    }
+
     @Override
     public @NotNull CompletableFuture<BigDecimal> balanceLater(@NotNull UUID player) {
         BigDecimal here = loaded.get(player);
@@ -220,25 +237,33 @@ public final class StoredCurrency implements CurrencyProvider {
         return deposit(player, amount, Transaction.NONE);
     }
 
+    /**
+     * Adds an amount, all of it or none: one that would take the balance over
+     * its ceiling is refused, never cut down to fit. A caller told "paid" has
+     * paid in full — a transfer charged the sender the whole amount.
+     */
     @Override
     public @NotNull EconomyResponse deposit(@NotNull UUID player, @NotNull BigDecimal amount,
                                             @NotNull Transaction transaction) {
         BigDecimal scaled = info().scale(amount);
         if (scaled.signum() <= 0) return EconomyResponse.invalidAmount();
         synchronized (this) {
+            BigDecimal ceiling = ceiling();
+            if (scaled.compareTo(ceiling) > 0) return overCeiling(ceiling);
             BigDecimal current = loaded.get(player);
             if (current == null) {
                 economy.queue(this, player, scaled, false, transaction);
                 return EconomyResponse.success(scaled, BigDecimal.ZERO);
             }
-            BigDecimal after = clamp(current.add(scaled));
-            BigDecimal moved = after.subtract(current);
-            if (moved.signum() <= 0) {
-                return EconomyResponse.failure(Values.of("amount", info().format(settings.max()))
-                        .apply(EconomyMessages.get().atCeiling()));
+            BigDecimal after = current.add(scaled);
+            if (after.compareTo(ceiling) > 0) {
+                return current.compareTo(ceiling) >= 0
+                        ? EconomyResponse.failure(Values.of("amount", info().format(ceiling))
+                                .apply(EconomyMessages.get().atCeiling()))
+                        : overCeiling(ceiling);
             }
-            apply(player, after, moved, transaction);
-            return EconomyResponse.success(moved, after);
+            apply(player, after, scaled, transaction);
+            return EconomyResponse.success(scaled, after);
         }
     }
 
@@ -252,6 +277,9 @@ public final class StoredCurrency implements CurrencyProvider {
                                              @NotNull Transaction transaction) {
         BigDecimal scaled = info().scale(amount);
         if (scaled.signum() <= 0) return EconomyResponse.invalidAmount();
+        // More than any balance can hold: refused here rather than queued as a
+        // row the column cannot store.
+        if (scaled.compareTo(LIMIT) > 0) return EconomyResponse.insufficientFunds(scaled, loaded.getOrDefault(player, BigDecimal.ZERO));
         synchronized (this) {
             BigDecimal current = loaded.get(player);
             if (current == null) {
@@ -278,8 +306,10 @@ public final class StoredCurrency implements CurrencyProvider {
     @Override
     public @NotNull EconomyResponse set(@NotNull UUID player, @NotNull BigDecimal amount,
                                         @NotNull Transaction transaction) {
-        BigDecimal after = clamp(info().scale(amount));
+        BigDecimal after = info().scale(amount.max(BigDecimal.ZERO));
         synchronized (this) {
+            BigDecimal ceiling = ceiling();
+            if (after.compareTo(ceiling) > 0) return overCeiling(ceiling);
             BigDecimal current = loaded.get(player);
             if (current == null) {
                 economy.queue(this, player, after, true, transaction);
@@ -315,9 +345,24 @@ public final class StoredCurrency implements CurrencyProvider {
         economy.written(this, player, after, moved, transaction);
     }
 
-    /** Never below zero, never above the ceiling, never finer than the currency. */
+    /**
+     * Never below zero, never above the ceiling, never finer than the currency.
+     *
+     * <p>For what was already promised — a starting balance, a queued change
+     * landing — which can only be cut, not refused.
+     */
     BigDecimal clamp(BigDecimal amount) {
-        BigDecimal scaled = info().scale(amount.max(BigDecimal.ZERO));
-        return settings.isCapped() ? scaled.min(info().scale(settings.max())) : scaled;
+        return info().scale(amount.max(BigDecimal.ZERO)).min(ceiling());
+    }
+
+    /** The most a balance may hold: the currency's own max, and never more than {@link #LIMIT}. */
+    BigDecimal ceiling() {
+        BigDecimal limit = info().scale(LIMIT);
+        return settings.isCapped() ? info().scale(settings.max()).min(limit) : limit;
+    }
+
+    private EconomyResponse overCeiling(BigDecimal ceiling) {
+        return EconomyResponse.failure(Values.of("amount", info().format(ceiling))
+                .apply(EconomyMessages.get().overCeiling()));
     }
 }

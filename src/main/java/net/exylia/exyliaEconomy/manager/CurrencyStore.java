@@ -99,7 +99,7 @@ public final class CurrencyStore {
      * Writes {@code currencies.yml} into the tables, then puts the file aside.
      *
      * <p>{@link CurrencyFile#load} already knows every way the file can be
-     * found — the owner's, the one ExyliaLib kept, or the defaults — so a server
+     * found — the owner's, the one the survival core kept, or the defaults — so a server
      * keeps exactly the currencies it had.
      */
     private CompletableFuture<CurrencyFile.Contents> importFile() {
