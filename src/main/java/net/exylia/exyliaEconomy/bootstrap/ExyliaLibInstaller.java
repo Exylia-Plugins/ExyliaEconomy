@@ -12,6 +12,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.DirectoryStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -67,9 +68,13 @@ public final class ExyliaLibInstaller {
         log.warning("ExyliaLib " + version + " is required and not installed; downloading it from " + url + ".");
         Thread download = new Thread(() -> {
             try {
-                download(plugins, name, url, version);
-                log.warning("Downloaded ExyliaLib " + version + " to plugins/" + JAR_NAME
-                        + " - restart the server to finish installing " + name + ".");
+                if (download(plugins, name, url, version)) {
+                    log.warning("Downloaded ExyliaLib " + version + " to plugins/" + JAR_NAME
+                            + " - restart the server to finish installing " + name + ".");
+                } else {
+                    log.warning("Another plugin installed ExyliaLib " + version + " or newer meanwhile"
+                            + " - restart the server to finish installing " + name + ".");
+                }
             } catch (Exception failure) {
                 log.log(Level.SEVERE, "ExyliaLib is required and could not be downloaded (" + failure.getMessage()
                         + "). Download ExyliaLib " + version + " or newer from " + RELEASES_URL
@@ -99,9 +104,20 @@ public final class ExyliaLibInstaller {
         }
     }
 
-    private static void download(Path plugins, String pluginName, String url, String version) throws IOException {
+    /**
+     * Downloads the jar and puts it in place.
+     *
+     * <p>Every Exylia plugin carries this installer, so several may run at
+     * once. The jar is only linked in where none exists — atomically, so two
+     * never overwrite each other — and only replaces one that is older than
+     * this plugin needs.
+     *
+     * @return whether this download was installed; {@code false} when another
+     *         plugin already put a recent enough jar there
+     */
+    private static boolean download(Path plugins, String pluginName, String url, String version) throws IOException {
         long deadline = System.currentTimeMillis() + DEADLINE_MILLIS;
-        Path tmp = Files.createTempFile(plugins, "ExyliaLib", ".download");
+        Path tmp = Files.createTempFile(plugins, "ExyliaLib-" + version + "-", ".download");
         try {
             HttpURLConnection connection = (HttpURLConnection) URI.create(url).toURL().openConnection();
             connection.setInstanceFollowRedirects(true);
@@ -128,15 +144,36 @@ public final class ExyliaLibInstaller {
                 throw new IOException("the download is not ExyliaLib " + version + " or newer");
             }
             Path target = plugins.resolve(JAR_NAME);
-            // An ExyliaLib jar that appeared meanwhile is never overwritten.
-            if (Files.exists(target)) throw new IOException(JAR_NAME + " appeared during the download");
+            if (place(tmp, target)) return true;
+            if (isExyliaLibJar(target, version)) return false;
+            // ponytail: two installers both newer than the jar there may each
+            // replace it, last one winning; ExyliaLib updates itself on the next start.
             try {
-                Files.move(tmp, target, StandardCopyOption.ATOMIC_MOVE);
+                Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
             } catch (AtomicMoveNotSupportedException unsupported) {
-                Files.move(tmp, target);
+                Files.move(tmp, target, StandardCopyOption.REPLACE_EXISTING);
             }
+            return true;
         } finally {
             Files.deleteIfExists(tmp);
+        }
+    }
+
+    /** Puts the download in place only where nothing is, and answers whether it did. */
+    private static boolean place(Path tmp, Path target) throws IOException {
+        try {
+            // A hard link fails when the target exists, in one step: a move cannot promise that.
+            Files.createLink(target, tmp);
+            return true;
+        } catch (FileAlreadyExistsException taken) {
+            return false;
+        } catch (UnsupportedOperationException | IOException noLinks) {
+            try {
+                Files.move(tmp, target);
+                return true;
+            } catch (FileAlreadyExistsException taken) {
+                return false;
+            }
         }
     }
 

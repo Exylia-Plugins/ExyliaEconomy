@@ -68,7 +68,7 @@ public final class FlakyRepository {
                         return method.invoke(storage, args);
                     }
                     return CompletableFuture.failedFuture(
-                            new IllegalStateException("The database stopped answering."));
+                            outage());
                 });
         return new Repository<>(liar, model);
     }
@@ -96,7 +96,7 @@ public final class FlakyRepository {
                             return CompletableFuture.failedFuture(failure);
                         }
                     }).thenCompose(written -> CompletableFuture.failedFuture(
-                            new IllegalStateException("The database stopped answering.")));
+                            outage()));
                 });
         return new Repository<>(liar, model);
     }
@@ -111,9 +111,20 @@ public final class FlakyRepository {
      * @param method   the storage method that fails, such as {@code updateIf} or {@code insert}
      * @param failures how many more calls fail; counted down by each one
      */
-    @SuppressWarnings("unchecked")
     public static <T> Repository<T> failing(Repository<T> real, String method, boolean commit,
                                             java.util.concurrent.atomic.AtomicInteger failures)
+            throws ReflectiveOperationException {
+        return failing(real, method, commit, failures, FlakyRepository::outage);
+    }
+
+    /**
+     * {@link #failing}, with the failure reported chosen by the test: a
+     * statement the database refuses for good rather than a dropped connection.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Repository<T> failing(Repository<T> real, String method, boolean commit,
+                                            java.util.concurrent.atomic.AtomicInteger failures,
+                                            java.util.function.Supplier<Throwable> failure)
             throws ReflectiveOperationException {
         Storage storage = (Storage) read(real, "storage");
         EntityModel<T> model = (EntityModel<T>) read(real, "model");
@@ -123,8 +134,7 @@ public final class FlakyRepository {
                         return method2.invoke(storage, args);
                     }
                     if (commit) ((CompletableFuture<?>) method2.invoke(storage, args)).join();
-                    return CompletableFuture.failedFuture(
-                            new IllegalStateException("The database stopped answering."));
+                    return CompletableFuture.failedFuture(failure.get());
                 });
         return new Repository<>(liar, model);
     }
@@ -143,9 +153,14 @@ public final class FlakyRepository {
                         ((CompletableFuture<?>) method.invoke(storage, args)).join();
                     }
                     return CompletableFuture.failedFuture(
-                            new IllegalStateException("The database stopped answering."));
+                            outage());
                 });
         return new Repository<>(liar, model);
+    }
+
+    /** What a dropped connection looks like: a failure the economy retries, unlike a refused statement. */
+    public static Throwable outage() {
+        return new java.sql.SQLTransientConnectionException("The database stopped answering.");
     }
 
     private static Object read(Repository<?> real, String name) throws ReflectiveOperationException {

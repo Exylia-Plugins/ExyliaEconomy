@@ -252,6 +252,10 @@ public final class StoredCurrency implements CurrencyProvider {
             if (scaled.compareTo(ceiling) > 0) return overCeiling(ceiling);
             BigDecimal current = loaded.get(player);
             if (current == null) {
+                // Somebody held elsewhere: checked against the last read of
+                // their row, which is as far as this server can see. What
+                // still slips past is handled where it lands, see applyPending.
+                if (economy.snapshot(this, player).add(scaled).compareTo(ceiling) > 0) return overCeiling(ceiling);
                 economy.queue(this, player, scaled, false, transaction);
                 return EconomyResponse.success(scaled, BigDecimal.ZERO);
             }
@@ -323,20 +327,29 @@ public final class StoredCurrency implements CurrencyProvider {
     /**
      * Folds a queued change into a loaded balance.
      *
+     * <p>Clamped, because it was already promised; whatever a deposit loses
+     * to the ceiling is handed to {@link StoredEconomy#overflowed}, never
+     * simply dropped.
+     *
      * @return whether the player was still held here; {@code false} leaves the change to the caller
      */
     boolean applyPending(@NotNull UUID player, @NotNull PendingRow pending) {
+        BigDecimal cut;
         synchronized (this) {
             BigDecimal current = loaded.get(player);
             if (current == null) return false;
-            BigDecimal after = pending.absolute()
-                    ? clamp(pending.amount())
-                    : clamp(current.add(pending.amount()));
+            BigDecimal wanted = pending.absolute() ? pending.amount() : current.add(pending.amount());
+            BigDecimal after = clamp(wanted);
             BigDecimal moved = after.subtract(current);
             UUID initiator = pending.initiator() == null ? null : UUID.fromString(pending.initiator());
             apply(player, after, moved, new Transaction(pending.reason() == null ? "api" : pending.reason(), initiator));
-            return true;
+            // Only what the ceiling took from a deposit: a withdrawal floored at zero takes nobody's money,
+            // and a set says what the balance is, not what anybody paid.
+            cut = !pending.absolute() && pending.amount().signum() > 0
+                    ? info().scale(wanted).subtract(after).max(BigDecimal.ZERO).min(pending.amount()) : BigDecimal.ZERO;
         }
+        if (cut.signum() > 0) economy.overflowed(this, player, pending, cut);
+        return true;
     }
 
     /** Writes a new balance to memory, then hands it to the player's write chain. */

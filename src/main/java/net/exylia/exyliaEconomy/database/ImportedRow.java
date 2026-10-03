@@ -10,7 +10,7 @@ import java.util.UUID;
  * One player whose balance an import already paid, so running it again never pays them twice.
  *
  * @param id         {@code from>into|player}
- * @param importedAt when it was paid
+ * @param importedAt when it was claimed for paying; {@code 0} while nobody has claimed it
  */
 @Table("exylia_balance_imports")
 public record ImportedRow(

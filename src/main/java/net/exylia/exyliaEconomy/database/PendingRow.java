@@ -21,8 +21,14 @@ import java.util.UUID;
  * <p>Keyed like a balance row: the currency's id, or {@code id@server} for a
  * currency each server keeps its own of, which only that server claims.
  *
+ * <p>A server whose insert reported failure looks for its {@code token}
+ * before inserting again, here and among the {@link TakenRow}s: a row already
+ * taken and deleted would otherwise read as never queued.
+ *
  * @param absolute whether {@code amount} replaces the balance rather than
  *                 adding to it — an admin {@code set} from elsewhere
+ * @param token    unique per change, so a retried insert finds its own row;
+ *                 {@code null} on rows queued before the column existed
  */
 @Table("exylia_balance_pending")
 public record PendingRow(
@@ -33,11 +39,13 @@ public record PendingRow(
         @Column boolean absolute,
         @Column(length = 160) String reason,
         @Column(length = 36) String initiator,
-        @Column("created_at") long createdAt) {
+        @Column("created_at") long createdAt,
+        @Column(length = 36) String token) {
 
     public PendingRow(UUID player, String currency, BigDecimal amount, boolean absolute,
                       String reason, UUID initiator) {
         this(0L, player.toString(), currency, amount, absolute, reason,
-                initiator == null ? null : initiator.toString(), System.currentTimeMillis());
+                initiator == null ? null : initiator.toString(), System.currentTimeMillis(),
+                UUID.randomUUID().toString());
     }
 }
