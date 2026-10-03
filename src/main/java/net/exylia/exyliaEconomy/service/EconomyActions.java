@@ -21,6 +21,7 @@ import net.exylia.lib.economy.TransferResult;
 import net.exylia.lib.format.Formats;
 import net.exylia.lib.player.ExyliaPlayer;
 import net.exylia.lib.player.ExyliaPlayers;
+import net.exylia.lib.util.Cooldowns;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -28,6 +29,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,6 +48,8 @@ import java.util.function.Consumer;
  * talks to players.
  */
 public final class EconomyActions {
+
+    private static final Duration PAY_COOLDOWN = Duration.ofSeconds(1);
 
     private static EconomyMessages text() {
         return EconomyMessages.get();
@@ -203,7 +207,7 @@ public final class EconomyActions {
         String currency = resolved(sender, currencyId);
         if (currency == null) return;
         CurrencyInfo info = Economy.info(currency);
-        BigDecimal amount = Economy.parseAmount(typedAmount);
+        BigDecimal amount = amount(typedAmount);
         if (amount == null) {
             Messages.send(sender, text().invalidAmount());
             return;
@@ -224,6 +228,13 @@ public final class EconomyActions {
         ExyliaPlayers.then(sender, targetName, found -> {
             if (found.id().equals(sender.getUniqueId())) {
                 Messages.send(sender, text().paySelf());
+                return;
+            }
+            // One payment a second to the same player, dropped silently past
+            // that: the minimum amount sent in a loop is a chat flood for the
+            // receiver, and a "slow down" line per attempt would be one for
+            // the sender.
+            if (!Cooldowns.tryStart(sender, "exyliaeconomy:pay:" + found.id(), PAY_COOLDOWN)) {
                 return;
             }
             BigDecimal tax = rules == null ? BigDecimal.ZERO : rules.tax(amount);
@@ -260,7 +271,7 @@ public final class EconomyActions {
     public void exchange(Player sender, @Nullable String fromId, String toId, String typedAmount) {
         String from = resolved(sender, fromId);
         if (from == null) return;
-        BigDecimal amount = Economy.parseAmount(typedAmount);
+        BigDecimal amount = amount(typedAmount);
         if (amount == null) {
             Messages.send(sender, text().invalidAmount());
             return;
@@ -342,7 +353,7 @@ public final class EconomyActions {
     public void set(CommandSender sender, @Nullable String currencyId, String targetName, String typedAmount) {
         String currency = resolved(sender, currencyId);
         if (currency == null) return;
-        BigDecimal amount = "0".equals(typedAmount) ? BigDecimal.ZERO : Economy.parseAmount(typedAmount);
+        BigDecimal amount = "0".equals(typedAmount) ? BigDecimal.ZERO : amount(typedAmount);
         if (amount == null) {
             Messages.send(sender, text().invalidAmount());
             return;
@@ -432,12 +443,26 @@ public final class EconomyActions {
                          String typedAmount, AdminOp op) {
         String currency = resolved(sender, currencyId);
         if (currency == null) return;
-        BigDecimal amount = Economy.parseAmount(typedAmount);
+        BigDecimal amount = amount(typedAmount);
         if (amount == null) {
             Messages.send(sender, text().invalidAmount());
             return;
         }
         ExyliaPlayers.then(sender, targetName, found -> op.run(currency, found, amount));
+    }
+
+    /**
+     * A typed amount, or {@code null} when it is not one a balance can hold.
+     *
+     * <p>Guarded here as well as in ExyliaLib: an older lib read
+     * {@code 1e99999999} as a number, and the first {@code add} on it builds a
+     * hundred-million-digit value on the main thread.
+     */
+    static @Nullable BigDecimal amount(@Nullable String typed) {
+        if (typed == null || typed.indexOf('e') >= 0 || typed.indexOf('E') >= 0) return null;
+        BigDecimal amount = Economy.parseAmount(typed);
+        if (amount == null || amount.precision() - amount.scale() > 20 || amount.scale() > 10) return null;
+        return amount;
     }
 
     /** The currency asked for, told to the sender when it cannot be used. */
