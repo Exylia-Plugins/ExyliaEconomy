@@ -1,6 +1,7 @@
 package net.exylia.exyliaEconomy.manager;
 
 import net.exylia.exyliaEconomy.ExyliaEconomy;
+import net.exylia.exyliaEconomy.Permissions;
 import net.exylia.exyliaEconomy.database.BalanceRow;
 import net.exylia.exyliaEconomy.database.CurrencyRow;
 import net.exylia.exyliaEconomy.database.ImportedRow;
@@ -118,6 +119,8 @@ public final class StoredEconomy implements Listener {
     /** What a server publishes on the channel after an admin changed the currencies. */
     private static final String CURRENCIES_CHANGED = "currencies";
     private static final long TOP_CACHE_MILLIS = 60_000L;
+    /** How many places a leaderboard holds. */
+    private static final int TOP_DEPTH = 100;
     /** How long a balance of somebody not held here is served from memory. */
     private static final long OFFLINE_CACHE_MILLIS = 30_000L;
     /** How long a joining server waits for the last one to let go before taking the balance over. */
@@ -159,6 +162,7 @@ public final class StoredEconomy implements Listener {
     private final Repository<LedgerRow> ledger;
     private final Repository<ImportedRow> imported;
     private final Repository<TakenRow> taken;
+    private final PlayerFlags flags;
     private final String server;
 
     private volatile CurrencyFile.Contents contents;
@@ -209,7 +213,8 @@ public final class StoredEconomy implements Listener {
     /** ExyliaAnalytics.supply(String, String, BigDecimal, long), once it is found. */
     private volatile Method supply;
 
-    private record CachedTop(long at, List<TopEntry> entries) { }
+    /** @param total every balance of the currency added up, hidden players included: the money supply */
+    private record CachedTop(long at, List<TopEntry> entries, BigDecimal total) { }
 
     /**
      * A balance read from the database.
@@ -254,6 +259,7 @@ public final class StoredEconomy implements Listener {
         this.ledger = Databases.of(plugin).repository(LedgerRow.class);
         this.imported = Databases.of(plugin).repository(ImportedRow.class);
         this.taken = Databases.of(plugin).repository(TakenRow.class);
+        this.flags = new PlayerFlags(plugin);
         this.server = Redis.serverId(plugin);
         this.vault = new VaultBridge(plugin);
     }
@@ -327,6 +333,12 @@ public final class StoredEconomy implements Listener {
                 if (instance == economy) economy.apply(read);
             });
         });
+    }
+
+    /** The per-player switches, or {@code null} while the economy is not running. */
+    public static @Nullable PlayerFlags flags() {
+        StoredEconomy economy = instance;
+        return economy == null ? null : economy.flags;
     }
 
     /** The rows an admin edits, or {@code null} while the economy is not running. */
@@ -648,6 +660,17 @@ public final class StoredEconomy implements Listener {
         sessions.put(id, nextSession.incrementAndGet());
         names.put(id, event.getPlayer().getName());
         load(id);
+        syncTopExempt(id, event.getPlayer().hasPermission(Permissions.TOP_EXEMPT));
+    }
+
+    /** Keeps the stored exemption in step with the permission, written only when it changed. */
+    private void syncTopExempt(UUID player, boolean exempt) {
+        flags.has(player, PlayerFlags.TOP_EXEMPT)
+                .thenCompose(stored -> stored == exempt ? DONE : flags.set(player, PlayerFlags.TOP_EXEMPT, exempt))
+                .exceptionally(failure -> {
+                    debug.error("Economy: could not store the leaderboard exemption of " + player + ".", failure);
+                    return null;
+                });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -1462,22 +1485,50 @@ public final class StoredEconomy implements Listener {
         long now = System.currentTimeMillis();
         if (cached == null || now - cached.at() > TOP_CACHE_MILLIS) {
             // Refreshed in the background; whoever asked gets what was there.
-            economy.tops.put(key, new CachedTop(now, cached == null ? List.of() : cached.entries()));
-            economy.topLoads.put(key, economy.balances.where("currency", key).orderByDescending("amount").limit(100).find()
-                    .thenApply(rows -> {
-                        List<TopEntry> entries = new ArrayList<>(rows.size());
-                        int position = 1;
-                        for (BalanceRow row : rows) {
-                            entries.add(new TopEntry(position++, row.uuid(),
-                                    ExyliaPlayers.nameOr(row.uuid(), row.name()), row.amount()));
-                        }
-                        economy.tops.put(key, new CachedTop(System.currentTimeMillis(), entries));
-                        return entries;
-                    }));
+            economy.tops.put(key, new CachedTop(now, cached == null ? List.of() : cached.entries(),
+                    cached == null ? BigDecimal.ZERO : cached.total()));
+            // Exempt players are left out before ranking, so they hold no place: read that many more.
+            economy.topLoads.put(key, economy.flags.holders(PlayerFlags.TOP_EXEMPT).thenCompose(exempt ->
+                    economy.balances.where("currency", key).orderByDescending("amount").limit(TOP_DEPTH + exempt.size())
+                            .find()
+                            .thenCombine(economy.balances.where("currency", key).sum("amount"), (rows, total) -> {
+                                List<TopEntry> entries = ranked(rows, exempt, TOP_DEPTH);
+                                economy.tops.put(key, new CachedTop(System.currentTimeMillis(), entries,
+                                        total == null ? BigDecimal.ZERO : total));
+                                return entries;
+                            })));
             if (cached == null) return List.of();
         }
         List<TopEntry> entries = cached == null ? List.of() : cached.entries();
         return entries.subList(0, Math.min(Math.max(0, limit), entries.size()));
+    }
+
+    /**
+     * Ranks balance rows, richest first as read, leaving out the exempt players without
+     * giving away their place.
+     */
+    static @NotNull List<TopEntry> ranked(List<BalanceRow> rows, Set<UUID> exempt, int limit) {
+        List<TopEntry> entries = new ArrayList<>(Math.min(rows.size(), limit));
+        for (BalanceRow row : rows) {
+            if (entries.size() >= limit) break;
+            if (exempt.contains(row.uuid())) continue;
+            entries.add(new TopEntry(entries.size() + 1, row.uuid(),
+                    ExyliaPlayers.nameOr(row.uuid(), row.name()), row.amount()));
+        }
+        return entries;
+    }
+
+    /**
+     * Every balance of a stored currency with a leaderboard, added up: its money supply, exempt
+     * players included. Read from the leaderboard's cache, so zero until its first read lands.
+     */
+    public static @NotNull BigDecimal total(String id) {
+        StoredEconomy economy = instance;
+        StoredCurrency currency = economy == null ? null : economy.currency(id);
+        if (currency == null) return BigDecimal.ZERO;
+        top(id, 0);
+        CachedTop cached = economy.tops.get(economy.key(currency));
+        return cached == null ? BigDecimal.ZERO : cached.total();
     }
 
     /**

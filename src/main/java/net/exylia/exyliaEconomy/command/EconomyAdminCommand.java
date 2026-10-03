@@ -15,6 +15,7 @@ import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.CommandPlaceholder;
 import revxrsal.commands.annotation.Optional;
 import revxrsal.commands.annotation.Subcommand;
+import revxrsal.commands.annotation.Suggest;
 import revxrsal.commands.annotation.SuggestWith;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
 
@@ -51,6 +52,14 @@ public final class EconomyAdminCommand {
     public void give(CommandSender sender, PlayerTarget player, String amount,
                      @Optional @SuggestWith(CurrencySuggestionProvider.class) String currency) {
         actions.give(sender, currency, player.typed(), amount);
+    }
+
+    /** Gives every player online an amount; asks first, then {@code confirm} sends it. */
+    @Subcommand("giveall")
+    public void giveAll(CommandSender sender,
+                        @SuggestWith(CurrencySuggestionProvider.class) String currency, String amount,
+                        @Optional @Suggest("confirm") String confirm) {
+        actions.giveAll(sender, currency, amount, "confirm".equalsIgnoreCase(confirm));
     }
 
     @Subcommand("take")

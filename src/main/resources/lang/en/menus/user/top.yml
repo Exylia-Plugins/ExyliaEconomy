@@ -2,7 +2,7 @@
 #
 # Written once, when it is missing, and never overwritten.
 #
-# Values: %currency% %top_size%
+# Values: %currency% %top_size% %top_total%
 # Each place: %top_position% %top_player% %top_amount%
 
 title: "{primary}&lTOP {highlight}%currency%"
@@ -66,6 +66,16 @@ pagination:
         - "next_page"
 
 items:
+  total:
+    slot: 45
+    material: GOLD_INGOT
+    name: "{primary}&lIN CIRCULATION"
+    lore:
+      - ""
+      - "{secondary}Supply:"
+      - " {letters_black}▎ {letters}Total {letters_black}» {info}%top_total%"
+      - " {letters_black}▎ {letters}Every balance, hidden players too."
+      - ""
   back:
     slot: 49
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"

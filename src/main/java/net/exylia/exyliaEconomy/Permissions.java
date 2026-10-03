@@ -14,6 +14,15 @@ public final class Permissions {
     /** Send money to another player. */
     public static final String PAY = "exyliaeconomy.pay";
 
+    /** Turn incoming payments off and on with {@code /paytoggle}. */
+    public static final String PAYTOGGLE = "exyliaeconomy.paytoggle";
+
+    /** Pay a player who turned incoming payments off. */
+    public static final String PAYTOGGLE_BYPASS = "exyliaeconomy.paytoggle.bypass";
+
+    /** Left off the leaderboards; stored as the player joins, so it applies from their next join. */
+    public static final String TOP_EXEMPT = "exyliaeconomy.top.exempt";
+
     /** Read somebody else's balance, wallet or history. */
     public static final String OTHERS = "exyliaeconomy.others";
 

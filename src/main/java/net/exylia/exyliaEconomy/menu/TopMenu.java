@@ -46,6 +46,7 @@ public final class TopMenu {
                 .put("currency_id", currency)
                 .put("currency", info.namePlural())
                 .put("top_size", entries.size())
+                .put("top_total", info.format(StoredEconomy.total(currency)))
                 .map(), rows);
     }
 }

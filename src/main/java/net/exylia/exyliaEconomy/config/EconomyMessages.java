@@ -92,6 +92,34 @@ public record EconomyMessages(
         String playerRequired,
         @Comment("A currency change that could not be written to the database. Placeholder: %id%.")
         String currencyWriteFailed,
+        @Comment("A payment another plugin cancelled without saying why.")
+        String payCancelled,
+        @Comment("An exchange another plugin cancelled without saying why.")
+        String exchangeCancelled,
+        @Comment("The receiver turned payments off with /paytoggle. Placeholder: %player%.")
+        String payDisabledTarget,
+        @Comment("/paytoggle, now refusing payments.")
+        String payToggleOff,
+        @Comment("/paytoggle, now accepting payments again.")
+        String payToggleOn,
+        @Comment("/paytoggle, or the receiver's setting, could not be read or saved.")
+        String payToggleFailed,
+        @Comment("A payment above the confirmation amount. Placeholders: %player% %amount% %command%.")
+        String payConfirm,
+        @Comment("A 'confirm' with nothing open that matches it: expired, or for another amount.")
+        String confirmExpired,
+        @Comment("On join, one payer paid you while you were away. Placeholders: %player% %amount%.")
+        String offlinePaySingle,
+        @Comment("On join, several players paid you while you were away. Placeholders: %count% %amount%.")
+        String offlinePayMany,
+        @Comment("Under the console leaderboard's header: every balance added up. Placeholder: %total%.")
+        String topTotal,
+        @Comment("/economyadmin giveall asking first. Placeholders: %amount% %count% %command%.")
+        String giveAllConfirm,
+        @Comment("/economyadmin giveall done. Placeholders: %amount% %count% %skipped%.")
+        String giveAllDone,
+        @Comment("/economyadmin giveall with nobody online.")
+        String giveAllNobody,
         @Comment("")
         @Comment("The currency editor of /economyadmin: its prompts, forms and the words its screens show.")
         CurrencyAdmin admin) {
@@ -172,6 +200,28 @@ public record EconomyMessages(
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Name a player{letters_black}: {highlight}/%command% <player>",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Could not save {highlight}%id% {error}to the database."
                         + " Check the console and try again.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}The payment was cancelled.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}The exchange was cancelled.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {highlight}%player% {error}is not accepting payments right now.",
+                "[sound:BLOCK_NOTE_BLOCK_BASS|1.0|0.8]%prefix% {warning}You no longer receive payments."
+                        + " {letters_black}/paytoggle turns them back on.",
+                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}You receive payments again.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}That could not be checked right now. Try again in a moment.",
+                "[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Send {highlight}%amount% {warning}to"
+                        + " {highlight}%player%{warning}? <click:run_command:'%command%'><hover:show_text:'{letters}Click to"
+                        + " send the payment'>{success}&l[✔ CONFIRM]</hover></click> {letters_black}30s ⌚",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Nothing to confirm: it expired or changed. Run the command again.",
+                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {letters}While you were away, {highlight}%player%"
+                        + " {letters}paid you {success}%amount%{letters}.",
+                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {letters}While you were away, you received"
+                        + " {success}%amount% {letters}from {highlight}%count% {letters}players.",
+                " {letters_black}▎ {letters}In circulation {letters_black}» {info}%total%",
+                "[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Give {highlight}%amount% {warning}to each of the"
+                        + " {highlight}%count% {warning}players online? <click:run_command:'%command%'><hover:show_text:"
+                        + "'{letters}Click to give it to everybody'>{success}&l[✔ CONFIRM]</hover></click> {letters_black}30s ⌚",
+                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Gave {highlight}%amount% {success}to"
+                        + " {highlight}%count% {success}players. {letters_black}Skipped: %skipped%",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Nobody is online.",
                 new CurrencyAdmin());
     }
 

@@ -42,6 +42,15 @@ permissions:
   exyliaeconomy.pay:
     description: Send money to another player.
     default: true
+  exyliaeconomy.paytoggle:
+    description: Turn incoming payments off and on with /paytoggle.
+    default: true
+  exyliaeconomy.paytoggle.bypass:
+    description: Pay players who turned incoming payments off.
+    default: op
+  exyliaeconomy.top.exempt:
+    description: Left off the leaderboards, from the player's next join. Not given to operators.
+    default: false
   exyliaeconomy.others:
     description: Read another player's balance, wallet or history.
     default: op
@@ -51,6 +60,8 @@ permissions:
     children:
       exyliaeconomy.use: true
       exyliaeconomy.pay: true
+      exyliaeconomy.paytoggle: true
+      exyliaeconomy.paytoggle.bypass: true
       exyliaeconomy.others: true
   exyliaeconomy.*:
     description: Every ExyliaEconomy permission.

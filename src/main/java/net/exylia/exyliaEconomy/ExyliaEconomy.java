@@ -8,6 +8,7 @@ import net.exylia.exyliaEconomy.command.BalanceTopCommand;
 import net.exylia.exyliaEconomy.command.EconomyAdminCommand;
 import net.exylia.exyliaEconomy.command.EconomyCommand;
 import net.exylia.exyliaEconomy.command.PayCommand;
+import net.exylia.exyliaEconomy.command.PayToggleCommand;
 import net.exylia.exyliaEconomy.command.WalletCommand;
 import net.exylia.exyliaEconomy.common.Messages;
 import net.exylia.exyliaEconomy.common.Values;
@@ -18,6 +19,7 @@ import net.exylia.exyliaEconomy.menu.EconomyMenus;
 import net.exylia.exyliaEconomy.migration.SurvivalCoreImport;
 import net.exylia.exyliaEconomy.placeholder.EconomyPlaceholder;
 import net.exylia.exyliaEconomy.service.EconomyActions;
+import net.exylia.exyliaEconomy.service.PayNotices;
 import net.exylia.lib.action.Actions;
 import net.exylia.lib.action.PluginActions;
 import net.exylia.lib.config.Configs;
@@ -70,6 +72,7 @@ public final class ExyliaEconomy {
     private PluginActions actions;
     private EconomyMenus menus;
     private Reloads reloads;
+    private PayNotices payNotices;
 
     public Server getServer() {
         return plugin.getServer();
@@ -111,6 +114,8 @@ public final class ExyliaEconomy {
         // plugin that looks for Vault in its own enable must find it.
         StoredEconomy.init(plugin, () -> AliasCommands.install(plugin, new EconomyActions()));
         EconomyPlaceholder.register(plugin);
+        payNotices = new PayNotices(plugin);
+        getServer().getPluginManager().registerEvents(payNotices, plugin);
 
         var lamp = PlayerArguments.install(BukkitLamp.builder(plugin)).build();
         lamp.register(new EconomyCommand());
@@ -119,6 +124,7 @@ public final class ExyliaEconomy {
         // multi-currency answer is /wallet.
         lamp.register(new BalanceCommand());
         lamp.register(new PayCommand());
+        lamp.register(new PayToggleCommand());
         lamp.register(new BalanceTopCommand());
         lamp.register(new WalletCommand());
 

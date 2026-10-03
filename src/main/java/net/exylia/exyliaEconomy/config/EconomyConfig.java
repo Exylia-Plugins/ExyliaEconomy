@@ -3,6 +3,12 @@ package net.exylia.exyliaEconomy.config;
 import net.exylia.lib.config.Comment;
 import net.exylia.lib.config.ConfigFile;
 import net.exylia.lib.config.Languages;
+import net.exylia.lib.economy.Economy;
+import org.jetbrains.annotations.Nullable;
+
+import java.math.BigDecimal;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Settings stored in {@code config.yml}.
@@ -13,6 +19,8 @@ import net.exylia.lib.config.Languages;
  *
  * @param language the language of menus and messages
  * @param debug    whether the log explains what the plugin does
+ * @param payConfirmAbove  per currency id, or {@code default}, the amount above which {@code /pay} asks first
+ * @param offlinePayNotice whether a player is told on join what they were paid while away
  */
 @Comment("ExyliaEconomy. The currencies are kept in the database and edited in game with /economyadmin.")
 public record EconomyConfig(
@@ -22,11 +30,27 @@ public record EconomyConfig(
         String language,
 
         @Comment("Explains in the console what the plugin is doing.")
-        boolean debug) {
+        boolean debug,
+
+        @Comment("A /pay above this amount asks the payer to confirm it within 30 seconds, by clicking")
+        @Comment("[Confirm] or adding 'confirm' to the command. Keyed by currency id; 'default' is every currency")
+        @Comment("not listed. Amounts read like the command's: 10000, 10k, 1.5m. 0 asks for nothing.")
+        Map<String, String> payConfirmAbove,
+
+        @Comment("Tells a player, as they join, what they were paid while they were away or on")
+        @Comment("another server: one line per currency.")
+        boolean offlinePayNotice) {
 
     /** The defaults the file is generated from. */
     public EconomyConfig() {
-        this(Languages.DEFAULT, false);
+        this(Languages.DEFAULT, false, new LinkedHashMap<>(Map.of("default", "0")), true);
+    }
+
+    /** The amount above which a payment in this currency asks first, or {@code null} when it never does. */
+    public @Nullable BigDecimal confirmAbove(String currency) {
+        Map<String, String> limits = payConfirmAbove == null ? Map.of() : payConfirmAbove;
+        String typed = limits.containsKey(currency) ? limits.get(currency) : limits.get("default");
+        return Economy.parseAmount(typed);
     }
 
     private static ConfigFile<EconomyConfig> file;

@@ -1,10 +1,14 @@
 package net.exylia.exyliaEconomy.service;
 
+import net.exylia.exyliaEconomy.api.event.EconomyExchangeEvent;
+import net.exylia.exyliaEconomy.api.event.EconomyPayEvent;
+import net.exylia.exyliaEconomy.config.EconomyConfig;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.ExyliaEconomy;
 import net.exylia.exyliaEconomy.common.Messages;
 import net.exylia.exyliaEconomy.common.Values;
 import net.exylia.exyliaEconomy.manager.CurrencyStore;
+import net.exylia.exyliaEconomy.manager.PlayerFlags;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
 import net.exylia.exyliaEconomy.menu.HistoryMenu;
 import net.exylia.exyliaEconomy.menu.TopMenu;
@@ -167,6 +171,7 @@ public final class EconomyActions {
         StoredEconomy.topLater(currency, from + size).thenAccept(entries ->
                 ExyliaEconomy.getInstance().getTasks().run(() -> {
                     Messages.send(sender, text().topHeader(), Values.of().put("currency", info.namePlural()).put("page", page));
+                    Messages.send(sender, text().topTotal(), Values.of().put("total", info.format(StoredEconomy.total(currency))));
                     if (entries.size() <= from) {
                         Messages.send(sender, text().topEmpty());
                         return;
@@ -218,6 +223,15 @@ public final class EconomyActions {
     // ------------------------------------------------------------- players
 
     public void pay(Player sender, @Nullable String currencyId, String targetName, String typedAmount) {
+        pay(sender, currencyId, targetName, typedAmount, false);
+    }
+
+    /**
+     * @param confirmed whether the command ended in {@code confirm}: what a payment above the
+     *                  confirmation amount needs, matching the question it was asked
+     */
+    public void pay(Player sender, @Nullable String currencyId, String targetName, String typedAmount,
+                    boolean confirmed) {
         String currency = resolved(sender, currencyId);
         if (currency == null) return;
         CurrencyInfo info = Economy.info(currency);
@@ -244,51 +258,114 @@ public final class EconomyActions {
                 Messages.send(sender, text().paySelf());
                 return;
             }
-            // One payment a second to the same player, dropped silently past
-            // that: the minimum amount sent in a loop is a chat flood for the
-            // receiver, and a "slow down" line per attempt would be one for
-            // the sender.
-            if (!Cooldowns.tryStart(sender, "exyliaeconomy:pay:" + found.id(), PAY_COOLDOWN)) {
-                return;
-            }
-            BigDecimal tax = rules == null ? BigDecimal.ZERO : rules.tax(amount);
-            Economy.CurrencyView view = Economy.of(currency);
-            if (!view.has(sender.getUniqueId(), amount.add(tax))) {
-                Messages.send(sender, text().notEnough(), Values.of().put("currency", info.namePlural())
-                        .put("amount", info.format(amount.add(tax).subtract(view.balance(sender.getUniqueId())))));
-                return;
-            }
-            if (tax.signum() > 0 && !view.withdraw(sender.getUniqueId(), tax,
-                    Transaction.of("pay:tax").by(sender.getUniqueId())).isSuccess()) {
-                Messages.send(sender, text().notEnough(), Values.of().put("currency", info.namePlural())
-                        .put("amount", info.format(tax)));
-                return;
-            }
-            TransferResult result = view.transfer(sender.getUniqueId(), found.id(), amount,
-                    Transaction.of("pay").by(sender.getUniqueId()));
-            if (!result.isSuccess()) {
-                if (tax.signum() > 0) view.deposit(sender.getUniqueId(), tax, Transaction.of("pay:tax-refund"));
-                switch (result.type()) {
-                    case INSUFFICIENT_FUNDS -> Messages.send(sender, text().notEnough(), Values.of()
-                            .put("currency", info.namePlural())
-                            .put("amount", info.format(amount.add(tax).subtract(view.balance(sender.getUniqueId())).max(BigDecimal.ZERO))));
-                    case INVALID_AMOUNT -> Messages.send(sender, text().invalidAmount());
-                    case NOT_AVAILABLE -> Messages.send(sender, text().notAvailable(), Values.of().put("currency", info.namePlural()));
-                    // The receiver's ceiling, or anything else the currency
-                    // refused: its own words, never a "you need more".
-                    default -> Messages.send(sender, text().refused(), Values.of().put("reason",
-                            result.message() == null ? text().payRefused() : result.message()));
+            // Read where it is kept, not remembered: a toggle on another server applies here at once.
+            PlayerFlags flags = StoredEconomy.flags();
+            CompletableFuture<Boolean> off = flags == null || sender.hasPermission(Permissions.PAYTOGGLE_BYPASS)
+                    ? CompletableFuture.completedFuture(false) : flags.has(found.id(), PlayerFlags.PAY_OFF);
+            off.whenComplete((refuses, failure) -> ExyliaEconomy.getInstance().getTasks().runAtEntity(sender, () -> {
+                if (failure != null) {
+                    Messages.send(sender, text().payToggleFailed());
+                } else if (refuses) {
+                    Messages.send(sender, text().payDisabledTarget(), Values.of().put("player", found.name()));
+                } else {
+                    transfer(sender, currency, info, rules, found, amount, confirmed);
                 }
+            }));
+        });
+    }
+
+    private void transfer(Player sender, String currency, CurrencyInfo info, @Nullable CurrencyRules rules,
+                          ExyliaPlayer found, BigDecimal amount, boolean confirmed) {
+        BigDecimal tax = rules == null ? BigDecimal.ZERO : rules.tax(amount);
+        Economy.CurrencyView view = Economy.of(currency);
+        BigDecimal above = EconomyConfig.get().confirmAbove(currency);
+        if (above != null && amount.compareTo(above) > 0) {
+            String who = sender.getUniqueId().toString();
+            String what = "pay|" + found.id() + "|" + currency + "|" + Confirmations.amount(amount);
+            if (confirmed && !Confirmations.confirm(who, what, System.currentTimeMillis())) {
+                Messages.send(sender, text().confirmExpired());
                 return;
             }
-            Messages.send(sender, tax.signum() > 0 ? text().paidTaxed() : text().paid(), Values.of()
-                    .put("player", found.name()).put("amount", info.format(amount)).put("tax", info.format(tax)));
-            Player receiver = found.here();
-            if (receiver != null) {
-                Messages.send(receiver, text().received(), Values.of().put("player", sender.getName())
-                        .put("amount", info.format(amount)));
+            if (!confirmed) {
+                // Never ask about a payment that would be refused anyway.
+                if (!view.has(sender.getUniqueId(), amount.add(tax))) {
+                    notEnough(sender, info, amount.add(tax).subtract(view.balance(sender.getUniqueId())));
+                    return;
+                }
+                Confirmations.ask(who, what, System.currentTimeMillis());
+                Messages.send(sender, text().payConfirm(), Values.of().put("player", found.name())
+                        .put("amount", info.format(amount))
+                        .put("command", "/pay " + found.name() + " " + amount.toPlainString() + " " + currency + " confirm"));
+                return;
             }
-        });
+        }
+        // One payment a second to the same player, dropped silently past
+        // that: the minimum amount sent in a loop is a chat flood for the
+        // receiver, and a "slow down" line per attempt would be one for
+        // the sender.
+        if (!Cooldowns.tryStart(sender, "exyliaeconomy:pay:" + found.id(), PAY_COOLDOWN)) {
+            return;
+        }
+        if (!view.has(sender.getUniqueId(), amount.add(tax))) {
+            notEnough(sender, info, amount.add(tax).subtract(view.balance(sender.getUniqueId())));
+            return;
+        }
+        EconomyPayEvent event = new EconomyPayEvent(sender, found.id(), found.name(), currency, amount, tax);
+        if (!event.callEvent()) {
+            Messages.send(sender, event.cancelMessage() == null ? text().payCancelled() : event.cancelMessage());
+            return;
+        }
+        if (tax.signum() > 0 && !view.withdraw(sender.getUniqueId(), tax,
+                Transaction.of("pay:tax").by(sender.getUniqueId())).isSuccess()) {
+            notEnough(sender, info, tax);
+            return;
+        }
+        TransferResult result = view.transfer(sender.getUniqueId(), found.id(), amount,
+                Transaction.of("pay").by(sender.getUniqueId()));
+        if (!result.isSuccess()) {
+            if (tax.signum() > 0) view.deposit(sender.getUniqueId(), tax, Transaction.of("pay:tax-refund"));
+            switch (result.type()) {
+                case INSUFFICIENT_FUNDS -> notEnough(sender, info,
+                        amount.add(tax).subtract(view.balance(sender.getUniqueId())).max(BigDecimal.ZERO));
+                case INVALID_AMOUNT -> Messages.send(sender, text().invalidAmount());
+                case NOT_AVAILABLE -> Messages.send(sender, text().notAvailable(), Values.of().put("currency", info.namePlural()));
+                // The receiver's ceiling, or anything else the currency
+                // refused: its own words, never a "you need more".
+                default -> Messages.send(sender, text().refused(), Values.of().put("reason",
+                        result.message() == null ? text().payRefused() : result.message()));
+            }
+            return;
+        }
+        Messages.send(sender, tax.signum() > 0 ? text().paidTaxed() : text().paid(), Values.of()
+                .put("player", found.name()).put("amount", info.format(amount)).put("tax", info.format(tax)));
+        Player receiver = found.here();
+        if (receiver != null) {
+            Messages.send(receiver, text().received(), Values.of().put("player", sender.getName())
+                    .put("amount", info.format(amount)));
+        } else {
+            ExyliaEconomy.getInstance().getPayNotices().record(found.id(), sender, currency, amount);
+        }
+    }
+
+    private static void notEnough(CommandSender sender, CurrencyInfo info, BigDecimal missing) {
+        Messages.send(sender, text().notEnough(), Values.of().put("currency", info.namePlural())
+                .put("amount", info.format(missing)));
+    }
+
+    /** Turns the sender's incoming payments off, or back on, on every server. */
+    public void payToggle(Player sender) {
+        PlayerFlags flags = StoredEconomy.flags();
+        if (flags == null) {
+            Messages.send(sender, text().economyOff());
+            return;
+        }
+        UUID id = sender.getUniqueId();
+        flags.has(id, PlayerFlags.PAY_OFF)
+                .thenCompose(off -> flags.set(id, PlayerFlags.PAY_OFF, !off).thenApply(ignored -> !off))
+                .whenComplete((nowOff, failure) -> ExyliaEconomy.getInstance().getTasks().runAtEntity(sender, () -> {
+                    if (failure != null) Messages.send(sender, text().payToggleFailed());
+                    else Messages.send(sender, nowOff ? text().payToggleOff() : text().payToggleOn());
+                }));
     }
 
     public void exchange(Player sender, @Nullable String fromId, String toId, String typedAmount) {
@@ -308,6 +385,11 @@ public final class EconomyActions {
         }
         if (StoredEconomy.loading(sender.getUniqueId(), from)) {
             Messages.send(sender, text().stillLoading());
+            return;
+        }
+        EconomyExchangeEvent event = new EconomyExchangeEvent(sender, from, toId, amount);
+        if (!event.callEvent()) {
+            Messages.send(sender, event.cancelMessage() == null ? text().exchangeCancelled() : event.cancelMessage());
             return;
         }
         StoredEconomy.Exchange exchange = StoredEconomy.exchange(sender.getUniqueId(), from, toId, amount);
@@ -372,6 +454,55 @@ public final class EconomyActions {
             Player target = found.here();
             if (target != null) Messages.send(target, text().takenNotify(), Values.of().put("amount", info.format(amount)));
         });
+    }
+
+    /**
+     * Gives an amount to every player on this server, asking first.
+     *
+     * <p>One deposit per player through the currency, as {@code give} does, so each lands in
+     * their ledger and fires its own change. A player who may not use the currency, or whose
+     * deposit is refused (their ceiling), is skipped and counted.
+     */
+    public void giveAll(CommandSender sender, @Nullable String currencyId, String typedAmount, boolean confirmed) {
+        String currency = resolved(sender, currencyId);
+        if (currency == null) return;
+        BigDecimal amount = amount(typedAmount);
+        if (amount == null) {
+            Messages.send(sender, text().invalidAmount());
+            return;
+        }
+        CurrencyInfo info = Economy.info(currency);
+        List<Player> online = List.copyOf(Bukkit.getOnlinePlayers());
+        if (online.isEmpty()) {
+            Messages.send(sender, text().giveAllNobody());
+            return;
+        }
+        UUID initiator = initiator(sender);
+        String who = initiator == null ? "console" : initiator.toString();
+        String what = "giveall|" + currency + "|" + Confirmations.amount(amount);
+        if (!confirmed) {
+            Confirmations.ask(who, what, System.currentTimeMillis());
+            Messages.send(sender, text().giveAllConfirm(), Values.of().put("amount", info.format(amount))
+                    .put("count", online.size())
+                    .put("command", "/economyadmin giveall " + currency + " " + amount.toPlainString() + " confirm"));
+            return;
+        }
+        if (!Confirmations.confirm(who, what, System.currentTimeMillis())) {
+            Messages.send(sender, text().confirmExpired());
+            return;
+        }
+        Transaction transaction = Transaction.of("admin:giveall").by(initiator);
+        int given = 0;
+        for (Player player : online) {
+            if (!player.isOnline() || !Economy.canUse(player, currency)
+                    || !Economy.of(currency).deposit(player.getUniqueId(), amount, transaction).isSuccess()) {
+                continue;
+            }
+            given++;
+            Messages.send(player, text().givenNotify(), Values.of().put("amount", info.format(amount)));
+        }
+        Messages.send(sender, text().giveAllDone(), Values.of().put("amount", info.format(amount))
+                .put("count", given).put("skipped", online.size() - given));
     }
 
     public void set(CommandSender sender, @Nullable String currencyId, String targetName, String typedAmount) {
