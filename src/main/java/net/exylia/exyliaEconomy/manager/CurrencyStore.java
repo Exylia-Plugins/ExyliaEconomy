@@ -2,9 +2,12 @@ package net.exylia.exyliaEconomy.manager;
 
 import net.exylia.exyliaEconomy.database.CurrencyRow;
 import net.exylia.exyliaEconomy.database.EconomySettingsRow;
+import net.exylia.exyliaEconomy.migration.LegacyConfig;
 import net.exylia.exyliaEconomy.migration.LegacyTables;
+import net.exylia.lib.config.Languages;
 import net.exylia.lib.database.Databases;
 import net.exylia.lib.database.Repository;
+import net.exylia.lib.economy.Economy;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -82,7 +85,38 @@ public final class CurrencyStore {
                 return settingsRows.save(settings).thenApply(saved -> contents());
             }
             return CompletableFuture.completedFuture(contents());
-        }));
+        })).thenCompose(read -> importConfig());
+    }
+
+    /**
+     * Brings the old {@code config.yml} into the rows, once, and settles a
+     * settings row that has never had a language: the file's values, or the
+     * defaults when there is no file.
+     */
+    private CompletableFuture<CurrencyFile.Contents> importConfig() {
+        LegacyConfig legacy = LegacyConfig.find(plugin.getDataFolder());
+        EconomySettingsRow global = settings;
+        if (legacy == null && !global.fresh()) return CompletableFuture.completedFuture(contents());
+        List<CompletableFuture<Void>> writes = new ArrayList<>();
+        if (global.fresh()) {
+            writes.add(save(legacy != null ? legacy.settings(global)
+                    : global.withLanguage(Languages.DEFAULT).withDebug(false).withOfflinePayNotice(true)));
+        }
+        if (legacy != null) {
+            String id = Economy.info(null).id();
+            String defaultId = id.equalsIgnoreCase("vault") ? global.vaultProvide() : id;
+            legacy.currencies(all(), defaultId.toLowerCase(Locale.ROOT)).forEach(row -> writes.add(save(row)));
+        }
+        return CompletableFuture.allOf(writes.toArray(CompletableFuture[]::new)).handle((done, failure) -> {
+            // Never worth the currencies: kept for the next start, which tries again.
+            if (failure != null) {
+                logger.warning("Economy: could not write the old config.yml into the database ("
+                        + failure.getMessage() + "); it is tried again on the next start.");
+            } else if (legacy != null) {
+                legacy.setAside(logger);
+            }
+            return contents();
+        });
     }
 
     /** Reads the tables again without waiting: a reload, or another server's edit. */

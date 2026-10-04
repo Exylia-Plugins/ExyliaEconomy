@@ -91,7 +91,7 @@ items:
       - "exyliaeconomy:currency_admin_settings_toggle vault_force"
 
   ledger-days:
-    slot: 22
+    slot: 21
     material: CLOCK
     name: "{primary}&lRETENÇÃO DO REGISTRO"
     lore:
@@ -115,6 +115,53 @@ items:
       - " {letters_black}▎ {letters}Publicada {letters_black}» {highlight}%vault_provide%"
       - " {letters_black}▎ {letters_black}Escolha na tela de uma moeda salva."
       - ""
+
+  offline-pay-notice:
+    slot: 20
+    material: "%offline_pay_notice_material%"
+    name: "{primary}&lAVISO DE PAGAMENTOS OFFLINE"
+    lore:
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Atual {letters_black}» %offline_pay_notice_status%"
+      - " {letters_black}▎ {letters_black}Ao entrar, avisa os jogadores do que"
+      - " {letters_black}▎ {letters_black}receberam enquanto estavam offline."
+      - ""
+      - "{warning}➥ Clique para alternar"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings_toggle offline_pay_notice"
+
+  language:
+    slot: 23
+    material: WRITABLE_BOOK
+    name: "{primary}&lIDIOMA"
+    lore:
+      - ""
+      - "{secondary}Informação:"
+      - " {letters_black}▎ {letters}Menus e mensagens {letters_black}» {highlight}%language%"
+      - " {letters_black}▎ {letters_black}Padrão do servidor segue o do ExyliaLib."
+      - ""
+      - "{warning}➥ Clique para mudar"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings_toggle language"
+
+  debug:
+    slot: 24
+    material: "%debug_material%"
+    name: "{primary}&lDEPURAÇÃO"
+    lore:
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Atual {letters_black}» %debug_status%"
+      - " {letters_black}▎ {letters_black}Explica no console o que o"
+      - " {letters_black}▎ {letters_black}plugin está fazendo."
+      - ""
+      - "{warning}➥ Clique para alternar"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings_toggle debug"
 
   back:
     slot: 31

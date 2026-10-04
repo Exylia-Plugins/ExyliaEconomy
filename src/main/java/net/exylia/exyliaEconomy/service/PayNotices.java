@@ -3,9 +3,9 @@ package net.exylia.exyliaEconomy.service;
 import net.exylia.exyliaEconomy.ExyliaEconomy;
 import net.exylia.exyliaEconomy.common.Messages;
 import net.exylia.exyliaEconomy.common.Values;
-import net.exylia.exyliaEconomy.config.EconomyConfig;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.database.PayNoticeRow;
+import net.exylia.exyliaEconomy.manager.StoredEconomy;
 import net.exylia.lib.database.Databases;
 import net.exylia.lib.database.Repository;
 import net.exylia.lib.economy.CurrencyInfo;
@@ -55,7 +55,7 @@ public final class PayNotices implements Listener {
 
     /** Remembers a payment to somebody who is not on this server. */
     public void record(UUID receiver, Player payer, String currency, BigDecimal amount) {
-        if (!EconomyConfig.get().offlinePayNotice()) return;
+        if (!StoredEconomy.settings().offlinePayNotice()) return;
         rows.insert(new PayNoticeRow(receiver, currency, amount, payer.getUniqueId(), payer.getName()))
                 .exceptionally(failure -> {
                     ExyliaEconomy.getInstance().getDebug().error("Economy: could not keep the payment notice for "
@@ -66,7 +66,7 @@ public final class PayNotices implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
-        if (!EconomyConfig.get().offlinePayNotice()) return;
+        if (!StoredEconomy.settings().offlinePayNotice()) return;
         Player player = event.getPlayer();
         take(player.getUniqueId()).thenAccept(taken -> {
             List<Summary> summaries = summarise(taken);

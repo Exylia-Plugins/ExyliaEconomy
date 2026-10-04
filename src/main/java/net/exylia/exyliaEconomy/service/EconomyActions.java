@@ -2,7 +2,7 @@ package net.exylia.exyliaEconomy.service;
 
 import net.exylia.exyliaEconomy.api.event.EconomyExchangeEvent;
 import net.exylia.exyliaEconomy.api.event.EconomyPayEvent;
-import net.exylia.exyliaEconomy.config.EconomyConfig;
+import net.exylia.exyliaEconomy.database.CurrencyRow;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.ExyliaEconomy;
 import net.exylia.exyliaEconomy.common.Messages;
@@ -278,7 +278,7 @@ public final class EconomyActions {
                           ExyliaPlayer found, BigDecimal amount, boolean confirmed) {
         BigDecimal tax = rules == null ? BigDecimal.ZERO : rules.tax(amount);
         Economy.CurrencyView view = Economy.of(currency);
-        BigDecimal above = EconomyConfig.get().confirmAbove(currency);
+        BigDecimal above = StoredEconomy.row(currency).map(CurrencyRow::confirmAbove).orElse(null);
         if (above != null && amount.compareTo(above) > 0) {
             String who = sender.getUniqueId().toString();
             String what = "pay|" + found.id() + "|" + currency + "|" + Confirmations.amount(amount);

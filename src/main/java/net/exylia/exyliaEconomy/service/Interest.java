@@ -4,11 +4,12 @@ import net.exylia.exyliaEconomy.ExyliaEconomy;
 import net.exylia.exyliaEconomy.Permissions;
 import net.exylia.exyliaEconomy.common.Messages;
 import net.exylia.exyliaEconomy.common.Values;
-import net.exylia.exyliaEconomy.config.EconomyConfig;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.database.BalanceRow;
+import net.exylia.exyliaEconomy.database.CurrencyRow;
 import net.exylia.exyliaEconomy.database.LedgerRow;
 import net.exylia.exyliaEconomy.manager.Claims;
+import net.exylia.exyliaEconomy.manager.CurrencyStore;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
 import net.exylia.lib.database.Databases;
 import net.exylia.lib.economy.CurrencyInfo;
@@ -32,13 +33,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Periodic interest on stored currencies, as {@code config.yml} sets it per currency.
+ * Periodic interest on stored currencies, as each one's row sets it in {@code /economyadmin}.
  *
  * <p>Time is cut into slots of the currency's interval since the epoch; a payout happens once the
  * clock enters a new slot, never on the slot a server starts in. Each payout is claimed per player
  * and slot ({@code interest|<key>|<slot>|<player>}), so a networked currency is paid once however
  * many servers see the player, and a restart never pays a slot again. Each server pays only the
- * players on it; with {@code online-only: false} every server also sweeps the other balance rows,
+ * players on it; with offline players paid too, every server also sweeps the other balance rows,
  * each claimed the same way and queued for whoever holds it.
  */
 public final class Interest {
@@ -93,23 +94,23 @@ public final class Interest {
 
     private void check() {
         long now = System.currentTimeMillis();
-        for (Map.Entry<String, EconomyConfig.Interest> entry : EconomyConfig.get().interestOrEmpty().entrySet()) {
-            String currency = EconomyActions.currency(entry.getKey()).orElse(null);
-            String key = currency == null ? null : StoredEconomy.storageKey(currency);
-            EconomyConfig.Interest settings = entry.getValue();
-            long interval = settings.interval() == null ? 0L : settings.interval().toMillis();
-            if (key == null || interval < MIN_INTERVAL_MILLIS || settings.rate() <= 0) continue;
+        CurrencyStore store = StoredEconomy.store();
+        for (CurrencyRow settings : store == null ? List.<CurrencyRow>of() : store.all()) {
+            String currency = settings.id();
+            String key = settings.kind() == CurrencyRow.Kind.STORED ? StoredEconomy.storageKey(currency) : null;
+            long interval = settings.interestEvery().toMillis();
+            if (key == null || interval < MIN_INTERVAL_MILLIS || settings.interestRate() <= 0) continue;
             long slot = slot(now, interval);
             Long last = slots.putIfAbsent(key, slot);
             if (last == null || slot <= last) continue;
             slots.put(key, slot);
             payOnline(currency, key, slot, settings, Duration.ofMillis(interval - now % interval));
-            if (!settings.onlineOnly()) payOffline(currency, key, slot, settings, 0);
+            if (settings.interestOffline()) payOffline(currency, key, slot, settings, 0);
         }
         if (now / LedgerRow.DAY_MILLIS != (now - CHECK_TICKS * 50L) / LedgerRow.DAY_MILLIS) purge();
     }
 
-    private void payOnline(String currency, String key, long slot, EconomyConfig.Interest settings, Duration next) {
+    private void payOnline(String currency, String key, long slot, CurrencyRow settings, Duration next) {
         for (Player player : List.copyOf(Bukkit.getOnlinePlayers())) {
             UUID id = player.getUniqueId();
             if (!player.hasPermission(Permissions.INTEREST) || !Economy.canUse(player, currency)
@@ -126,9 +127,9 @@ public final class Interest {
 
     /** Claims and pays one player's slot; completes with what was paid, zero when nothing was. */
     private CompletableFuture<BigDecimal> pay(String currency, String key, long slot, UUID player, BigDecimal balance,
-                                              EconomyConfig.Interest settings) {
+                                              CurrencyRow settings) {
         CurrencyInfo info = Economy.info(currency);
-        BigDecimal amount = earned(balance, settings.rate(), Economy.parseAmount(settings.max()), info.scaleDigits());
+        BigDecimal amount = earned(balance, settings.interestRate(), settings.interestMax(), info.scaleDigits());
         if (amount.signum() <= 0) return CompletableFuture.completedFuture(BigDecimal.ZERO);
         return claims.claim(claimId(key, slot, player), KEEP_DAYS).thenApply(won -> {
             if (!won) return BigDecimal.ZERO;
@@ -151,7 +152,7 @@ public final class Interest {
      * sweeper with a lease if a currency holds far more. Permissions cannot be read for somebody
      * offline, so every balance earns.
      */
-    private void payOffline(String currency, String key, long slot, EconomyConfig.Interest settings, int from) {
+    private void payOffline(String currency, String key, long slot, CurrencyRow settings, int from) {
         Databases.of(plugin).repository(BalanceRow.class).where("currency", key).orderBy("id")
                 .skip(from).limit(OFFLINE_PAGE).find().thenAccept(rows -> {
                     CompletableFuture<?> step = CompletableFuture.completedFuture(null);

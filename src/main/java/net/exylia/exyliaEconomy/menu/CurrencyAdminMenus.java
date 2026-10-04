@@ -11,6 +11,7 @@ import net.exylia.exyliaEconomy.manager.CurrencyStore;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
 import net.exylia.lib.economy.CurrencyInfo;
 import net.exylia.lib.ui.UiEntry;
+import net.exylia.lib.util.TimeFormats;
 import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
@@ -88,13 +89,21 @@ public final class CurrencyAdminMenus {
                 .put("currency_tax", plain(BigDecimal.valueOf(row.transferTaxPercent())) + "%")
                 .put("currency_rates", row.rates() == null || row.rates().isBlank()
                         ? admin().none() : row.rates().replace(";", ", "))
-                .put("currency_sort_order", String.valueOf(row.sortOrder()));
+                .put("currency_sort_order", String.valueOf(row.sortOrder()))
+                .put("currency_pay_confirm", row.confirmAbove() == null ? admin().none() : plain(row.confirmAbove()))
+                .put("currency_interest_rate", row.interestRate() <= 0 ? admin().off()
+                        : plain(BigDecimal.valueOf(row.interestRate())) + "%")
+                .put("currency_interest_interval", TimeFormats.render(row.interestEvery(), TimeFormats.Style.COMPACT))
+                .put("currency_interest_max", row.interestMax() == null || row.interestMax().signum() <= 0
+                        ? admin().none() : plain(row.interestMax()));
         toggle(context, "transferable", row.transferable());
         toggle(context, "exchangeable", row.exchangeable());
         toggle(context, "leaderboard", row.leaderboard());
         toggle(context, "networked", row.networked());
         toggle(context, "commands", row.commands());
         toggle(context, "vault", vault);
+        toggle(context, "banknotes", row.banknotes());
+        toggle(context, "interest_offline", row.interestOffline());
         if (inPlace && Screens.update(player, EDIT, context)) return;
         menus().open(player, EDIT, context.map());
     }
@@ -114,11 +123,15 @@ public final class CurrencyAdminMenus {
         Values context = Values.of()
                 .put("vault_provide", settings.vaultProvide().isBlank() ? admin().none() : settings.vaultProvide())
                 .put("ledger_days", settings.keptLedgerDays() <= 0 ? admin().ledgerForever()
-                        : Values.of("days", settings.keptLedgerDays()).apply(admin().ledgerDays()));
+                        : Values.of("days", settings.keptLedgerDays()).apply(admin().ledgerDays()))
+                .put("language", settings.languageOrDefault().equals(EconomySettingsRow.LANGUAGES.getFirst())
+                        ? admin().languageDefault() : settings.languageOrDefault().toUpperCase(java.util.Locale.ROOT));
         toggle(context, "experience_levels", settings.experienceLevels());
         toggle(context, "experience_points", settings.experiencePoints());
         toggle(context, "vault_force", settings.vaultForce());
         toggle(context, "ledger", settings.ledger());
+        toggle(context, "offline_pay_notice", settings.offlinePayNotice());
+        toggle(context, "debug", settings.debug());
         if (inPlace && Screens.update(player, SETTINGS, context)) return;
         menus().open(player, SETTINGS, context.map());
     }

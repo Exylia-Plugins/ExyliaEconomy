@@ -3,7 +3,7 @@ package net.exylia.exyliaEconomy.service;
 import net.exylia.exyliaEconomy.ExyliaEconomy;
 import net.exylia.exyliaEconomy.common.Messages;
 import net.exylia.exyliaEconomy.common.Values;
-import net.exylia.exyliaEconomy.config.EconomyConfig;
+import net.exylia.exyliaEconomy.database.CurrencyRow;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.database.BanknoteRow;
 import net.exylia.exyliaEconomy.manager.Banknotes;
@@ -80,7 +80,7 @@ public final class BanknoteService implements Listener {
         String currency = EconomyActions.resolved(player, currencyId);
         if (currency == null) return;
         CurrencyInfo info = Economy.info(currency);
-        if (Economy.kind(currency) != CurrencyKind.STORED || !EconomyConfig.get().banknotes(currency)) {
+        if (Economy.kind(currency) != CurrencyKind.STORED || !StoredEconomy.row(currency).map(CurrencyRow::banknotes).orElse(false)) {
             Messages.send(player, text().noteDisabled(), Values.of().put("currency", info.namePlural()));
             return;
         }

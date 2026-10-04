@@ -6,7 +6,10 @@ import net.exylia.lib.database.Id;
 import net.exylia.lib.database.Table;
 import net.exylia.lib.economy.CurrencyInfo;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,6 +24,14 @@ import java.util.function.Consumer;
  * ignored: an overlay has no balance ceiling, a stored currency no item. The
  * id is the key balances are stored under, so it is never changed once the
  * row exists.
+ *
+ * <p>Payments and interest: {@code payConfirmAbove} is the amount above which
+ * {@code /pay} asks first ({@code 0} never); {@code banknotes} lets
+ * {@code /withdraw} print it; {@code interestRate} is the percent paid every
+ * {@code interestInterval} seconds ({@code 0} pays nothing), never more than
+ * {@code interestMax} ({@code 0} no cap), and {@code interestOffline} also pays
+ * the players not online. A column added after a row was written reads as
+ * zero or false, which is every one of these turned off.
  */
 @Table("exylia_currencies")
 public record CurrencyRow(
@@ -47,6 +58,12 @@ public record CurrencyRow(
         @Column boolean leaderboard,
         @Column boolean networked,
         @Column boolean commands,
+        @Column BigDecimal payConfirmAbove,
+        @Column boolean banknotes,
+        @Column double interestRate,
+        @Column long interestInterval,
+        @Column BigDecimal interestMax,
+        @Column boolean interestOffline,
         @Column("created_at") long createdAt,
         @Column("updated_at") long updatedAt) {
 
@@ -60,13 +77,17 @@ public record CurrencyRow(
         DISPLAY
     }
 
+    /** Seconds between interest payouts until an admin picks otherwise. */
+    public static final long DEFAULT_INTEREST_INTERVAL = 3600;
+
     /** A new currency of a kind, with the settings a fresh one starts from. */
     public static CurrencyRow blank(String id, Kind kind, int sortOrder) {
         long now = System.currentTimeMillis();
         return new CurrencyRow(id, kind, sortOrder, "", "", "", kind == Kind.ITEM ? "" : "GOLD_INGOT",
                 kind == Kind.DISPLAY ? -1 : 0, "%amount% %name%", "",
                 kind == Kind.DISPLAY ? List.of() : List.of(id), "", BigDecimal.ZERO, BigDecimal.valueOf(-1), "",
-                true, BigDecimal.ONE, 0, false, "", true, true, true, now, now);
+                true, BigDecimal.ONE, 0, false, "", true, true, true,
+                BigDecimal.ZERO, false, 0, DEFAULT_INTEREST_INTERVAL, BigDecimal.ZERO, false, now, now);
     }
 
     /** A stored currency read from the old file. */
@@ -77,7 +98,8 @@ public record CurrencyRow(
                 info.icon(), info.decimals(), info.format(), info.compactFormat(), stored.aliases(), "",
                 stored.start(), stored.max(), stored.permission(), stored.transferable(), stored.minimumTransfer(),
                 stored.transferTaxPercent(), stored.exchangeable(), encodeRates(stored.rates()),
-                stored.leaderboard(), stored.networked(), stored.commands(), now, now);
+                stored.leaderboard(), stored.networked(), stored.commands(),
+                BigDecimal.ZERO, false, 0, DEFAULT_INTEREST_INTERVAL, BigDecimal.ZERO, false, now, now);
     }
 
     /** An item currency read from the old file. */
@@ -103,6 +125,16 @@ public record CurrencyRow(
             row.format = info.format();
             row.compactFormat = info.compactFormat();
         });
+    }
+
+    /** The amount above which a payment asks first, or {@code null} when it never does. */
+    public @Nullable BigDecimal confirmAbove() {
+        return payConfirmAbove == null || payConfirmAbove.signum() <= 0 ? null : payConfirmAbove;
+    }
+
+    /** How often interest is paid; an unset interval reads as the default hour. */
+    public Duration interestEvery() {
+        return Duration.ofSeconds(interestInterval > 0 ? interestInterval : DEFAULT_INTEREST_INTERVAL);
     }
 
     /** How the currency looks. */
@@ -169,9 +201,10 @@ public record CurrencyRow(
         public String name, plural, symbol, icon, format, compactFormat, item, permission, rates;
         public int sortOrder, decimals;
         public List<String> aliases;
-        public BigDecimal start, max, minimumTransfer;
-        public double transferTaxPercent;
-        public boolean transferable, exchangeable, leaderboard, networked, commands;
+        public BigDecimal start, max, minimumTransfer, payConfirmAbove, interestMax;
+        public double transferTaxPercent, interestRate;
+        public long interestInterval;
+        public boolean transferable, exchangeable, leaderboard, networked, commands, banknotes, interestOffline;
         private final CurrencyRow source;
 
         private Draft(CurrencyRow row) {
@@ -183,12 +216,16 @@ public record CurrencyRow(
             minimumTransfer = row.minimumTransfer; transferTaxPercent = row.transferTaxPercent;
             transferable = row.transferable; exchangeable = row.exchangeable;
             leaderboard = row.leaderboard; networked = row.networked; commands = row.commands;
+            payConfirmAbove = row.payConfirmAbove; banknotes = row.banknotes; interestRate = row.interestRate;
+            interestInterval = row.interestInterval; interestMax = row.interestMax;
+            interestOffline = row.interestOffline;
         }
 
         private CurrencyRow build() {
             return new CurrencyRow(source.id, source.kind, sortOrder, name, plural, symbol, icon, decimals, format,
                     compactFormat, aliases, item, start, max, permission, transferable, minimumTransfer,
-                    transferTaxPercent, exchangeable, rates, leaderboard, networked, commands, source.createdAt,
+                    transferTaxPercent, exchangeable, rates, leaderboard, networked, commands, payConfirmAbove,
+                    banknotes, interestRate, interestInterval, interestMax, interestOffline, source.createdAt,
                     System.currentTimeMillis());
         }
     }

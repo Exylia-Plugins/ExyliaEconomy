@@ -79,19 +79,19 @@ Leave the currency out for the default one. The leaderboard, rank and total are 
 
 ## Configuration
 
-`config.yml` holds what each server decides alone; the currencies live in the database and are edited with `/economyadmin`.
+Everything is edited in game with `/economyadmin` and stored in the database, so every server of a network reads the same settings and an edit on one applies on all of them at once. The plugin writes no `config.yml`; the menus and messages stay files under `lang/`.
 
-| Key | Default | |
+| Where | Setting | |
 | --- | --- | --- |
-| `language` | `default` | `en`, `es`, `pt`, or `default` to follow ExyliaLib |
-| `debug` | `false` | Explain in the console what the plugin does |
-| `pay-confirm-above` | `default: '0'` | Per currency id, the amount above which `/pay` asks for a confirmation. `default` covers every currency not listed; `0` never asks. Amounts read like the command's: `10000`, `10k`, `1.5m` |
-| `offline-pay-notice` | `true` | On join, tell a player what they were paid while they were offline (a player online on another server of the network gets no notice): one line per currency, with the payer's name or how many paid |
-| `banknotes` | `[default]` | Currencies `/withdraw` may print, by id; `default` is the default currency. Stored currencies only; empty turns banknotes off |
-| `interest.<currency>.rate` | `1.0` | Percent of the balance paid per interval. Nothing is paid until a currency is listed under `interest` |
-| `interest.<currency>.interval` | `1h` | How often; at least `1m` |
-| `interest.<currency>.max` | `'0'` | The most one payout gives; `0` for no cap |
-| `interest.<currency>.online-only` | `true` | `false` also pays every balance of players not online here, queued for whoever holds them; every server sweeps, each balance claimed once per slot, so a crash mid-sweep leaves nobody unpaid. Their permission cannot be checked |
+| Settings | Language | `default` follows ExyliaLib, or `en`, `es`, `pt`; applies at once |
+| Settings | Debug | Explain in the console what the plugin does |
+| Settings | Offline pay notice | On join, tell a player what they were paid while they were offline (a player online on another server of the network gets no notice): one line per currency, with the payer's name or how many paid |
+| Currency | Pay confirmation | The amount above which `/pay` asks for a confirmation; `0` never asks |
+| Currency | Banknotes | Whether `/withdraw` may print it. Stored currencies only |
+| Currency | Interest | Percent of the balance paid every interval (at least `1m`), capped per payout; `0` pays nothing. Online players need `exyliaeconomy.interest` |
+| Currency | Interest while offline | Also pays every balance of players not online here, queued for whoever holds them; every server sweeps, each balance claimed once per slot, so a crash mid-sweep leaves nobody unpaid. Their permission cannot be checked |
+
+A server upgrading from a version that had a `config.yml` has it imported into the database on the first start, where nothing is set yet, and renamed to `config.yml.migrated`. A `config.yml` holding only `language` is imported the same way. The language is handed to ExyliaLib from the database, so no `config.yml` is ever written again.
 
 The banknote's look is the `banknote` section of `messages.yml` (`material`, `name`, `lore`), with `%amount%`, `%currency%`, `%issuer%` and `%date%`.
 

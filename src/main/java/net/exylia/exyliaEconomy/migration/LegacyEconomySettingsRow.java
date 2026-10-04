@@ -24,6 +24,6 @@ public record LegacyEconomySettingsRow(
     /** The row under its new table, column for column. */
     public EconomySettingsRow toRow() {
         return new EconomySettingsRow(id, experienceLevels, experiencePoints, vaultProvide, vaultForce, ledger,
-                updatedAt, ledgerDays, imports);
+                updatedAt, ledgerDays, imports, null, false, true);
     }
 }

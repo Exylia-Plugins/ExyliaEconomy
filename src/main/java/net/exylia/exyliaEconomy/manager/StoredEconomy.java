@@ -4,6 +4,7 @@ import net.exylia.exyliaEconomy.ExyliaEconomy;
 import net.exylia.exyliaEconomy.Permissions;
 import net.exylia.exyliaEconomy.database.BalanceRow;
 import net.exylia.exyliaEconomy.database.CurrencyRow;
+import net.exylia.exyliaEconomy.database.EconomySettingsRow;
 import net.exylia.exyliaEconomy.database.ImportedRow;
 import net.exylia.exyliaEconomy.database.LedgerRow;
 import net.exylia.exyliaEconomy.common.Values;
@@ -345,6 +346,18 @@ public final class StoredEconomy implements Listener {
     public static @Nullable CurrencyStore store() {
         StoredEconomy economy = instance;
         return economy == null ? null : economy.store;
+    }
+
+    /** The row an admin set a currency up with, empty while the economy is not running. */
+    public static @NotNull Optional<CurrencyRow> row(@NotNull String id) {
+        CurrencyStore store = store();
+        return store == null ? Optional.empty() : store.get(id);
+    }
+
+    /** The economy-wide settings, the defaults while the economy is not running. */
+    public static @NotNull EconomySettingsRow settings() {
+        CurrencyStore store = store();
+        return store == null ? CurrencyStore.defaultSettings(List.of()) : store.settings();
     }
 
     /**

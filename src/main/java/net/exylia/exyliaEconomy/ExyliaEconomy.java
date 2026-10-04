@@ -14,8 +14,8 @@ import net.exylia.exyliaEconomy.command.WithdrawCommand;
 import net.exylia.exyliaEconomy.command.DepositCommand;
 import net.exylia.exyliaEconomy.common.Messages;
 import net.exylia.exyliaEconomy.common.Values;
-import net.exylia.exyliaEconomy.config.EconomyConfig;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
+import net.exylia.exyliaEconomy.database.EconomySettingsRow;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
 import net.exylia.exyliaEconomy.menu.EconomyMenus;
 import net.exylia.exyliaEconomy.migration.SurvivalCoreImport;
@@ -27,6 +27,7 @@ import net.exylia.exyliaEconomy.service.PayNotices;
 import net.exylia.lib.action.Actions;
 import net.exylia.lib.action.PluginActions;
 import net.exylia.lib.config.Configs;
+import net.exylia.lib.config.Languages;
 import net.exylia.lib.debug.Debug;
 import net.exylia.lib.input.Inputs;
 import net.exylia.lib.input.PluginInputs;
@@ -42,6 +43,7 @@ import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 import net.exylia.exyliaEconomy.command.PlayerArguments;
 import revxrsal.commands.bukkit.BukkitLamp;
+
 
 /**
  * ExyliaEconomy: the server's own currencies, kept in the database and shared across a network,
@@ -118,7 +120,10 @@ public final class ExyliaEconomy {
 
         // Here, during enable, and not later: the Vault bridge registers as it is built, and a
         // plugin that looks for Vault in its own enable must find it.
-        StoredEconomy.init(plugin, () -> AliasCommands.install(plugin, new EconomyActions()));
+        StoredEconomy.init(plugin, () -> {
+            AliasCommands.install(plugin, new EconomyActions());
+            applySettings();
+        });
         EconomyPlaceholder.register(plugin);
         payNotices = new PayNotices(plugin);
         getServer().getPluginManager().registerEvents(payNotices, plugin);
@@ -157,13 +162,14 @@ public final class ExyliaEconomy {
     }
 
     /**
-     * Reads the plugin's two files.
+     * Reads the messages.
      *
      * <p>{@link Prefixes#set} is what makes every {@code %prefix%} in {@code messages.yml} arrive
      * as the prefix, and it is repeated after each reload so an edited prefix applies at once.
      */
     private void loadConfigs() {
-        EconomyConfig.install(Configs.define(plugin, "config", EconomyConfig.class).load());
+        // Nothing chosen yet: the database answers after the first tick, and applySettings follows.
+        Languages.use(plugin, null);
         EconomyMessages.install(Configs.define(plugin, "messages", EconomyMessages.class).translated().load());
         applyConfigs();
     }
@@ -171,7 +177,27 @@ public final class ExyliaEconomy {
     /** What has to follow every read of the files. */
     private void applyConfigs() {
         Prefixes.set(plugin, EconomyMessages.get().prefix());
-        debug.enabled(EconomyConfig.get().debug());
+    }
+
+    /**
+     * Applies the economy-wide settings after every read of them: this server's
+     * edit, another server's, or a reload.
+     *
+     * <p>The files first load before the database answers, in ExyliaLib's
+     * language; once the settings arrive, a different language reads the
+     * messages and menus again in it.
+     */
+    private void applySettings() {
+        EconomySettingsRow settings = StoredEconomy.settings();
+        debug.enabled(settings.debug());
+        String before = Languages.code(plugin);
+        Languages.use(plugin, settings.languageOrDefault());
+        String language = Languages.code(plugin);
+        if (language.equals(before)) return;
+        Configs.reloadAll(plugin);
+        applyConfigs();
+        if (menus != null) menus.reload();
+        debug.log("Economy: menus and messages now in '" + language + "'.");
     }
 
     /**

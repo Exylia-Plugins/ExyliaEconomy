@@ -91,7 +91,7 @@ items:
       - "exyliaeconomy:currency_admin_settings_toggle vault_force"
 
   ledger-days:
-    slot: 22
+    slot: 21
     material: CLOCK
     name: "{primary}&lLEDGER RETENTION"
     lore:
@@ -115,6 +115,53 @@ items:
       - " {letters_black}▎ {letters}Published {letters_black}» {highlight}%vault_provide%"
       - " {letters_black}▎ {letters_black}Choose it from a stored currency's screen."
       - ""
+
+  offline-pay-notice:
+    slot: 20
+    material: "%offline_pay_notice_material%"
+    name: "{primary}&lOFFLINE PAY NOTICE"
+    lore:
+      - ""
+      - "{secondary}Status:"
+      - " {letters_black}▎ {letters}Current {letters_black}» %offline_pay_notice_status%"
+      - " {letters_black}▎ {letters_black}Tells players on join what they were"
+      - " {letters_black}▎ {letters_black}paid while they were offline."
+      - ""
+      - "{warning}➥ Click to toggle"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings_toggle offline_pay_notice"
+
+  language:
+    slot: 23
+    material: WRITABLE_BOOK
+    name: "{primary}&lLANGUAGE"
+    lore:
+      - ""
+      - "{secondary}Information:"
+      - " {letters_black}▎ {letters}Menus and messages {letters_black}» {highlight}%language%"
+      - " {letters_black}▎ {letters_black}Default follows ExyliaLib's language."
+      - ""
+      - "{warning}➥ Click to change"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings_toggle language"
+
+  debug:
+    slot: 24
+    material: "%debug_material%"
+    name: "{primary}&lDEBUG"
+    lore:
+      - ""
+      - "{secondary}Status:"
+      - " {letters_black}▎ {letters}Current {letters_black}» %debug_status%"
+      - " {letters_black}▎ {letters_black}Explains in the console what the"
+      - " {letters_black}▎ {letters_black}plugin is doing."
+      - ""
+      - "{warning}➥ Click to toggle"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings_toggle debug"
 
   back:
     slot: 31

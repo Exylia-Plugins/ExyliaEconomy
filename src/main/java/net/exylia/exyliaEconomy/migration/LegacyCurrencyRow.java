@@ -44,6 +44,7 @@ public record LegacyCurrencyRow(
     public CurrencyRow toRow() {
         return new CurrencyRow(id, kind, sortOrder, name, plural, symbol, icon, decimals, format, compactFormat,
                 aliases, item, start, max, permission, transferable, minimumTransfer, transferTaxPercent,
-                exchangeable, rates, leaderboard, networked, commands, createdAt, updatedAt);
+                exchangeable, rates, leaderboard, networked, commands, null, false, 0,
+                CurrencyRow.DEFAULT_INTEREST_INTERVAL, null, false, createdAt, updatedAt);
     }
 }

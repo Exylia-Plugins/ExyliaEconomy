@@ -5,7 +5,7 @@
 # its look.
 
 title: "{primary}&lMONEDA {letters_black}» {highlight}%currency_id%"
-size: 36
+size: 45
 type: SIMPLE
 refresh:
   mode: ON_CLICK
@@ -27,7 +27,7 @@ filler:
     frame:
       material: GRAY_STAINED_GLASS_PANE
       hide_tooltip: true
-      slots: "0-8,27-35"
+      slots: "0-8,36-44"
 
 items:
   summary:
@@ -265,8 +265,74 @@ items:
     actions:
       - "exyliaeconomy:currency_admin_toggle %currency_id% vault"
 
+  pay-confirm:
+    slot: 29
+    material: PAPER
+    name: "{primary}&lCONFIRMACIÓN DE PAGO"
+    lore:
+      - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Pregunta por encima de {letters_black}» {info}%currency_pay_confirm%"
+      - " {letters_black}▎ {letters_black}Un /pay por encima pide confirmación."
+      - ""
+      - "{warning}➥ Clic para editar"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_pay_confirm %currency_id%"
+
+  banknotes:
+    slot: 30
+    material: "%banknotes_material%"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lBILLETES"
+    lore:
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Actual {letters_black}» %banknotes_status%"
+      - " {letters_black}▎ {letters_black}Si /withdraw puede emitirla como billete."
+      - ""
+      - "{warning}➥ Clic para alternar"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_toggle %currency_id% banknotes"
+
+  interest:
+    slot: 32
+    material: EXPERIENCE_BOTTLE
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lINTERÉS"
+    lore:
+      - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Tasa {letters_black}» {info}%currency_interest_rate%"
+      - " {letters_black}▎ {letters}Cada {letters_black}» {info}%currency_interest_interval% ⌚"
+      - " {letters_black}▎ {letters}Máximo por pago {letters_black}» {info}%currency_interest_max%"
+      - " {letters_black}▎ {letters_black}Se paga a quien tenga el permiso de interés."
+      - ""
+      - "{warning}➥ Clic para editar"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_interest %currency_id%"
+
+  interest-offline:
+    slot: 33
+    material: "%interest_offline_material%"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lINTERÉS SIN CONEXIÓN"
+    lore:
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Actual {letters_black}» %interest_offline_status%"
+      - " {letters_black}▎ {letters_black}También paga a quien no está conectado,"
+      - " {letters_black}▎ {letters_black}sin comprobar su permiso."
+      - ""
+      - "{warning}➥ Clic para alternar"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_toggle %currency_id% interest_offline"
+
   back:
-    slot: 31
+    slot: 40
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"
     material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0='
     name: '{error}&lVOLVER'
@@ -280,7 +346,7 @@ items:
       - "exyliaeconomy:currency_admin_open_list"
 
   delete:
-    slot: 35
+    slot: 44
     material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUwZmQxMDE5OWU4ZTRmY2RhYmNhZTRmODVjODU5MTgxMjdhN2M1NTUzYWQyMzVmMDFjNTZkMThiYjk0NzBkMyJ9fX0='
     name: "{error}&lELIMINAR MONEDA"
     lore:

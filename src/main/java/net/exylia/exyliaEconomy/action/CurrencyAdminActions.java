@@ -13,6 +13,7 @@ import net.exylia.exyliaEconomy.Permissions;
 import net.exylia.lib.action.ActionArguments;
 import net.exylia.lib.action.ActionResult;
 import net.exylia.lib.action.PluginActions;
+import net.exylia.lib.input.FormField;
 import net.exylia.lib.input.FormKey;
 import net.exylia.lib.item.Source;
 import net.exylia.lib.util.editor.EditorForm;
@@ -22,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
@@ -60,6 +62,10 @@ public final class CurrencyAdminActions {
     private static final FormKey<String> RATES = FormKey.text("rates");
     private static final FormKey<String> ALIASES = FormKey.text("aliases");
     private static final FormKey<Long> SORT = FormKey.integer("sort_order");
+    private static final FormKey<BigDecimal> CONFIRM_ABOVE = FormKey.decimal("pay_confirm_above");
+    private static final FormKey<BigDecimal> INTEREST_RATE = FormKey.decimal("interest_rate");
+    private static final FormKey<Duration> INTEREST_INTERVAL = FormKey.duration("interest_interval");
+    private static final FormKey<BigDecimal> INTEREST_MAX = FormKey.decimal("interest_max");
 
     private final ExyliaEconomy plugin;
     private final PluginActions actions;
@@ -80,6 +86,8 @@ public final class CurrencyAdminActions {
         withRow("currency_admin_rates", this::rates);
         withRow("currency_admin_aliases", this::aliases);
         withRow("currency_admin_sort", this::sortOrder);
+        withRow("currency_admin_pay_confirm", this::payConfirm);
+        withRow("currency_admin_interest", this::interest);
         withRow("currency_admin_icon", (player, store, row) -> {
             player.closeInventory();
             plugin.getInputs().answered(player, plugin.getInputs().icon(player, admin().iconPrompt()).open(),
@@ -249,6 +257,35 @@ public final class CurrencyAdminActions {
                 values -> row.edit(draft -> draft.sortOrder = (int) values.getLong(SORT)));
     }
 
+    private void payConfirm(Player player, CurrencyStore store, CurrencyRow row) {
+        form(player, store, row, EditorForm.of(plugin.getPlugin(), player,
+                                Values.of("id", row.id()).apply(admin().payConfirmTitle()))
+                        .decimal(CONFIRM_ABOVE, admin().payConfirmAbove(),
+                                row.payConfirmAbove() == null ? BigDecimal.ZERO : row.payConfirmAbove())
+                        .hint(admin().payConfirmAboveHint()),
+                values -> row.edit(draft -> draft.payConfirmAbove = values.getDecimal(CONFIRM_ABOVE).max(BigDecimal.ZERO)));
+    }
+
+    private void interest(Player player, CurrencyStore store, CurrencyRow row) {
+        if (row.kind() != CurrencyRow.Kind.STORED) return;
+        form(player, store, row, EditorForm.of(plugin.getPlugin(), player,
+                                Values.of("id", row.id()).apply(admin().interestTitle()))
+                        .decimal(INTEREST_RATE, admin().interestRate(), BigDecimal.valueOf(row.interestRate()))
+                        .hint(admin().interestRateHint())
+                        .field(INTEREST_INTERVAL, FormField.duration(INTEREST_INTERVAL, admin().interestInterval())
+                                .defaultValue(row.interestEvery()))
+                        .hint(admin().interestIntervalHint())
+                        .decimal(INTEREST_MAX, admin().interestMax(),
+                                row.interestMax() == null ? BigDecimal.ZERO : row.interestMax())
+                        .hint(admin().interestMaxHint()),
+                values -> row.edit(draft -> {
+                    draft.interestRate = Math.max(0, Math.min(100, values.getDecimal(INTEREST_RATE).doubleValue()));
+                    // Interest checks every 30 seconds, so a minute is the shortest interval it keeps.
+                    draft.interestInterval = Math.max(60, values.getDuration(INTEREST_INTERVAL).toSeconds());
+                    draft.interestMax = values.getDecimal(INTEREST_MAX).max(BigDecimal.ZERO);
+                }));
+    }
+
     /**
      * Asks for the exact item an item currency is.
      *
@@ -308,6 +345,8 @@ public final class CurrencyAdminActions {
             case "exchangeable" -> current -> current.edit(draft -> draft.exchangeable = !draft.exchangeable);
             case "leaderboard" -> current -> current.edit(draft -> draft.leaderboard = !draft.leaderboard);
             case "commands" -> current -> current.edit(draft -> draft.commands = !draft.commands);
+            case "banknotes" -> current -> current.edit(draft -> draft.banknotes = !draft.banknotes);
+            case "interest_offline" -> current -> current.edit(draft -> draft.interestOffline = !draft.interestOffline);
             default -> null;
         };
         if (change == null) return;
@@ -346,19 +385,25 @@ public final class CurrencyAdminActions {
     /** {@code currency_admin_settings_toggle <setting>}: flips one of the economy-wide switches. */
     private void toggleSetting(Player player, ActionArguments args, CurrencyStore store) {
         EconomySettingsRow settings = store.settings();
-        EconomySettingsRow changed = switch (args.string(0, "").toLowerCase(Locale.ROOT)) {
+        String setting = args.string(0, "").toLowerCase(Locale.ROOT);
+        EconomySettingsRow changed = switch (setting) {
             case "experience_levels" -> settings.withExperienceLevels(!settings.experienceLevels());
             case "experience_points" -> settings.withExperiencePoints(!settings.experiencePoints());
             case "vault_force" -> settings.withVaultForce(!settings.vaultForce());
             case "ledger" -> settings.withLedger(!settings.ledger());
             case "ledger_days" -> settings.withNextLedgerDays();
+            case "offline_pay_notice" -> settings.withOfflinePayNotice(!settings.offlinePayNotice());
+            case "debug" -> settings.withDebug(!settings.debug());
+            case "language" -> settings.withNextLanguage();
             default -> null;
         };
         if (changed == null) return;
         CompletableFuture<Void> written = store.save(changed);
         StoredEconomy.changed(written);
         reported(player, written, "settings", null);
-        CurrencyAdminMenus.refreshSettings(player, store);
+        // A new language rebuilt every menu: the open one is redrawn from the new files.
+        if (setting.equals("language")) CurrencyAdminMenus.openSettings(player, store);
+        else CurrencyAdminMenus.refreshSettings(player, store);
     }
 
     // ---------------------------------------------------------------- plumbing

@@ -100,7 +100,7 @@ public final class EconomyAdminCommand {
     }
 
     /**
-     * Reads {@code config.yml}, the messages and the menus again, and the currencies from the
+     * Reads the messages and the menus again, and the currencies and settings from the
      * database: the same as another server announcing an admin's edit.
      */
     @Subcommand("reload")

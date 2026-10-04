@@ -187,3 +187,14 @@ admin:
   kind-stored: Almacenada
   kind-item: Ítem
   kind-display: Solo visual
+  pay-confirm-title: '{primary}&lCONFIRMACIÓN DE PAGO {letters_black}» {highlight}%id%'
+  pay-confirm-above: Pedir confirmación por encima de
+  pay-confirm-above-hint: Un /pay por encima de esta cantidad pide confirmación. 0 nunca pregunta.
+  interest-title: '{primary}&lINTERÉS {letters_black}» {highlight}%id%'
+  interest-rate: Tasa, porcentaje
+  interest-rate-hint: Del saldo, pagado en cada intervalo. 0 desactiva el interés.
+  interest-interval: Intervalo
+  interest-interval-hint: Cada cuánto se paga, como 30m, 1h o 1d. Mínimo 1m.
+  interest-max: Máximo por pago
+  interest-max-hint: El tope de un pago. 0 para sin tope.
+  language-default: Del servidor

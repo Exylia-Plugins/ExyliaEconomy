@@ -360,7 +360,18 @@ public record EconomyMessages(
             String ledgerDays,
             String kindStored,
             String kindItem,
-            String kindDisplay) {
+            String kindDisplay,
+            String payConfirmTitle,
+            String payConfirmAbove,
+            String payConfirmAboveHint,
+            String interestTitle,
+            String interestRate,
+            String interestRateHint,
+            String interestInterval,
+            String interestIntervalHint,
+            String interestMax,
+            String interestMaxHint,
+            String languageDefault) {
 
         public CurrencyAdmin() {
             this("{warning}Choose an icon",
@@ -411,7 +422,18 @@ public record EconomyMessages(
                     "%days% days ⌚",
                     "Stored",
                     "Item",
-                    "Display only");
+                    "Display only",
+                    "{primary}&lPAY CONFIRMATION {letters_black}» {highlight}%id%",
+                    "Ask to confirm above",
+                    "A /pay above this amount asks the payer first. 0 never asks.",
+                    "{primary}&lINTEREST {letters_black}» {highlight}%id%",
+                    "Rate, percent",
+                    "Of the balance, paid every interval. 0 turns interest off.",
+                    "Interval",
+                    "How often it is paid, such as 30m, 1h or 1d. At least 1m.",
+                    "Most per payout",
+                    "The cap on one payout. 0 for no cap.",
+                    "Server default");
         }
     }
 
