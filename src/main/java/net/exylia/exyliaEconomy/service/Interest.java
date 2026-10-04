@@ -25,10 +25,8 @@ import org.jetbrains.annotations.Nullable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,8 +38,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * clock enters a new slot, never on the slot a server starts in. Each payout is claimed per player
  * and slot ({@code interest|<key>|<slot>|<player>}), so a networked currency is paid once however
  * many servers see the player, and a restart never pays a slot again. Each server pays only the
- * players on it; with {@code online-only: false} one server per slot also pays every other
- * balance row, queued for whoever holds it.
+ * players on it; with {@code online-only: false} every server also sweeps the other balance rows,
+ * each claimed the same way and queued for whoever holds it.
  */
 public final class Interest {
 
@@ -106,7 +104,7 @@ public final class Interest {
             if (last == null || slot <= last) continue;
             slots.put(key, slot);
             payOnline(currency, key, slot, settings, Duration.ofMillis(interval - now % interval));
-            if (!settings.onlineOnly()) payOffline(currency, key, slot, settings);
+            if (!settings.onlineOnly()) payOffline(currency, key, slot, settings, 0);
         }
         if (now / LedgerRow.DAY_MILLIS != (now - CHECK_TICKS * 50L) / LedgerRow.DAY_MILLIS) purge();
     }
@@ -144,34 +142,31 @@ public final class Interest {
     }
 
     /**
-     * Every balance row of the currency, paid by the one server that claims the slot for it.
+     * Every balance row of the currency, swept by every server, each balance claimed on its own like
+     * an online one: a server that crashes mid-sweep leaves the rest to the others, and nobody is
+     * paid twice. Paged by the row's key, which no payment changes.
      *
-     * <p>ponytail: one claim and one queued change per balance per payout, and the base is the row
-     * as last written; fine for thousands of balances, batch it if a currency holds far more.
-     * Permissions cannot be read for somebody offline, so every balance earns.
+     * <p>ponytail: every server tries every row, one claim and one queued change per balance per
+     * payout, and the base is the row as last written; fine for thousands of balances, elect one
+     * sweeper with a lease if a currency holds far more. Permissions cannot be read for somebody
+     * offline, so every balance earns.
      */
-    private void payOffline(String currency, String key, long slot, EconomyConfig.Interest settings) {
-        claims.claim("interest|" + key + "|" + slot + "|all", KEEP_DAYS).thenAccept(won -> {
-            if (won) offlinePage(currency, key, slot, settings, 0, new HashSet<>());
-        }).exceptionally(failure -> {
-            ExyliaEconomy.getInstance().getDebug().error("Economy: could not pay the offline interest of " + currency + ".", failure);
-            return null;
-        });
-    }
-
-    private void offlinePage(String currency, String key, long slot, EconomyConfig.Interest settings, int from,
-                             Set<UUID> seen) {
-        Databases.of(plugin).repository(BalanceRow.class).where("currency", key).orderByDescending("amount")
+    private void payOffline(String currency, String key, long slot, EconomyConfig.Interest settings, int from) {
+        Databases.of(plugin).repository(BalanceRow.class).where("currency", key).orderBy("id")
                 .skip(from).limit(OFFLINE_PAGE).find().thenAccept(rows -> {
                     CompletableFuture<?> step = CompletableFuture.completedFuture(null);
                     for (BalanceRow row : rows) {
                         // Somebody on this server was already asked about by payOnline, permission and all.
-                        if (!seen.add(row.uuid()) || Bukkit.getPlayer(row.uuid()) != null) continue;
+                        if (Bukkit.getPlayer(row.uuid()) != null) continue;
                         step = step.thenCompose(ignored -> pay(currency, key, slot, row.uuid(), row.amount(), settings));
                     }
                     if (rows.size() == OFFLINE_PAGE) {
-                        step.thenRun(() -> offlinePage(currency, key, slot, settings, from + OFFLINE_PAGE, seen));
+                        step.thenRun(() -> payOffline(currency, key, slot, settings, from + OFFLINE_PAGE));
                     }
+                }).exceptionally(failure -> {
+                    ExyliaEconomy.getInstance().getDebug().error("Economy: could not read the balances of " + currency
+                            + " for interest; the other servers still pay them.", failure);
+                    return null;
                 });
     }
 

@@ -2,7 +2,9 @@ package net.exylia.exyliaEconomy.manager;
 
 import net.exylia.exyliaEconomy.database.BanknoteRow;
 import net.exylia.exyliaEconomy.testing.TestServer;
+import net.exylia.lib.database.FlakyRepository;
 import net.exylia.lib.database.MemoryDatabase;
+import net.exylia.lib.database.Repository;
 import net.exylia.lib.economy.EconomyResponse;
 import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,7 +36,7 @@ class BanknotesTest {
     }
 
     private static BanknoteRow note() {
-        return new BanknoteRow(UUID.randomUUID().toString(), "coins", new BigDecimal("250"),
+        return new BanknoteRow(UUID.randomUUID().toString(), "coins", "coins", new BigDecimal("250"),
                 UUID.randomUUID().toString(), "Issuer", System.currentTimeMillis(), 0L, "");
     }
 
@@ -101,5 +103,47 @@ class BanknotesTest {
         assertEquals(Banknotes.Outcome.PAID, new Banknotes(second).redeem(note.id(), player, BanknotesTest::paid)
                 .join().outcome());
         assertEquals(player.toString(), notes.find(note.id()).join().orElseThrow().redeemedBy());
+    }
+
+    /** Banknotes whose updateIf starts failing like a dropped connection once {@code failures} is raised. */
+    private static Banknotes flaky(AtomicInteger failures) throws Exception {
+        Banknotes notes = new Banknotes(first);
+        Repository<BanknoteRow> real = TestServer.get(notes, "rows");
+        TestServer.set(notes, "rows", FlakyRepository.failing(real, "updateIf", false, failures));
+        return notes;
+    }
+
+    @Test
+    @DisplayName("a refusal whose release hits an outage is retried until the note is redeemable again")
+    void releaseRetriedOnOutage() throws Exception {
+        AtomicInteger failures = new AtomicInteger();
+        Banknotes notes = flaky(failures);
+        BanknoteRow note = note();
+        notes.issue(note).join();
+
+        Banknotes.Redeem refused = notes.redeem(note.id(), UUID.randomUUID(), row -> {
+            failures.set(2);
+            return EconomyResponse.failure("refused");
+        }).join();
+        assertEquals(Banknotes.Outcome.REFUSED, refused.outcome());
+        assertEquals(0L, notes.find(note.id()).join().orElseThrow().redeemedAt());
+    }
+
+    @Test
+    @DisplayName("a release that never lands is reported stuck, and the note stays claimed rather than paid")
+    void releaseStuck() throws Exception {
+        AtomicInteger failures = new AtomicInteger();
+        Banknotes notes = flaky(failures);
+        BanknoteRow note = note();
+        notes.issue(note).join();
+
+        Banknotes.Redeem stuck = notes.redeem(note.id(), UUID.randomUUID(), row -> {
+            failures.set(1_000);
+            return EconomyResponse.failure("refused");
+        }).join();
+        failures.set(0);
+        assertEquals(Banknotes.Outcome.STUCK, stuck.outcome());
+        assertEquals(Banknotes.Outcome.ALREADY_REDEEMED,
+                notes.redeem(note.id(), UUID.randomUUID(), BanknotesTest::paid).join().outcome());
     }
 }

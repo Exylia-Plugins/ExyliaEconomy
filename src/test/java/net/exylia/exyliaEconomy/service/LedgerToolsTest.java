@@ -93,4 +93,23 @@ class LedgerToolsTest {
         assertEquals(LedgerTools.CSV_HEADER, lines.get(0));
         assertEquals(2, lines.size());
     }
+
+    @Test
+    @DisplayName("transfers, banknotes and rollbacks are never reverted on their own")
+    void onlyOneSidedLinesRevert() {
+        for (String kept : new String[]{"pay", "pay:tax", "pay:refund", "exchange:coins>gems", "note:withdraw",
+                "note:redeem", "rollback"}) {
+            org.junit.jupiter.api.Assertions.assertFalse(LedgerTools.revertible(kept), kept);
+        }
+        for (String reverted : new String[]{"admin:give", "shop:sell", "interest", "api", "payroll"}) {
+            org.junit.jupiter.api.Assertions.assertTrue(LedgerTools.revertible(reverted), reverted);
+        }
+    }
+
+    @Test
+    @DisplayName("CSV cells starting with a tab or carriage return are neutralised too")
+    void csvControlCharacters() {
+        LedgerRow row = new LedgerRow(9L, "p", "coins", BigDecimal.ONE, BigDecimal.ONE, "\tcmd", "\rx", "s", 0L, 0L);
+        assertEquals("9,1970-01-01T00:00Z,p,coins,1,1,'\tcmd,\"'\rx\",s", LedgerTools.csv(row, ZoneOffset.UTC));
+    }
 }

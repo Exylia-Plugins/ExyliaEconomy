@@ -18,7 +18,16 @@ import net.exylia.lib.item.ItemValues;
 import net.exylia.lib.item.Items;
 import net.exylia.lib.item.PluginItems;
 import net.exylia.lib.util.Cooldowns;
+import io.papermc.paper.event.player.PlayerPurchaseEvent;
+import org.bukkit.block.Crafter;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.block.CrafterCraftEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.PrepareInventoryResultEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -96,7 +105,12 @@ public final class BanknoteService implements Listener {
         }
         if (!Cooldowns.tryStart(player, "exyliaeconomy:withdraw", COOLDOWN)) return;
         long now = System.currentTimeMillis();
-        BanknoteRow row = new BanknoteRow(UUID.randomUUID().toString(), currency, amount,
+        String scope = StoredEconomy.storageKey(currency);
+        if (scope == null) {
+            Messages.send(player, text().noteDisabled(), Values.of().put("currency", info.namePlural()));
+            return;
+        }
+        BanknoteRow row = new BanknoteRow(UUID.randomUUID().toString(), currency, scope, amount,
                 player.getUniqueId().toString(), player.getName(), now, 0L, "");
         // The row first: a note handed out is always one the database knows. A row whose money was
         // never taken is discarded, and is worth nothing anyway with no item carrying its id.
@@ -164,6 +178,54 @@ public final class BanknoteService implements Listener {
         }
     }
 
+    // --------------------------------------------------------------- guards
+    // A note is paper: vanilla would craft it into books, maps and rockets, trade it to librarians
+    // and cartographers, or put it through a loom or a cartography table, and its money with it.
+
+    private boolean holdsNote(@Nullable Inventory inventory) {
+        if (inventory == null) return false;
+        for (ItemStack item : inventory.getContents()) {
+            if (items.values().has(item, NOTE)) return true;
+        }
+        return false;
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPrepareCraft(PrepareItemCraftEvent event) {
+        if (holdsNote(event.getInventory())) event.getInventory().setResult(null);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onCraft(CraftItemEvent event) {
+        if (holdsNote(event.getInventory())) event.setCancelled(true);
+    }
+
+    /** Anvil, grindstone, smithing table, loom, cartography table and stonecutter. */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPrepareResult(PrepareInventoryResultEvent event) {
+        if (holdsNote(event.getInventory())) event.setResult(null);
+    }
+
+    /** Taking any result while a note sits in the inputs: crafting, merchants, every station above. */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onResult(InventoryClickEvent event) {
+        if (event.getSlotType() == InventoryType.SlotType.RESULT && holdsNote(event.getView().getTopInventory())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onTrade(PlayerPurchaseEvent event) {
+        if (holdsNote(event.getPlayer().getOpenInventory().getTopInventory())) event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onCrafter(CrafterCraftEvent event) {
+        if (event.getBlock().getState(false) instanceof Crafter crafter && holdsNote(crafter.getInventory())) {
+            event.setCancelled(true);
+        }
+    }
+
     // -------------------------------------------------------------- redeem
 
     /** {@code /deposit}: the note in the main hand, or the off hand. */
@@ -185,6 +247,16 @@ public final class BanknoteService implements Listener {
         ItemStack held = player.getInventory().getItem(hand);
         String id = items.values().text(held, NOTE).orElse(null);
         if (id == null) return false;
+        // Asked here, on the player's thread: the row read later must name this same currency.
+        String currency = items.values().text(held, "banknote_currency", "");
+        if (!Economy.currencies().contains(currency)) {
+            Messages.send(player, text().noteInvalid());
+            return true;
+        }
+        if (!Economy.canUse(player, currency)) {
+            Messages.send(player, text().noPermission(), Values.of().put("currency", Economy.info(currency).namePlural()));
+            return true;
+        }
         if (!Cooldowns.tryStart(player, "exyliaeconomy:redeem", COOLDOWN)) return true;
         // Out of the hand before anything else: whatever the database answers, this copy is spent.
         ItemStack one = held.clone();
@@ -193,8 +265,10 @@ public final class BanknoteService implements Listener {
         else player.getInventory().setItem(hand, null);
         UUID uuid = player.getUniqueId();
         notes.redeem(id, uuid, note -> {
-            if (!Economy.currencies().contains(note.currency()) || !Economy.canUse(player, note.currency())) {
-                return EconomyResponse.notAvailable();
+            if (!note.currency().equals(currency)) return EconomyResponse.notAvailable();
+            // A per-server currency is a balance on the server that printed it, not on this one.
+            if (!note.scope().equals(StoredEconomy.storageKey(note.currency()))) {
+                return EconomyResponse.failure(text().noteWrongServer());
             }
             return Economy.of(note.currency()).deposit(uuid, note.amount(), Transaction.of("note:redeem").by(uuid));
         }).whenComplete((done, failure) -> ExyliaEconomy.getInstance().getTasks().runAtEntity(player, () -> {
@@ -207,7 +281,8 @@ public final class BanknoteService implements Listener {
             switch (done.outcome()) {
                 case PAID -> Messages.send(player, text().noteRedeemed(), Values.of()
                         .put("amount", Economy.info(done.note().currency()).format(done.note().amount())));
-                case REFUSED -> {
+                case REFUSED, STUCK -> {
+                    // A stuck note comes back too: once an admin clears its claim, it redeems again.
                     give(player, one);
                     EconomyActions.refused(player, done.credit(), Economy.info(done.note().currency()));
                 }
@@ -215,7 +290,7 @@ public final class BanknoteService implements Listener {
             }
         }, () -> {
             // ponytail: they left before the answer; a refused or failed note is logged rather than queued back.
-            if (failure != null || done.outcome() == Banknotes.Outcome.REFUSED) {
+            if (failure != null || done.outcome() == Banknotes.Outcome.REFUSED || done.outcome() == Banknotes.Outcome.STUCK) {
                 ExyliaEconomy.getInstance().getPlugin().getLogger().severe("Economy: banknote " + id + " of " + uuid
                         + " was not redeemed and its holder left before the item could be handed back. It is still"
                         + " unredeemed in exylia_banknotes: pay its amount by hand and mark the row redeemed.");

@@ -56,6 +56,7 @@ public final class LedgerTools {
     static final String CSV_HEADER = "id,time,player,currency,delta,balance_after,reason,initiator,server";
 
     private static final int LOG_PAGE = 10;
+    private static final int MAX_LOG_PAGE = 100_000;
     /** The most lines one rollback looks at, newest first. */
     // ponytail: a window holding more movements than this reverts the newest ones only; page further if that matters.
     private static final int ROLLBACK_DEPTH = 500;
@@ -104,7 +105,8 @@ public final class LedgerTools {
         String key = key(sender, currency);
         if (key == null) return;
         CurrencyInfo info = Economy.info(currency);
-        int shown = Math.max(1, page);
+        // Clamped, so the offset never overflows an int.
+        int shown = Math.min(Math.max(1, page), MAX_LOG_PAGE);
         ExyliaPlayers.then(sender, targetName, found -> ledger().where("player", found.id().toString())
                 .where("currency", key).orderByDescending("id").skip((shown - 1) * LOG_PAGE).limit(LOG_PAGE).find()
                 .whenComplete((rows, failure) -> {
@@ -220,7 +222,7 @@ public final class LedgerTools {
     private static String cell(@Nullable String value) {
         if (value == null) return "";
         // A leading formula character is neutralised: an export opened in a spreadsheet runs nothing.
-        String safe = !value.isEmpty() && "=+-@".indexOf(value.charAt(0)) >= 0 ? "'" + value : value;
+        String safe = !value.isEmpty() && "=+-@\t\r".indexOf(value.charAt(0)) >= 0 ? "'" + value : value;
         boolean quote = safe.contains(",") || safe.contains("\"") || safe.contains("\n") || safe.contains("\r");
         return quote ? "\"" + safe.replace("\"", "\"\"") + "\"" : safe;
     }
@@ -245,7 +247,7 @@ public final class LedgerTools {
         String key = key(sender, currency);
         if (key == null) return;
         UUID initiator = EconomyActions.initiator(sender);
-        String who = initiator == null ? "console" : initiator.toString();
+        String who = EconomyActions.confirmKey(sender);
         ExyliaPlayers.then(sender, targetName, found -> {
             String what = "rollback|" + found.id() + "|" + currency + "|" + window.toLowerCase(java.util.Locale.ROOT);
             if (confirmed) {
@@ -257,21 +259,28 @@ public final class LedgerTools {
                 apply(sender, found, currency, rows, initiator);
                 return;
             }
-            candidates(found.id(), key, entry, span).thenCompose(LedgerTools::unclaimed).whenComplete((rows, failure) -> {
+            candidates(found.id(), key, entry, span).thenCompose(lines -> {
+                List<LedgerRow> open = lines.stream().filter(row -> revertible(row.reason())).toList();
+                int excluded = lines.size() - open.size();
+                return unclaimed(open).thenApply(rows -> Map.entry(rows, excluded));
+            }).whenComplete((split, failure) -> {
                 if (failure != null) {
                     failed(sender, "read the ledger of " + found.name(), failure);
                     return;
                 }
+                List<LedgerRow> rows = split.getKey();
+                int excluded = split.getValue();
                 sync(() -> {
                     CurrencyInfo info = Economy.info(currency);
                     if (rows.isEmpty()) {
-                        Messages.send(sender, text().rollbackNothing(), Values.of().put("player", found.name()));
+                        Messages.send(sender, text().rollbackNothing(), Values.of().put("player", found.name())
+                                .put("excluded", excluded));
                         return;
                     }
                     PENDING.put(who, rows);
                     Confirmations.ask(who, what, System.currentTimeMillis());
                     Messages.send(sender, text().rollbackConfirm(), Values.of().put("player", found.name())
-                            .put("count", rows.size()).put("net", signed(info, reversal(rows)))
+                            .put("count", rows.size()).put("net", signed(info, reversal(rows))).put("excluded", excluded)
                             .put("command", "/economyadmin rollback " + found.name() + " " + window + " " + currency + " confirm"));
                 });
             });
@@ -287,11 +296,10 @@ public final class LedgerTools {
         }
     }
 
-    /** The lines a rollback would revert: the player's, in the currency, never a rollback itself. */
+    /** The player's lines in the currency and window, transfers included: {@link #revertible} sorts them. */
     private static CompletableFuture<List<LedgerRow>> candidates(UUID player, String key, @Nullable Long entry,
                                                                 @Nullable Duration span) {
-        Predicate<LedgerRow> theirs = row -> row.player().equals(player.toString()) && row.currency().equals(key)
-                && !ROLLBACK.equals(row.reason());
+        Predicate<LedgerRow> theirs = row -> row.player().equals(player.toString()) && row.currency().equals(key);
         if (entry != null) {
             return ledger().find(entry).thenApply(found -> found.filter(theirs).map(List::of).orElse(List.of()));
         }
@@ -299,6 +307,20 @@ public final class LedgerTools {
         return ledger().where("player", player.toString()).where("currency", key).orderByDescending("id")
                 .limit(ROLLBACK_DEPTH).find()
                 .thenApply(rows -> rows.stream().filter(theirs).filter(row -> row.createdAt() >= since).toList());
+    }
+
+    /**
+     * Whether a line may be reverted on its own.
+     *
+     * <p>Never one whose money has a counterpart a rollback of this player cannot see: a payment
+     * (the other player keeps their side), an exchange (the other currency keeps its leg), a
+     * banknote (the note stays redeemable, or was already paid out), or a rollback itself. The
+     * ledger does not link the two sides of these, so they are left out and counted.
+     */
+    static boolean revertible(String reason) {
+        if (reason == null) return true;
+        String head = reason.contains(":") ? reason.substring(0, reason.indexOf(':')) : reason;
+        return !(ROLLBACK.equals(head) || "pay".equals(head) || "exchange".equals(head) || "note".equals(head));
     }
 
     /** Leaves out what an earlier rollback already reverted. */

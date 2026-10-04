@@ -11,6 +11,8 @@ import java.math.BigDecimal;
  *
  * @param id         the note's id, also stored on the item
  * @param currency   the currency's id
+ * @param scope      the key its balances were kept under when printed: the id, or {@code id@server}
+ *                   for a currency each server keeps its own of, which only that server redeems
  * @param issuer     who withdrew it
  * @param redeemedAt when it was redeemed; {@code 0} while it is still worth something
  * @param redeemedBy who redeemed it, or blank
@@ -19,6 +21,7 @@ import java.math.BigDecimal;
 public record BanknoteRow(
         @Id(length = 36) String id,
         @Column(length = 64) String currency,
+        @Column(length = 100) String scope,
         @Column BigDecimal amount,
         @Column(length = 36) String issuer,
         @Column(value = "issuer_name", length = 64) String issuerName,
@@ -27,6 +30,6 @@ public record BanknoteRow(
         @Column(value = "redeemed_by", length = 36) String redeemedBy) {
 
     public BanknoteRow redeemed(String by, long at) {
-        return new BanknoteRow(id, currency, amount, issuer, issuerName, issuedAt, at, by);
+        return new BanknoteRow(id, currency, scope, amount, issuer, issuerName, issuedAt, at, by);
     }
 }

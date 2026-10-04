@@ -282,6 +282,8 @@ public final class EconomyActions {
         if (above != null && amount.compareTo(above) > 0) {
             String who = sender.getUniqueId().toString();
             String what = "pay|" + found.id() + "|" + currency + "|" + Confirmations.amount(amount);
+            // A confirm dropped by the cooldown below must not use the question up first.
+            if (confirmed && Cooldowns.isActive(sender, "exyliaeconomy:pay:" + found.id())) return;
             if (confirmed && !Confirmations.confirm(who, what, System.currentTimeMillis())) {
                 Messages.send(sender, text().confirmExpired());
                 return;
@@ -342,7 +344,8 @@ public final class EconomyActions {
         if (receiver != null) {
             Messages.send(receiver, text().received(), Values.of().put("player", sender.getName())
                     .put("amount", info.format(amount)));
-        } else {
+        } else if (!found.isConnected()) {
+            // Somebody playing on another server is paid there now; the notice is for whoever was away.
             ExyliaEconomy.getInstance().getPayNotices().record(found.id(), sender, currency, amount);
         }
     }
@@ -478,7 +481,7 @@ public final class EconomyActions {
             return;
         }
         UUID initiator = initiator(sender);
-        String who = initiator == null ? "console" : initiator.toString();
+        String who = confirmKey(sender);
         String what = "giveall|" + currency + "|" + Confirmations.amount(amount);
         if (!confirmed) {
             Confirmations.ask(who, what, System.currentTimeMillis());
@@ -693,6 +696,21 @@ public final class EconomyActions {
     /** Runs an answer on the server thread, whichever thread the read landed on. */
     private static void later(CompletableFuture<BigDecimal> read, Consumer<BigDecimal> show) {
         read.thenAccept(amount -> ExyliaEconomy.getInstance().getTasks().run(() -> show.accept(amount)));
+    }
+
+    /**
+     * Whose open question a confirmation is: a player by id, the console as itself, and anything
+     * else — a command block, a remote console — by what it is and its name or place, so two
+     * senders never confirm each other's question.
+     */
+    static String confirmKey(CommandSender sender) {
+        if (sender instanceof Player player) return player.getUniqueId().toString();
+        if (sender instanceof org.bukkit.command.ConsoleCommandSender) return "console";
+        if (sender instanceof org.bukkit.command.BlockCommandSender block) {
+            org.bukkit.Location at = block.getBlock().getLocation();
+            return "block:" + at.getWorld().getName() + ":" + at.getBlockX() + ":" + at.getBlockY() + ":" + at.getBlockZ();
+        }
+        return sender.getClass().getSimpleName() + ":" + sender.getName();
     }
 
     static @Nullable UUID initiator(CommandSender sender) {

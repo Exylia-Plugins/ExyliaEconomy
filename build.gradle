@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'net.exylia'
-version = '1.0.4'
+version = '1.1.0'
 
 repositories {
     // A locally published ExyliaLib wins, so a change to both can be built before the library is released.

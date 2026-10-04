@@ -3,6 +3,7 @@ package net.exylia.exyliaEconomy.manager;
 import net.exylia.exyliaEconomy.database.BanknoteRow;
 import net.exylia.lib.database.Databases;
 import net.exylia.lib.database.Repository;
+import net.exylia.lib.database.internal.Outages;
 import net.exylia.lib.economy.EconomyResponse;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +12,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 /**
  * The banknotes /withdraw printed, as the database keeps them.
@@ -24,7 +27,14 @@ import java.util.function.Function;
 public final class Banknotes {
 
     /** How a redeem ended. */
-    public enum Outcome { PAID, ALREADY_REDEEMED, UNKNOWN_NOTE, REFUSED }
+    public enum Outcome {
+        PAID, ALREADY_REDEEMED, UNKNOWN_NOTE, REFUSED,
+        /** Refused, and the claim could not be given back: logged at SEVERE with the note's id. */
+        STUCK
+    }
+
+    private static final int RELEASE_ATTEMPTS = 3;
+    private static final long RELEASE_RETRY_MILLIS = 1_000L;
 
     /**
      * @param note   the note's row, {@code null} when there is none
@@ -33,9 +43,11 @@ public final class Banknotes {
     public record Redeem(@NotNull Outcome outcome, @Nullable BanknoteRow note, @Nullable EconomyResponse credit) { }
 
     private final Repository<BanknoteRow> rows;
+    private final Logger logger;
 
     public Banknotes(@NotNull Plugin plugin) {
         this.rows = Databases.of(plugin).repository(BanknoteRow.class);
+        this.logger = plugin.getLogger();
     }
 
     /** Records a note before it is printed: a note without a row is worth nothing. */
@@ -76,11 +88,38 @@ public final class Banknotes {
                 }
                 if (paid.isSuccess()) return CompletableFuture.completedFuture(new Redeem(Outcome.PAID, note, paid));
                 EconomyResponse refused = paid;
-                // Back to unredeemed, only if it is still this claim.
-                return rows.updateIf(note, "redeemedAt", claimed.redeemedAt())
-                        .thenApply(ignored -> new Redeem(Outcome.REFUSED, note, refused));
+                return release(note, claimed.redeemedAt(), 0).thenApply(released -> {
+                    if (released) return new Redeem(Outcome.REFUSED, note, refused);
+                    logger.severe("Economy: banknote " + note.id() + " (" + note.amount().toPlainString() + " "
+                            + note.currency() + ") was refused for " + player + " but stays marked redeemed: the"
+                            + " database did not answer. Set redeemed_at to 0 on that row of exylia_banknotes"
+                            + " to make it redeemable again.");
+                    return new Redeem(Outcome.STUCK, note, refused);
+                });
             });
         });
+    }
+
+    /**
+     * Back to unredeemed, only while it is still this claim. A failed write may have committed, so
+     * the row is read back; an outage is tried again a few times.
+     *
+     * @return whether the note is unredeemed again, or at least no longer this claim
+     */
+    private CompletableFuture<Boolean> release(BanknoteRow note, long stamp, int attempt) {
+        return rows.updateIf(note, "redeemedAt", stamp).handle((done, failure) -> {
+            if (failure == null) return CompletableFuture.completedFuture(true);
+            return rows.find(note.id()).handle((found, unread) -> {
+                if (unread == null && found.map(row -> row.redeemedAt() != stamp).orElse(true)) {
+                    return CompletableFuture.completedFuture(true);
+                }
+                Throwable cause = unread != null ? unread : failure;
+                if (attempt + 1 >= RELEASE_ATTEMPTS || !Outages.is(cause)) return CompletableFuture.completedFuture(false);
+                return CompletableFuture.runAsync(() -> { },
+                                CompletableFuture.delayedExecutor(RELEASE_RETRY_MILLIS, TimeUnit.MILLISECONDS))
+                        .thenCompose(ignored -> release(note, stamp, attempt + 1));
+            }).thenCompose(next -> next);
+        }).thenCompose(next -> next);
     }
 
     /**

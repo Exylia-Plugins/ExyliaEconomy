@@ -134,6 +134,8 @@ public record EconomyMessages(
         String noteInventoryFull,
         @Comment("A banknote could not be printed or redeemed because the database did not answer.")
         String noteFailed,
+        @Comment("Why a banknote of a per-server currency is refused on another server.")
+        String noteWrongServer,
         @Comment("/economyadmin log header. Placeholders: %currency% %player% %page%.")
         String logHeader,
         @Comment("/economyadmin log line. Placeholders: %id% %date% %delta% %reason% %balance%.")
@@ -144,9 +146,10 @@ public record EconomyMessages(
         String exportDone,
         @Comment("The ledger could not be read or written; the console says why.")
         String ledgerFailed,
-        @Comment("/economyadmin rollback asking first. Placeholders: %player% %count% %net% %command%.")
+        @Comment("/economyadmin rollback asking first. Payments, exchanges and banknotes are never reverted and are")
+        @Comment("counted in %excluded%. Placeholders: %player% %count% %net% %excluded% %command%.")
         String rollbackConfirm,
-        @Comment("/economyadmin rollback with nothing left to revert. Placeholder: %player%.")
+        @Comment("/economyadmin rollback with nothing left to revert. Placeholders: %player% %excluded%.")
         String rollbackNothing,
         @Comment("/economyadmin rollback done. Placeholders: %player% %count% %net% %failed% %skipped%.")
         String rollbackDone,
@@ -268,6 +271,7 @@ public record EconomyMessages(
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}cannot be withdrawn as a banknote.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Free a slot in your inventory first.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}The banknote could not be processed right now. Try again in a moment.",
+                "This banknote can only be redeemed on the server that printed it.",
                 "{primary}&lLEDGER {highlight}%currency% {letters_black}· {letters}%player% {muted}page %page%",
                 " {letters_black}#%id% {muted}%date% %delta% {letters_black}» {info}%reason% {letters_black}(%balance%)",
                 "%prefix% {letters}Exporting the ledger…",
@@ -275,9 +279,11 @@ public record EconomyMessages(
                         + " to {highlight}exports/%file%{success}.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}The ledger could not be read or written. Check the console.",
                 "[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Roll back {highlight}%count% {warning}movements of"
-                        + " {highlight}%player%{warning}? {letters_black}Net: %net% <click:run_command:'%command%'><hover:show_text:"
-                        + "'{letters}Click to roll them back'>{success}&l[✔ CONFIRM]</hover></click> {letters_black}30s ⌚",
-                "%prefix% {letters}Nothing left to roll back for {highlight}%player% {letters}in that window.",
+                        + " {highlight}%player%{warning}? {letters_black}Net: %net% {letters_black}· Transfers left out: %excluded%"
+                        + " <click:run_command:'%command%'><hover:show_text:'{letters}Click to roll them back'>"
+                        + "{success}&l[✔ CONFIRM]</hover></click> {letters_black}30s ⌚",
+                "%prefix% {letters}Nothing left to roll back for {highlight}%player% {letters}in that window."
+                        + " {letters_black}Transfers left out: %excluded%",
                 "[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}Rolled back {highlight}%count% {success}movements of"
                         + " {highlight}%player%{success}. {letters_black}Net: %net% {letters_black}· Refused: %failed%"
                         + " · Already done: %skipped%",

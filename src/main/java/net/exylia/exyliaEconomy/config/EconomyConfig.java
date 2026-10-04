@@ -41,8 +41,8 @@ public record EconomyConfig(
         @Comment("[Confirm] or adding 'confirm' to the command. Keyed by currency id; 'default' is every currency")
         @Comment("not listed. Amounts read like the command's: 10000, 10k, 1.5m. 0 asks for nothing.")
         Map<String, String> payConfirmAbove,
-
-        @Comment("Tells a player, as they join, what they were paid while they were away or on")
+        @Comment("Tells a player, as they join, what they were paid while they were offline:")
+        @Comment("one line per currency.")
         @Comment("another server: one line per currency.")
         boolean offlinePayNotice,
 
