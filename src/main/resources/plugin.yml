@@ -48,6 +48,12 @@ permissions:
   exyliaeconomy.paytoggle.bypass:
     description: Pay players who turned incoming payments off.
     default: op
+  exyliaeconomy.withdraw:
+    description: Turn money into a banknote with /withdraw. Redeeming one needs no permission.
+    default: true
+  exyliaeconomy.interest:
+    description: Earn the interest config.yml sets on a currency while online.
+    default: true
   exyliaeconomy.top.exempt:
     description: Left off the leaderboards, from the player's next join. Not given to operators.
     default: false
@@ -62,6 +68,7 @@ permissions:
       exyliaeconomy.pay: true
       exyliaeconomy.paytoggle: true
       exyliaeconomy.paytoggle.bypass: true
+      exyliaeconomy.withdraw: true
       exyliaeconomy.others: true
   exyliaeconomy.*:
     description: Every ExyliaEconomy permission.

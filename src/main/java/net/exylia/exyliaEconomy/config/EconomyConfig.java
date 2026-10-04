@@ -7,6 +7,9 @@ import net.exylia.lib.economy.Economy;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -21,6 +24,8 @@ import java.util.Map;
  * @param debug    whether the log explains what the plugin does
  * @param payConfirmAbove  per currency id, or {@code default}, the amount above which {@code /pay} asks first
  * @param offlinePayNotice whether a player is told on join what they were paid while away
+ * @param banknotes        the currencies /withdraw may print, {@code default} meaning the default one
+ * @param interest         per currency id, its periodic interest
  */
 @Comment("ExyliaEconomy. The currencies are kept in the database and edited in game with /economyadmin.")
 public record EconomyConfig(
@@ -39,11 +44,57 @@ public record EconomyConfig(
 
         @Comment("Tells a player, as they join, what they were paid while they were away or on")
         @Comment("another server: one line per currency.")
-        boolean offlinePayNotice) {
+        boolean offlinePayNotice,
+
+        @Comment("Currencies /withdraw may turn into banknotes, by id; 'default' is the default currency.")
+        @Comment("Only currencies this plugin stores. Empty turns banknotes off.")
+        List<String> banknotes,
+
+        @Comment("Interest paid on a stored currency, keyed by its id. Nothing is paid until one is added:")
+        @Comment("  coins:")
+        @Comment("    rate: 1.0           # percent of the balance per payout")
+        @Comment("    interval: 1h        # how often; at least 1m")
+        @Comment("    max: '500'          # the most one payout gives; 0 for no cap")
+        @Comment("    online-only: true   # false also pays every offline balance, permission unchecked")
+        @Comment("Online players need exyliaeconomy.interest. Paid at each interval boundary, once per")
+        @Comment("player across every server.")
+        Map<String, Interest> interest) {
 
     /** The defaults the file is generated from. */
     public EconomyConfig() {
-        this(Languages.DEFAULT, false, new LinkedHashMap<>(Map.of("default", "0")), true);
+        this(Languages.DEFAULT, false, new LinkedHashMap<>(Map.of("default", "0")), true,
+                new ArrayList<>(List.of("default")), new LinkedHashMap<>());
+    }
+
+    /**
+     * One currency's interest.
+     *
+     * @param rate       percent of the balance per payout
+     * @param interval   how often it is paid
+     * @param max        the most one payout gives, read like a typed amount; {@code 0} for no cap
+     * @param onlineOnly whether only the players online are paid
+     */
+    public record Interest(double rate, Duration interval, String max, boolean onlineOnly) {
+
+        public Interest() {
+            this(1.0, Duration.ofHours(1), "0", true);
+        }
+    }
+
+    /** The interest settings, never {@code null}. */
+    public Map<String, Interest> interestOrEmpty() {
+        return interest == null ? Map.of() : interest;
+    }
+
+    /** Whether /withdraw may print banknotes of this currency. */
+    public boolean banknotes(String currency) {
+        if (banknotes == null) return false;
+        for (String listed : banknotes) {
+            if (listed == null) continue;
+            String id = "default".equalsIgnoreCase(listed.trim()) ? Economy.defaultId() : Economy.canonical(listed.trim().toLowerCase(java.util.Locale.ROOT));
+            if (id.equals(currency)) return true;
+        }
+        return false;
     }
 
     /** The amount above which a payment in this currency asks first, or {@code null} when it never does. */

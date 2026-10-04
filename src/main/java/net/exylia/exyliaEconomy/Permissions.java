@@ -20,6 +20,12 @@ public final class Permissions {
     /** Pay a player who turned incoming payments off. */
     public static final String PAYTOGGLE_BYPASS = "exyliaeconomy.paytoggle.bypass";
 
+    /** Turn money into a banknote with {@code /withdraw}. */
+    public static final String WITHDRAW = "exyliaeconomy.withdraw";
+
+    /** Earn the interest {@code config.yml} sets on a currency. */
+    public static final String INTEREST = "exyliaeconomy.interest";
+
     /** Left off the leaderboards; stored as the player joins, so it applies from their next join. */
     public static final String TOP_EXEMPT = "exyliaeconomy.top.exempt";
 

@@ -10,6 +10,8 @@ import net.exylia.exyliaEconomy.command.EconomyCommand;
 import net.exylia.exyliaEconomy.command.PayCommand;
 import net.exylia.exyliaEconomy.command.PayToggleCommand;
 import net.exylia.exyliaEconomy.command.WalletCommand;
+import net.exylia.exyliaEconomy.command.WithdrawCommand;
+import net.exylia.exyliaEconomy.command.DepositCommand;
 import net.exylia.exyliaEconomy.common.Messages;
 import net.exylia.exyliaEconomy.common.Values;
 import net.exylia.exyliaEconomy.config.EconomyConfig;
@@ -19,6 +21,8 @@ import net.exylia.exyliaEconomy.menu.EconomyMenus;
 import net.exylia.exyliaEconomy.migration.SurvivalCoreImport;
 import net.exylia.exyliaEconomy.placeholder.EconomyPlaceholder;
 import net.exylia.exyliaEconomy.service.EconomyActions;
+import net.exylia.exyliaEconomy.service.BanknoteService;
+import net.exylia.exyliaEconomy.service.Interest;
 import net.exylia.exyliaEconomy.service.PayNotices;
 import net.exylia.lib.action.Actions;
 import net.exylia.lib.action.PluginActions;
@@ -73,6 +77,8 @@ public final class ExyliaEconomy {
     private EconomyMenus menus;
     private Reloads reloads;
     private PayNotices payNotices;
+    private BanknoteService banknotes;
+    private Interest interest;
 
     public Server getServer() {
         return plugin.getServer();
@@ -116,6 +122,10 @@ public final class ExyliaEconomy {
         EconomyPlaceholder.register(plugin);
         payNotices = new PayNotices(plugin);
         getServer().getPluginManager().registerEvents(payNotices, plugin);
+        banknotes = new BanknoteService(plugin);
+        getServer().getPluginManager().registerEvents(banknotes, plugin);
+        interest = new Interest(plugin);
+        interest.start();
 
         var lamp = PlayerArguments.install(BukkitLamp.builder(plugin)).build();
         lamp.register(new EconomyCommand());
@@ -127,6 +137,8 @@ public final class ExyliaEconomy {
         lamp.register(new PayToggleCommand());
         lamp.register(new BalanceTopCommand());
         lamp.register(new WalletCommand());
+        lamp.register(new WithdrawCommand());
+        lamp.register(new DepositCommand());
 
         loadReloads();
         debug.success("ExyliaEconomy enabled");
@@ -135,6 +147,7 @@ public final class ExyliaEconomy {
     /** Releases what {@link #start} set up, waiting for the queued balance writes. */
     public void shutdown() {
         AliasCommands.uninstall();
+        if (interest != null) interest.stop();
         // Before the library lets the database go: shutdown waits, bounded, for every queued balance write.
         StoredEconomy.shutdown();
         // Everything else the library owns for this plugin — menus, actions, inputs, placeholders,

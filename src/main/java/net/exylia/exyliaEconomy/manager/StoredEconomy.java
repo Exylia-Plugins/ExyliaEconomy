@@ -1469,6 +1469,16 @@ public final class StoredEconomy implements Listener {
     }
 
     /**
+     * The key a stored currency's balances and ledger lines are written under: its id, or
+     * {@code id@server} when each server keeps its own. {@code null} for anything this plugin does not store.
+     */
+    public static @Nullable String storageKey(@NotNull String id) {
+        StoredEconomy economy = instance;
+        StoredCurrency currency = economy == null ? null : economy.currency(id);
+        return currency == null ? null : economy.key(currency);
+    }
+
+    /**
      * The richest players in a stored currency, richest first.
      *
      * <p>Cached for a minute, because a leaderboard on a scoreboard is read

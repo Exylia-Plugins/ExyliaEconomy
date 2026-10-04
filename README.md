@@ -28,6 +28,8 @@ Optional: Vault, PlaceholderAPI, ExyliaAnalytics.
 | `/wallet [player]` (`/balances`) | `exyliaeconomy.use` | Every balance on one screen |
 | `/baltop [page]` (`/balancetop`, `/moneytop`) | `exyliaeconomy.use` | The richest players: a screen for players, ten lines per page for the console |
 | `/pay <player> <amount> [currency] [confirm]` | `exyliaeconomy.pay` | Send money. Above the confirmation amount it asks first: click **[✔ CONFIRM]** or add `confirm` within 30 seconds |
+| `/withdraw <amount> [currency]` | `exyliaeconomy.withdraw` | Turn money into a banknote. Right-click it, or `/deposit` while holding it, to redeem |
+| `/deposit` | `exyliaeconomy.use` | Redeem the banknote in your hand |
 | `/paytoggle` | `exyliaeconomy.paytoggle` | Stop receiving payments, or start again. Kept in the database: every server, every restart |
 | `/economy` (`/eco`) `balance\|wallet\|currencies\|top\|history\|exchange` | `exyliaeconomy.use` | Everything above, for any currency. `/eco top 2` is page 2 of the default currency |
 | `/<currency> [player]` | `exyliaeconomy.use` | One currency's balance; naming a player needs `exyliaeconomy.others` |
@@ -38,9 +40,14 @@ Optional: Vault, PlaceholderAPI, ExyliaAnalytics.
 | `/economyadmin give\|take\|set\|reset <player> ...` | `exyliaeconomy.admin` | Change a balance, online or not |
 | `/economyadmin giveall <currency> <amount> [confirm]` | `exyliaeconomy.admin` | Give an amount to every player on this server, after a confirmation, with a summary |
 | `/economyadmin import <from> <into> [again]` | `exyliaeconomy.admin` | Add every balance of one currency to another |
+| `/economyadmin log <player> [currency] [page]` | `exyliaeconomy.admin` | A player's ledger lines with their ids, ten per page |
+| `/economyadmin export <currency\|all> [days]` | `exyliaeconomy.admin` | Write ledger lines to `plugins/ExyliaEconomy/exports/ledger-<scope>-<time>.csv`, off the game thread. `days` keeps only the last days; `0` or nothing is everything |
+| `/economyadmin rollback <player> <window\|#id> [currency] [confirm]` | `exyliaeconomy.admin` | Revert a player's movements in a window (`1h`, `2d`) or one ledger line (`#42`), after a confirmation showing the net change |
 | `/economyadmin reload` | `exyliaeconomy.admin` | Reload files, menus and currencies |
 
 `exyliaeconomy.others` lets a player read somebody else's balance, wallet or history. `exyliaeconomy.use`, `exyliaeconomy.pay` and `exyliaeconomy.paytoggle` are given to everyone by default. `exyliaeconomy.paytoggle.bypass` (operators) pays players who turned payments off. `exyliaeconomy.admin` includes `use`, `pay`, `paytoggle`, `paytoggle.bypass` and `others`, and `exyliaeconomy.*` grants everything. A currency may also name its own permission.
+
+`exyliaeconomy.withdraw` and `exyliaeconomy.interest` are given to everyone by default; `admin` includes `withdraw`.
 
 `exyliaeconomy.top.exempt` leaves a player off every leaderboard, without taking a place. It is given to nobody by default, operators included. A permission cannot be checked for somebody offline, so it is stored as the player joins: granting or removing it applies from their next join, and within a minute once the board refreshes.
 
@@ -50,6 +57,9 @@ A currency whose leaderboard is turned off answers `top` with a message rather t
 
 - **Imports.** `/economyadmin import <from> <into>` runs once per pair. Adding `again` imports only the players not imported yet, so nobody is paid twice, even after an import that stopped partway.
 - **Networked switch.** A stored currency can switch between networked and per-server only while nothing but starting balances would be left behind. Once balances have moved, the switch is locked.
+- **Banknotes.** Each note is a row in `exylia_banknotes`, written before the money is taken; the item only carries its id and is never stackable. Redeeming takes the item from the hand, then claims the row in the database before paying, so a duplicated note pays once on the whole network and every other copy disappears with "already redeemed". A payment the currency refuses (its ceiling) gives the claim and the item back. `/withdraw` is refused before taking anything when the inventory is full. Ledger reasons: `note:withdraw`, `note:redeem`.
+- **Rollback.** Each ledger line is reverted once, through the currency with reason `rollback`, and remembered in `exylia_economy_claims` (`rollback|<id>`), so a second rollback over the same window skips it. Lines that are themselves rollbacks are never reverted. The ledger must be on, and a line merges consecutive changes with one reason, so it is reverted whole. A withdrawal from somebody offline is queued and floored at zero when it lands. A window looks at the newest 500 lines.
+- **Interest.** Paid at each interval boundary to the players on each server, claimed per player and slot in `exylia_economy_claims`, so a networked currency never pays twice and a restart never repeats a slot. Claims are deleted after two days.
 - **Hard ceiling.** No balance can pass 10^18 (1,000,000,000,000,000,000), whatever the currency's own ceiling, including `-1` for no ceiling. A change that would pass it is refused.
 
 ## Placeholders
@@ -77,6 +87,13 @@ Leave the currency out for the default one. The leaderboard, rank and total are 
 | `debug` | `false` | Explain in the console what the plugin does |
 | `pay-confirm-above` | `default: '0'` | Per currency id, the amount above which `/pay` asks for a confirmation. `default` covers every currency not listed; `0` never asks. Amounts read like the command's: `10000`, `10k`, `1.5m` |
 | `offline-pay-notice` | `true` | On join, tell a player what they were paid while they were offline or on another server: one line per currency, with the payer's name or how many paid |
+| `banknotes` | `[default]` | Currencies `/withdraw` may print, by id; `default` is the default currency. Stored currencies only; empty turns banknotes off |
+| `interest.<currency>.rate` | `1.0` | Percent of the balance paid per interval. Nothing is paid until a currency is listed under `interest` |
+| `interest.<currency>.interval` | `1h` | How often; at least `1m` |
+| `interest.<currency>.max` | `'0'` | The most one payout gives; `0` for no cap |
+| `interest.<currency>.online-only` | `true` | `false` also pays every balance of players not online here, queued for whoever holds them, once per slot; their permission cannot be checked |
+
+The banknote's look is the `banknote` section of `messages.yml` (`material`, `name`, `lore`), with `%amount%`, `%currency%`, `%issuer%` and `%date%`.
 
 The confirmation is bound to the exact payer, receiver, currency and amount, and is used once. The offline notice is kept in its own table (`exylia_pay_notices`), not read from the ledger, so it works with the ledger turned off. The leaderboard screen shows the money supply in slot 45 of `menus/user/top.yml`; a file written before this version keeps its layout until you add the item or delete the file.
 

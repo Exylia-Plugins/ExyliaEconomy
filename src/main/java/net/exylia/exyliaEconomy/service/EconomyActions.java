@@ -347,7 +347,7 @@ public final class EconomyActions {
         }
     }
 
-    private static void notEnough(CommandSender sender, CurrencyInfo info, BigDecimal missing) {
+    static void notEnough(CommandSender sender, CurrencyInfo info, BigDecimal missing) {
         Messages.send(sender, text().notEnough(), Values.of().put("currency", info.namePlural())
                 .put("amount", info.format(missing)));
     }
@@ -638,7 +638,7 @@ public final class EconomyActions {
     }
 
     /** Why a change was refused, in the currency's own words when it gave any. */
-    private static void refused(CommandSender sender, EconomyResponse response, CurrencyInfo info) {
+    static void refused(CommandSender sender, EconomyResponse response, CurrencyInfo info) {
         if (response.type() == EconomyResponse.Type.FAILURE && response.message() != null) {
             Messages.send(sender, text().refused(), Values.of().put("reason", response.message()));
         } else if (response.type() == EconomyResponse.Type.INVALID_AMOUNT) {
@@ -649,7 +649,7 @@ public final class EconomyActions {
     }
 
     /** The currency asked for, told to the sender when it cannot be used. */
-    private @Nullable String resolved(CommandSender sender, @Nullable String currencyId) {
+    static @Nullable String resolved(CommandSender sender, @Nullable String currencyId) {
         Optional<String> currency = currency(currencyId);
         if (currency.isEmpty()) {
             Messages.send(sender, text().noCurrency(), Values.of().put("currency", currencyId == null ? "" : currencyId));
@@ -695,7 +695,7 @@ public final class EconomyActions {
         read.thenAccept(amount -> ExyliaEconomy.getInstance().getTasks().run(() -> show.accept(amount)));
     }
 
-    private static @Nullable UUID initiator(CommandSender sender) {
+    static @Nullable UUID initiator(CommandSender sender) {
         return sender instanceof Player player ? player.getUniqueId() : null;
     }
 

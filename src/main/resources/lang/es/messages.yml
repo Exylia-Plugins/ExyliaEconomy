@@ -66,6 +66,11 @@ reasons:
   exchange: Cambio
   admin: Staff
   import: Importación
+  note: Billete
+  note:withdraw: Billete emitido
+  note:redeem: Billete canjeado
+  interest: Interés
+  rollback: Reversión
 kinds:
   stored: Moneda del servidor
   item: Ítem
@@ -103,6 +108,35 @@ top-total: ' {letters_black}▎ {letters}En circulación {letters_black}» {info
 give-all-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}¿Dar {highlight}%amount% {warning}a cada uno de los {highlight}%count% {warning}jugadores conectados? <click:run_command:''%command%''><hover:show_text:''{letters}Clic para dárselo a todos''>{success}&l[✔ CONFIRMAR]</hover></click> {letters_black}30s ⌚'
 give-all-done: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Diste {highlight}%amount% {success}a {highlight}%count% {success}jugadores. {letters_black}Omitidos: %skipped%'
 give-all-nobody: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}No hay nadie conectado.'
+note-withdrawn: '[sound:ITEM_BOOK_PAGE_TURN|1.0|1.2]%prefix% {success}Retiraste un billete de {highlight}%amount%{success}.'
+note-redeemed: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}Canjeaste un billete de {highlight}%amount%{success}.'
+note-invalid: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Este billete ya fue canjeado o no es válido.'
+note-not-held: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Sostén un billete en la mano para depositarlo.'
+note-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}no se puede retirar como billete.'
+note-inventory-full: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Libera un espacio de tu inventario primero.'
+note-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}No se pudo procesar el billete ahora mismo. Inténtalo de nuevo en un momento.'
+log-header: '{primary}&lREGISTRO {highlight}%currency% {letters_black}· {letters}%player% {muted}página %page%'
+log-line: ' {letters_black}#%id% {muted}%date% %delta% {letters_black}» {info}%reason% {letters_black}(%balance%)'
+export-started: '%prefix% {letters}Exportando el registro…'
+export-done: '[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}Se exportaron {highlight}%count% {success}líneas a {highlight}exports/%file%{success}.'
+ledger-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}No se pudo leer o escribir el registro. Revisa la consola.'
+rollback-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}¿Revertir {highlight}%count% {warning}movimientos de {highlight}%player%{warning}? {letters_black}Neto: %net% <click:run_command:''%command%''><hover:show_text:''{letters}Clic para revertirlos''>{success}&l[✔ CONFIRMAR]</hover></click> {letters_black}30s ⌚'
+rollback-nothing: '%prefix% {letters}No queda nada que revertir para {highlight}%player% {letters}en ese periodo.'
+rollback-done: '[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}Se revirtieron {highlight}%count% {success}movimientos de {highlight}%player%{success}. {letters_black}Neto: %net% {letters_black}· Rechazados: %failed% · Ya hechos: %skipped%'
+invalid-window: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Eso no es un periodo. Prueba {highlight}1h{error}, {highlight}2d {error}o una entrada como {highlight}#42{error}.'
+interest-paid: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.6]%prefix% {success}Interés {highlight}+%amount% {letters_black}· el próximo en {info}%next% ⌚'
+banknote:
+  material: PAPER
+  name: '{primary}&lBILLETE &8[{success}%amount%&8]'
+  lore:
+  - ''
+  - '{secondary}Información:'
+  - ' {letters_black}▎ {letters}Moneda {letters_black}» {highlight}%currency%'
+  - ' {letters_black}▎ {letters}Firmado por {letters_black}» {highlight}%issuer%'
+  - ' {letters_black}▎ {letters}Emitido {letters_black}» {info}%date%'
+  - ''
+  - '{warning}➥ Clic derecho para canjear'
+  - ''
 admin:
   icon-prompt: '{warning}Elige un icono'
   id-prompt: '{primary}Escribe un ID para la moneda, como {highlight}gems{primary}:'

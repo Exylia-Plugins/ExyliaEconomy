@@ -120,6 +120,43 @@ public record EconomyMessages(
         String giveAllDone,
         @Comment("/economyadmin giveall with nobody online.")
         String giveAllNobody,
+        @Comment("/withdraw printed a banknote. Placeholder: %amount%.")
+        String noteWithdrawn,
+        @Comment("A banknote was redeemed. Placeholder: %amount%.")
+        String noteRedeemed,
+        @Comment("A banknote already redeemed, or one no server printed: it is taken away.")
+        String noteInvalid,
+        @Comment("/deposit without a banknote in hand.")
+        String noteNotHeld,
+        @Comment("/withdraw in a currency that prints no banknotes. Placeholder: %currency%.")
+        String noteDisabled,
+        @Comment("/withdraw with no free inventory slot.")
+        String noteInventoryFull,
+        @Comment("A banknote could not be printed or redeemed because the database did not answer.")
+        String noteFailed,
+        @Comment("/economyadmin log header. Placeholders: %currency% %player% %page%.")
+        String logHeader,
+        @Comment("/economyadmin log line. Placeholders: %id% %date% %delta% %reason% %balance%.")
+        String logLine,
+        @Comment("/economyadmin export started.")
+        String exportStarted,
+        @Comment("/economyadmin export written. Placeholders: %count% %file%.")
+        String exportDone,
+        @Comment("The ledger could not be read or written; the console says why.")
+        String ledgerFailed,
+        @Comment("/economyadmin rollback asking first. Placeholders: %player% %count% %net% %command%.")
+        String rollbackConfirm,
+        @Comment("/economyadmin rollback with nothing left to revert. Placeholder: %player%.")
+        String rollbackNothing,
+        @Comment("/economyadmin rollback done. Placeholders: %player% %count% %net% %failed% %skipped%.")
+        String rollbackDone,
+        @Comment("/economyadmin rollback with a window that is neither a duration nor #id.")
+        String invalidWindow,
+        @Comment("Interest paid. Placeholders: %amount% %currency% %next%. Empty to pay silently.")
+        String interestPaid,
+        @Comment("")
+        @Comment("The banknote /withdraw prints. Placeholders: %amount% %currency% %issuer% %date%.")
+        Banknote banknote,
         @Comment("")
         @Comment("The currency editor of /economyadmin: its prompts, forms and the words its screens show.")
         CurrencyAdmin admin) {
@@ -175,7 +212,9 @@ public record EconomyMessages(
                         "shop:sell", "Shop sale", "worth", "Worth", "worth:sell", "Worth sale", "market", "Market", "market:buy", "Market purchase",
                         "market:sale", "Market sale", "market:fee", "Market fee", "auctions", "Auctions",
                         "auctions:bid", "Auction bid", "auctions:sale", "Auction sale", "orders", "Orders",
-                        "trade", "Trade", "exchange", "Exchange", "admin", "Staff", "import", "Import"),
+                        "trade", "Trade", "exchange", "Exchange", "admin", "Staff", "import", "Import",
+                        "note", "Banknote", "note:withdraw", "Banknote printed", "note:redeem", "Banknote redeemed",
+                        "interest", "Interest", "rollback", "Rollback"),
                 labels("stored", "Server currency", "item", "Item", "experience", "Experience",
                         "external", "Another plugin", "unknown", "Unknown"),
                 "That currency cannot be exchanged.",
@@ -222,7 +261,48 @@ public record EconomyMessages(
                 "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Gave {highlight}%amount% {success}to"
                         + " {highlight}%count% {success}players. {letters_black}Skipped: %skipped%",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Nobody is online.",
+                "[sound:ITEM_BOOK_PAGE_TURN|1.0|1.2]%prefix% {success}You withdrew a banknote of {highlight}%amount%{success}.",
+                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}Redeemed a banknote of {highlight}%amount%{success}.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}This banknote was already redeemed or is not valid.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Hold a banknote in your hand to deposit it.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}cannot be withdrawn as a banknote.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Free a slot in your inventory first.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}The banknote could not be processed right now. Try again in a moment.",
+                "{primary}&lLEDGER {highlight}%currency% {letters_black}· {letters}%player% {muted}page %page%",
+                " {letters_black}#%id% {muted}%date% %delta% {letters_black}» {info}%reason% {letters_black}(%balance%)",
+                "%prefix% {letters}Exporting the ledger…",
+                "[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}Exported {highlight}%count% {success}lines"
+                        + " to {highlight}exports/%file%{success}.",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}The ledger could not be read or written. Check the console.",
+                "[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Roll back {highlight}%count% {warning}movements of"
+                        + " {highlight}%player%{warning}? {letters_black}Net: %net% <click:run_command:'%command%'><hover:show_text:"
+                        + "'{letters}Click to roll them back'>{success}&l[✔ CONFIRM]</hover></click> {letters_black}30s ⌚",
+                "%prefix% {letters}Nothing left to roll back for {highlight}%player% {letters}in that window.",
+                "[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}Rolled back {highlight}%count% {success}movements of"
+                        + " {highlight}%player%{success}. {letters_black}Net: %net% {letters_black}· Refused: %failed%"
+                        + " · Already done: %skipped%",
+                "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}That is not a window. Try {highlight}1h{error},"
+                        + " {highlight}2d {error}or an entry such as {highlight}#42{error}.",
+                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.6]%prefix% {success}Interest {highlight}+%amount%"
+                        + " {letters_black}· next in {info}%next% ⌚",
+                new Banknote(),
                 new CurrencyAdmin());
+    }
+
+    /** The {@code banknote} section: the item /withdraw prints. */
+    public record Banknote(String material, String name, java.util.List<String> lore) {
+
+        public Banknote() {
+            this("PAPER", "{primary}&lBANKNOTE &8[{success}%amount%&8]", java.util.List.of(
+                    "",
+                    "{secondary}Information:",
+                    " {letters_black}▎ {letters}Currency {letters_black}» {highlight}%currency%",
+                    " {letters_black}▎ {letters}Signed by {letters_black}» {highlight}%issuer%",
+                    " {letters_black}▎ {letters}Issued {letters_black}» {info}%date%",
+                    "",
+                    "{warning}➥ Right-click to redeem",
+                    ""));
+        }
     }
 
     /** The {@code admin} section: what {@code /economyadmin} asks and shows. */
