@@ -1,0 +1,92 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# Where else one stored currency shows up: its board, the network and Vault.
+
+title: "{primary}&lINTEGRAÇÕES {letters_black}» {highlight}%currency_id%"
+size: 36
+type: SIMPLE
+refresh:
+  mode: ON_CLICK
+  click_delay: 4
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  leaderboard:
+    slot: 11
+    material: "%leaderboard_material%"
+    name: "{primary}&lRANKING"
+    lore:
+      - ""
+      - "{secondary}Informação:"
+      - " {letters_black}▎ {letters}Se funcionam o seu ranking"
+      - " {letters_black}▎ {letters}e os seus placeholders."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Atual {letters_black}» %leaderboard_status%"
+      - ""
+      - "{warning}➥ Clique para alternar"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_toggle %currency_id% leaderboard"
+
+  networked:
+    slot: 13
+    material: "%networked_material%"
+    name: "{primary}&lCOMPARTILHADA ENTRE SERVIDORES"
+    lore:
+      - ""
+      - "{secondary}Informação:"
+      - " {letters_black}▎ {letters}Ativada: um saldo em toda a rede;"
+      - " {letters_black}▎ {letters}desativada: um por servidor. Cada um"
+      - " {letters_black}▎ {letters}fica separado; ao voltar, é restaurado."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Atual {letters_black}» %networked_status%"
+      - ""
+      - "{warning}➥ Clique para alternar"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_toggle %currency_id% networked"
+
+  vault:
+    slot: 15
+    material: "%vault_material%"
+    name: "{primary}&lECONOMIA DO VAULT"
+    lore:
+      - ""
+      - "{secondary}Informação:"
+      - " {letters_black}▎ {letters}Publica-a como a economia Vault"
+      - " {letters_black}▎ {letters}do servidor, no lugar da anterior."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Atual {letters_black}» %vault_status%"
+      - ""
+      - "{warning}➥ Clique para alternar"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_toggle %currency_id% vault"
+
+  back:
+    slot: 31
+    sound: "minecraft:item.bundle.remove_one|1.0|0.5"
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{error}&lVOLTAR"
+    lore:
+      - ""
+      - " {letters_black}▎ {letters}Volta para o resumo da moeda."
+      - ""
+      - "{warning}➥ Clique para voltar"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% hub"

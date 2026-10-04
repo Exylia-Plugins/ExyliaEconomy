@@ -15,38 +15,35 @@ close_sounds:
 
 filler:
   global:
-    material: BLACK_STAINED_GLASS_PANE
+    material: GRAY_STAINED_GLASS_PANE
     hide_tooltip: true
-
-  custom:
-    frame:
-      material: GRAY_STAINED_GLASS_PANE
-      hide_tooltip: true
-      slots: "45-53"
-
   pagination:
     material: LIGHT_GRAY_STAINED_GLASS_PANE
-    name: "{letters_black}&lNENHUMA MOEDA AINDA"
+    name: "{muted}Não há mais moedas"
     lore:
       - ""
       - " {letters_black}▎ {letters}Crie uma com o botão abaixo."
       - ""
+    hide_tooltip: false
 
 pagination:
   slots: '0-35'
 
   item_template:
     material: "%currency_icon%"
-    name: "{primary}&l%currency_name% {letters_black}%currency_id%"
+    name: "{primary}&l%currency_name%"
     lore:
       - ""
-      - "{secondary}Moeda:"
+      - "{secondary}Informação:"
+      - " {letters_black}▎ {letters}ID {letters_black}» {info}%currency_id%"
       - " {letters_black}▎ {letters}Tipo {letters_black}» {info}%currency_kind%"
-      - " {letters_black}▎ {letters}Aparência {letters_black}» {letters}%currency_preview%"
       - " {letters_black}▎ {letters}Ordem {letters_black}» {info}%currency_sort_order%"
       - ""
-      - "{warning}➥ Clique esq. para editar"
-      - "{warning}➥ Clique dir. para excluir"
+      - "{secondary}Prévia:"
+      - " {letters_black}▎ {letters}Fica assim {letters_black}» {letters}%currency_preview%"
+      - ""
+      - "{warning}➥ Clique esquerdo para editar"
+      - "{error}➥ Clique direito para excluir"
       - ""
     actions:
       - "left: exyliaeconomy:currency_admin_edit %currency_id%"
@@ -56,33 +53,37 @@ pagination:
     previous:
       slot: 48
       sound: "minecraft:item.book.page_turn|1.0|1.0"
-      material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0='
-      name: '{error}&l← PÁGINA ANTERIOR'
+      material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0="
+      name: "{error}&l← PÁGINA ANTERIOR"
       lore:
         - ""
         - " {letters_black}▎ {letters}Página {info}%current_page%{letters_black}/{info}%total_pages%"
         - ""
+      actions:
+        - "previous_page"
     next:
       slot: 50
       sound: "minecraft:item.book.page_turn|1.0|1.0"
-      material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0='
-      name: '{success}&lPRÓXIMA PÁGINA →'
+      material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0="
+      name: "{success}&lPRÓXIMA PÁGINA →"
       lore:
         - ""
         - " {letters_black}▎ {letters}Página {info}%current_page%{letters_black}/{info}%total_pages%"
         - ""
+      actions:
+        - "next_page"
 
 items:
   create:
     slot: 45
-    material: EMERALD
-    name: "{success}&lCRIAR MOEDA"
+    material: "EMERALD_BLOCK"
+    name: "{primary}&lCRIAR MOEDA"
     lore:
       - ""
       - "{secondary}Tipos:"
-      - " {letters_black}▎ {info}Salva {letters_black}» {letters}saldos no banco de dados"
-      - " {letters_black}▎ {info}Item {letters_black}» {letters}um item exato que se carrega"
-      - " {letters_black}▎ {info}Só exibição {letters_black}» {letters}reestiliza a de outro plugin"
+      - " {letters_black}▎ {highlight}Armazenada {letters_black}» {letters}saldos no banco de dados"
+      - " {letters_black}▎ {highlight}Item {letters_black}» {letters}um item exato que os jogadores carregam"
+      - " {letters_black}▎ {highlight}Só visual {letters_black}» {letters}reveste a de outro plugin"
       - ""
       - "{warning}➥ Clique para criar"
       - ""
@@ -91,13 +92,13 @@ items:
 
   settings:
     slot: 53
-    material: COMPARATOR
+    material: "COMPARATOR"
     name: "{primary}&lCONFIG. DE ECONOMIA"
     lore:
       - ""
       - "{secondary}Informação:"
-      - " {letters_black}▎ {letters}Moedas de experiência, o registro"
-      - " {letters_black}▎ {letters}e a economia do Vault."
+      - " {letters_black}▎ {letters}Moedas de experiência, o registro,"
+      - " {letters_black}▎ {letters}Vault, idioma e depuração."
       - ""
       - "{warning}➥ Clique para abrir"
       - ""

@@ -3,7 +3,7 @@
 # The economy's switches that belong to no one currency.
 
 title: "{primary}&lAJUSTES DE ECONOMÍA"
-size: 36
+size: 45
 type: SIMPLE
 refresh:
   mode: ON_CLICK
@@ -18,14 +18,8 @@ close_sounds:
 
 filler:
   global:
-    material: BLACK_STAINED_GLASS_PANE
+    material: GRAY_STAINED_GLASS_PANE
     hide_tooltip: true
-
-  custom:
-    frame:
-      material: GRAY_STAINED_GLASS_PANE
-      hide_tooltip: true
-      slots: "0-8,27-35"
 
 items:
   experience-levels:
@@ -34,9 +28,12 @@ items:
     name: "{primary}&lNIVELES DE EXPERIENCIA"
     lore:
       - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Hace de xp_levels una moneda"
+      - " {letters_black}▎ {letters}con la que pueden cobrar las tiendas."
+      - ""
       - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Actual {letters_black}» %experience_levels_status%"
-      - " {letters_black}▎ {letters_black}Hace de xp_levels una moneda para tiendas."
       - ""
       - "{warning}➥ Clic para alternar"
       - ""
@@ -49,83 +46,97 @@ items:
     name: "{primary}&lPUNTOS DE EXPERIENCIA"
     lore:
       - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Hace de xp_points una moneda"
+      - " {letters_black}▎ {letters}con la que pueden cobrar las tiendas."
+      - ""
       - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Actual {letters_black}» %experience_points_status%"
-      - " {letters_black}▎ {letters_black}Hace de xp_points una moneda para tiendas."
       - ""
       - "{warning}➥ Clic para alternar"
       - ""
     actions:
       - "exyliaeconomy:currency_admin_settings_toggle experience_points"
 
-  ledger:
-    slot: 13
-    material: "%ledger_material%"
-    name: "{primary}&lREGISTRO"
+  vault-provide:
+    slot: 14
+    material: "GOLD_BLOCK"
+    name: "{primary}&lECONOMÍA DE VAULT"
     lore:
       - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}La moneda guardada que sirve Vault."
+      - " {letters_black}▎ {letters}Elígela en la pantalla de esa moneda."
+      - ""
       - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Actual {letters_black}» %ledger_status%"
-      - " {letters_black}▎ {letters_black}Anota cada operación guardada"
-      - " {letters_black}▎ {letters_black}para la pantalla de historial."
+      - " {letters_black}▎ {letters}Publicada {letters_black}» {highlight}%vault_provide%"
       - ""
-      - "{warning}➥ Clic para alternar"
-      - ""
-    actions:
-      - "exyliaeconomy:currency_admin_settings_toggle ledger"
 
   vault-force:
-    slot: 14
+    slot: 15
     material: "%vault_force_material%"
     name: "{primary}&lVAULT POR ENCIMA"
     lore:
       - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Sirve Vault aunque haya otro"
+      - " {letters_black}▎ {letters}plugin de economía instalado."
+      - ""
       - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Actual {letters_black}» %vault_force_status%"
-      - " {letters_black}▎ {letters_black}Sirve Vault aunque haya otro plugin"
-      - " {letters_black}▎ {letters_black}de economía instalado."
       - ""
       - "{warning}➥ Clic para alternar"
       - ""
     actions:
       - "exyliaeconomy:currency_admin_settings_toggle vault_force"
 
+  ledger:
+    slot: 20
+    material: "%ledger_material%"
+    name: "{primary}&lREGISTRO"
+    lore:
+      - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Anota cada operación guardada"
+      - " {letters_black}▎ {letters}para la pantalla de historial."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Actual {letters_black}» %ledger_status%"
+      - ""
+      - "{warning}➥ Clic para alternar"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings_toggle ledger"
+
   ledger-days:
     slot: 21
-    material: CLOCK
+    material: "CLOCK"
     name: "{primary}&lRETENCIÓN DEL REGISTRO"
     lore:
       - ""
       - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Lo antiguo se borra cada hora."
+      - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Se guarda {letters_black}» {info}%ledger_days%"
-      - " {letters_black}▎ {letters_black}Lo antiguo se borra cada hora."
       - ""
       - "{warning}➥ Clic para cambiar"
       - ""
     actions:
       - "exyliaeconomy:currency_admin_settings_toggle ledger_days"
 
-  vault-provide:
-    slot: 15
-    material: GOLD_BLOCK
-    name: "{primary}&lECONOMÍA DE VAULT"
-    lore:
-      - ""
-      - "{secondary}Información:"
-      - " {letters_black}▎ {letters}Publicada {letters_black}» {highlight}%vault_provide%"
-      - " {letters_black}▎ {letters_black}Elígela en la pantalla de una moneda guardada."
-      - ""
-
   offline-pay-notice:
-    slot: 20
+    slot: 22
     material: "%offline_pay_notice_material%"
     name: "{primary}&lAVISO DE PAGOS SIN CONEXIÓN"
     lore:
       - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Al entrar, avisa a los jugadores de lo"
+      - " {letters_black}▎ {letters}que recibieron mientras no estaban."
+      - ""
       - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Actual {letters_black}» %offline_pay_notice_status%"
-      - " {letters_black}▎ {letters_black}Al entrar, avisa a los jugadores de lo"
-      - " {letters_black}▎ {letters_black}que les pagaron mientras no estaban."
       - ""
       - "{warning}➥ Clic para alternar"
       - ""
@@ -134,13 +145,15 @@ items:
 
   language:
     slot: 23
-    material: WRITABLE_BOOK
+    material: "WRITABLE_BOOK"
     name: "{primary}&lIDIOMA"
     lore:
       - ""
       - "{secondary}Información:"
-      - " {letters_black}▎ {letters}Menús y mensajes {letters_black}» {highlight}%language%"
-      - " {letters_black}▎ {letters_black}Del servidor sigue el idioma de ExyliaLib."
+      - " {letters_black}▎ {letters}Por defecto sigue el idioma de ExyliaLib."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Actual {letters_black}» {highlight}%language%"
       - ""
       - "{warning}➥ Clic para cambiar"
       - ""
@@ -153,10 +166,12 @@ items:
     name: "{primary}&lDEPURACIÓN"
     lore:
       - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Explica en la consola lo que"
+      - " {letters_black}▎ {letters}está haciendo el plugin."
+      - ""
       - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Actual {letters_black}» %debug_status%"
-      - " {letters_black}▎ {letters_black}Explica en la consola lo que"
-      - " {letters_black}▎ {letters_black}hace el plugin."
       - ""
       - "{warning}➥ Clic para alternar"
       - ""
@@ -164,13 +179,13 @@ items:
       - "exyliaeconomy:currency_admin_settings_toggle debug"
 
   back:
-    slot: 31
+    slot: 40
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"
-    material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0='
-    name: '{error}&lVOLVER'
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{error}&lVOLVER"
     lore:
       - ""
-      - " {letters_black}▎ {letters}Vuelve a la lista de monedas"
+      - " {letters_black}▎ {letters}Vuelve a la lista de monedas."
       - ""
       - "{warning}➥ Clic para volver"
       - ""

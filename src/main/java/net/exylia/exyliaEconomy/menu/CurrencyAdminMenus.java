@@ -15,14 +15,31 @@ import net.exylia.lib.util.TimeFormats;
 import org.bukkit.entity.Player;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
-/** The three screens {@code /economyadmin} opens: the currencies, one currency, and the settings. */
+/**
+ * The screens {@code /economyadmin} opens: the currencies, one currency, and the settings.
+ *
+ * <p>One currency is a hub that opens each section of it on its own page, as a mine's setup does.
+ */
 public final class CurrencyAdminMenus {
 
     public static final String LIST = "menus/admin/currency_admin_list";
     public static final String EDIT = "menus/admin/currency_admin_edit";
     public static final String SETTINGS = "menus/admin/currency_admin_settings";
+
+    /** The hub's pages, each its own file next to it. Only stored currencies have more than {@code general}. */
+    public static final List<String> PAGES = List.of("general", "commands", "payments", "exchange", "interest", "integrations");
+    private static final String HUB = "hub";
+
+    /** The section each admin is on, so an edit made from it comes back to it. Forgotten with the player. */
+    private static final Map<Player, Page> pages = Collections.synchronizedMap(new WeakHashMap<>());
+
+    private record Page(String currency, String name) {
+    }
 
     /** The amount the preview lines are written with: big enough to show grouping and decimals. */
     private static final BigDecimal SAMPLE = new BigDecimal("12345.67");
@@ -48,8 +65,28 @@ public final class CurrencyAdminMenus {
 
     // ------------------------------------------------------------------- edit
 
+    /** Opens a currency on its hub, from wherever the admin came. */
+    public static void edit(Player player, CurrencyRow row) {
+        openPage(player, row, HUB);
+    }
+
+    /** Opens one section of a currency; {@code hub} or an unknown name opens the hub. */
+    public static void openPage(Player player, CurrencyRow row, String page) {
+        pages.put(player, new Page(row.id(), page));
+        draw(player, row, false);
+    }
+
+    /** Opens the currency on the section the admin was last on. */
     public static void openEdit(Player player, CurrencyRow row) {
         draw(player, row, false);
+    }
+
+    /** The page file this admin is on for this currency: the hub unless a section of it was opened. */
+    private static String file(Player player, CurrencyRow row) {
+        Page page = pages.get(player);
+        if (page == null || !page.currency().equals(row.id()) || !PAGES.contains(page.name())) return EDIT;
+        if (!page.name().equals("general") && row.kind() != CurrencyRow.Kind.STORED) return EDIT;
+        return EDIT + "_" + page.name();
     }
 
     /** Redraws the currency in place when its screen is already open. */
@@ -104,8 +141,9 @@ public final class CurrencyAdminMenus {
         toggle(context, "vault", vault);
         toggle(context, "banknotes", row.banknotes());
         toggle(context, "interest_offline", row.interestOffline());
-        if (inPlace && Screens.update(player, EDIT, context)) return;
-        menus().open(player, EDIT, context.map());
+        String file = file(player, row);
+        if (inPlace && Screens.update(player, file, context)) return;
+        menus().open(player, file, context.map());
     }
 
     // --------------------------------------------------------------- settings
@@ -156,7 +194,7 @@ public final class CurrencyAdminMenus {
     /** A setting that is on or off: its word and the dye that shows it. */
     private static void toggle(Values context, String name, boolean on) {
         context.put(name + "_status", on ? admin().on() : admin().off())
-                .put(name + "_material", on ? "LIME_DYE" : "GRAY_DYE");
+                .put(name + "_material", on ? "LIME_DYE" : "ORANGE_DYE");
     }
 
     private static String plain(BigDecimal amount) {

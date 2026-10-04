@@ -40,6 +40,7 @@ public final class HistoryMenu {
                     ExyliaEconomy.getInstance().getMenus().open(viewer, ID, Values.of()
                             .put("currency_id", currency)
                             .put("currency", info.namePlural())
+                            .put("currency_icon", info.icon())
                             .put("history_owner", owner.name())
                             .put("history_owner_id", owner.id().toString())
                             .put("history_size", lines.size())

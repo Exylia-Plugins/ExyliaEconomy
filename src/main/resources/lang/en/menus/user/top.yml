@@ -1,11 +1,15 @@
-# The leaderboard of one currency.
+# The leaderboard of one currency. /baltop
 #
-# Written once, when it is missing, and never overwritten.
+# Yours to restyle: edits are kept across updates. A release that has to
+# change the layout raises menu-version below; the file is then replaced
+# and your previous one is kept next to it.
 #
-# Values: %currency% %top_size% %top_total%
+# Values: %currency% %currency_icon% %top_size% %top_total%
 # Each place: %top_position% %top_player% %top_amount%
 
-title: "{primary}&lTOP {highlight}%currency%"
+menu-version: 1
+
+title: "{primary}&lTOP {letters_black}» {highlight}%currency% {muted}%current_page%/%total_pages%"
 size: 54
 type: PAGINATION
 
@@ -22,31 +26,31 @@ filler:
     hide_tooltip: true
   pagination:
     material: LIGHT_GRAY_STAINED_GLASS_PANE
-    name: "{letters_black}&lNOBODY HAS ANY YET"
+    name: "{muted}No more players"
     lore:
       - ""
-      - " {letters_black}▎ {letters}Be the first to earn some."
+      - " {letters_black}▎ {letters}Players who hold some appear here."
       - ""
     hide_tooltip: false
 
 pagination:
-  slots: '0-44'
+  slots: '0-35'
 
   item_template:
-    material: 'playerhead-%top_player%'
+    material: "playerhead-%top_player%"
     name: "{primary}&l%top_player% &8[{highlight}#%top_position%&8]"
     lore:
       - ""
-      - "{secondary}Place:"
-      - " {letters_black}▎ {letters}Holds {letters_black}» {success}%top_amount%"
+      - "{secondary}Status:"
+      - " {letters_black}▎ {letters}Balance {letters_black}» {success}%top_amount%"
       - ""
 
   navigation:
     previous:
       slot: 48
       sound: "minecraft:item.book.page_turn|1.0|1.0"
-      material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0='
-      name: '{error}&l← PREVIOUS PAGE'
+      material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0="
+      name: "{error}&l← PREVIOUS PAGE"
       lore:
         - ""
         - " {letters_black}▎ {letters}Page {info}%current_page%{letters_black}/{info}%total_pages%"
@@ -56,8 +60,8 @@ pagination:
     next:
       slot: 50
       sound: "minecraft:item.book.page_turn|1.0|1.0"
-      material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0='
-      name: '{success}&lNEXT PAGE →'
+      material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0="
+      name: "{success}&lNEXT PAGE →"
       lore:
         - ""
         - " {letters_black}▎ {letters}Page {info}%current_page%{letters_black}/{info}%total_pages%"
@@ -68,25 +72,28 @@ pagination:
 items:
   total:
     slot: 45
-    material: GOLD_INGOT
+    material: "%currency_icon%"
     name: "{primary}&lIN CIRCULATION"
     lore:
       - ""
-      - "{secondary}Supply:"
-      - " {letters_black}▎ {letters}Total {letters_black}» {info}%top_total%"
+      - "{secondary}Information:"
       - " {letters_black}▎ {letters}Every balance, hidden players too."
       - ""
+      - "{secondary}Status:"
+      - " {letters_black}▎ {letters}Total {letters_black}» {info}%top_total%"
+      - " {letters_black}▎ {letters}Ranked {letters_black}» {info}%top_size%"
+      - ""
+
   back:
     slot: 49
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"
-    material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0='
-    name: '{error}&lBACK'
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{error}&lBACK"
     lore:
       - ""
-      - " {letters_black}▎ {letters}Returns to your wallet"
+      - " {letters_black}▎ {letters}Returns to your wallet."
       - ""
       - "{warning}➥ Click to go back"
       - ""
     actions:
       - "exyliaeconomy:economy_wallet"
-

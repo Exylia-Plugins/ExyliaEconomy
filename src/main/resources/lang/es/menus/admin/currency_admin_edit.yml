@@ -1,8 +1,8 @@
 # DO NOT EDIT — REGENERATED ON EVERY STARTUP.
 #
-# One currency. What a button offers depends on its kind: a stored currency
-# has rules and switches, an item currency its item, a display-only one only
-# its look.
+# One currency: an overview that opens each section of it. A stored
+# currency has every section; an item currency its item, commands and
+# pay confirmation; a display-only one its look and pay confirmation.
 
 title: "{primary}&lMONEDA {letters_black}» {highlight}%currency_id%"
 size: 45
@@ -20,14 +20,8 @@ close_sounds:
 
 filler:
   global:
-    material: BLACK_STAINED_GLASS_PANE
+    material: GRAY_STAINED_GLASS_PANE
     hide_tooltip: true
-
-  custom:
-    frame:
-      material: GRAY_STAINED_GLASS_PANE
-      hide_tooltip: true
-      slots: "0-8,36-44"
 
 items:
   summary:
@@ -36,8 +30,8 @@ items:
     name: "{primary}&l%currency_plural%"
     lore:
       - ""
-      - "{secondary}Moneda:"
-      - " {letters_black}▎ {letters}ID {letters_black}» {highlight}%currency_id%"
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}ID {letters_black}» {info}%currency_id%"
       - " {letters_black}▎ {letters}Tipo {letters_black}» {info}%currency_kind_label%"
       - ""
       - "{secondary}Vista previa:"
@@ -45,60 +39,47 @@ items:
       - " {letters_black}▎ {letters}Compacta {letters_black}» {letters}%currency_preview_compact%"
       - ""
 
-  icon:
-    slot: 10
-    material: "%currency_icon%"
-    name: "{primary}&lICONO"
+  general:
+    slot: 19
+    material: "NAME_TAG"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lGENERAL"
     lore:
       - ""
       - "{secondary}Información:"
-      - " {letters_black}▎ {letters}Cómo la muestran billeteras y listas."
+      - " {letters_black}▎ {letters}Nombres, cantidades, icono y orden."
       - ""
-      - "{warning}➥ Clic para elegir uno"
-      - ""
-    actions:
-      - "exyliaeconomy:currency_admin_icon %currency_id%"
-
-  appearance:
-    slot: 11
-    material: NAME_TAG
-    name: "{primary}&lAPARIENCIA"
-    lore:
-      - ""
-      - "{secondary}Nombres:"
-      - " {letters_black}▎ {letters}Nombre {letters_black}» {letters}%currency_name%"
-      - " {letters_black}▎ {letters}Plural {letters_black}» {letters}%currency_plural%"
-      - " {letters_black}▎ {letters}Símbolo {letters_black}» {letters}%currency_symbol%"
-      - ""
-      - "{secondary}Cantidades:"
-      - " {letters_black}▎ {letters}Decimales {letters_black}» {info}%currency_decimals%"
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Nombre {letters_black}» {info}%currency_name%"
       - " {letters_black}▎ {letters}Se ve así {letters_black}» {letters}%currency_preview%"
-      - " {letters_black}▎ {letters}Compacta {letters_black}» {letters}%currency_preview_compact%"
       - ""
-      - "{warning}➥ Clic para editar"
+      - "{warning}➥ Clic para abrir"
       - ""
     actions:
-      - "exyliaeconomy:currency_admin_appearance %currency_id%"
+      - "exyliaeconomy:currency_admin_page %currency_id% general"
 
-  aliases:
-    slot: 12
-    material: COMMAND_BLOCK
-    condition: "%currency_kind% != DISPLAY"
+  commands:
+    slot: 20
+    material: "COMMAND_BLOCK"
+    condition: "%currency_kind% == STORED"
     name: "{primary}&lCOMANDOS"
     lore:
       - ""
       - "{secondary}Información:"
-      - " {letters_black}▎ {letters}Nombres {letters_black}» {highlight}%currency_aliases%"
-      - " {letters_black}▎ {letters_black}El primero es el comando; el resto, alias."
+      - " {letters_black}▎ {letters}Lo que escriben los jugadores para usarla."
       - ""
-      - "{warning}➥ Clic para editar"
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Nombres {letters_black}» {info}%currency_aliases%"
+      - " {letters_black}▎ {letters}Activados {letters_black}» %commands_status%"
+      - ""
+      - "{warning}➥ Clic para abrir"
       - ""
     actions:
-      - "exyliaeconomy:currency_admin_aliases %currency_id%"
+      - "exyliaeconomy:currency_admin_page %currency_id% commands"
 
   rules:
-    slot: 14
-    material: BOOK
+    slot: 21
+    material: "BOOK"
     condition: "%currency_kind% == STORED"
     name: "{primary}&lREGLAS"
     lore:
@@ -106,7 +87,7 @@ items:
       - "{secondary}Saldos:"
       - " {letters_black}▎ {letters}Inicial {letters_black}» {info}%currency_start%"
       - " {letters_black}▎ {letters}Tope {letters_black}» {info}%currency_max%"
-      - " {letters_black}▎ {letters}Permiso {letters_black}» {highlight}%currency_permission%"
+      - " {letters_black}▎ {letters}Permiso {letters_black}» {info}%currency_permission%"
       - ""
       - "{secondary}Transferencias:"
       - " {letters_black}▎ {letters}Mínimo {letters_black}» {info}%currency_minimum_transfer%"
@@ -117,228 +98,205 @@ items:
     actions:
       - "exyliaeconomy:currency_admin_rules %currency_id%"
 
+  payments:
+    slot: 22
+    material: "GOLD_NUGGET"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lPAGOS"
+    lore:
+      - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Transferencias, confirmaciones y billetes."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Transferencias {letters_black}» %transferable_status%"
+      - " {letters_black}▎ {letters}Pregunta desde {letters_black}» {info}%currency_pay_confirm%"
+      - " {letters_black}▎ {letters}Billetes {letters_black}» %banknotes_status%"
+      - ""
+      - "{warning}➥ Clic para abrir"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% payments"
+
+  exchange:
+    slot: 23
+    material: "SUNFLOWER"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lCAMBIO"
+    lore:
+      - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Cambiarla por otras monedas."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Cambio {letters_black}» %exchangeable_status%"
+      - " {letters_black}▎ {letters}Tasas {letters_black}» {info}%currency_rates%"
+      - ""
+      - "{warning}➥ Clic para abrir"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% exchange"
+
+  interest:
+    slot: 24
+    material: "EXPERIENCE_BOTTLE"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lINTERÉS"
+    lore:
+      - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Lo que paga a quien la tiene."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Tasa {letters_black}» {info}%currency_interest_rate%"
+      - " {letters_black}▎ {letters}Cada {letters_black}» {info}%currency_interest_interval% ⌚"
+      - " {letters_black}▎ {letters}Desconectados {letters_black}» %interest_offline_status%"
+      - ""
+      - "{warning}➥ Clic para abrir"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% interest"
+
+  integrations:
+    slot: 25
+    material: "ENDER_EYE"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lINTEGRACIONES"
+    lore:
+      - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Su top, Vault y la red."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Top {letters_black}» %leaderboard_status%"
+      - " {letters_black}▎ {letters}Red {letters_black}» %networked_status%"
+      - " {letters_black}▎ {letters}Vault {letters_black}» %vault_status%"
+      - ""
+      - "{warning}➥ Clic para abrir"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% integrations"
+
+  general-item:
+    slot: 20
+    material: "NAME_TAG"
+    condition: "%currency_kind% == ITEM"
+    name: "{primary}&lGENERAL"
+    lore:
+      - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Nombres, cantidades, icono y orden."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Nombre {letters_black}» {info}%currency_name%"
+      - " {letters_black}▎ {letters}Se ve así {letters_black}» {letters}%currency_preview%"
+      - ""
+      - "{warning}➥ Clic para abrir"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% general"
+
+  commands-item:
+    slot: 21
+    material: "COMMAND_BLOCK"
+    condition: "%currency_kind% == ITEM"
+    name: "{primary}&lCOMANDOS"
+    lore:
+      - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}El primero es el comando;"
+      - " {letters_black}▎ {letters}el resto, sus alias."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Nombres {letters_black}» {info}%currency_aliases%"
+      - ""
+      - "{warning}➥ Clic para editar"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_aliases %currency_id%"
+
   item:
-    slot: 14
+    slot: 23
     material: "%currency_item_icon%"
     condition: "%currency_kind% == ITEM"
     name: "{primary}&lÍTEM"
     lore:
       - ""
       - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Solo cuentan los stacks idénticos:"
+      - " {letters_black}▎ {letters}nombre, lore y modelo incluidos."
+      - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Ítem {letters_black}» %currency_item_state%"
-      - " {letters_black}▎ {letters_black}Solo cuentan los stacks idénticos:"
-      - " {letters_black}▎ {letters_black}nombre, lore y modelo incluidos."
       - ""
       - "{warning}➥ Clic para poner uno nuevo"
       - ""
     actions:
       - "exyliaeconomy:currency_admin_item %currency_id%"
 
-  rates:
-    slot: 15
-    material: SUNFLOWER
-    condition: "%currency_kind% == STORED"
-    name: "{primary}&lTASAS DE CAMBIO"
-    lore:
-      - ""
-      - "{secondary}Información:"
-      - " {letters_black}▎ {letters}Tasas {letters_black}» {info}%currency_rates%"
-      - " {letters_black}▎ {letters_black}shards=0.01: 1 de esta vale 0.01 shards."
-      - " {letters_black}▎ {letters_black}Solo se usa con el cambio activo."
-      - ""
-      - "{warning}➥ Clic para editar"
-      - ""
-    actions:
-      - "exyliaeconomy:currency_admin_rates %currency_id%"
-
-  sort-order:
-    slot: 16
-    material: HOPPER
-    name: "{primary}&lORDEN"
-    lore:
-      - ""
-      - "{secondary}Información:"
-      - " {letters_black}▎ {letters}Actual {letters_black}» {info}%currency_sort_order%"
-      - " {letters_black}▎ {letters_black}Menor se muestra primero."
-      - ""
-      - "{warning}➥ Clic para definirlo"
-      - ""
-    actions:
-      - "exyliaeconomy:currency_admin_sort %currency_id%"
-
-  transferable:
-    slot: 19
-    material: "%transferable_material%"
-    condition: "%currency_kind% == STORED"
-    name: "{primary}&lTRANSFERENCIAS"
-    lore:
-      - ""
-      - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Actual {letters_black}» %transferable_status%"
-      - " {letters_black}▎ {letters_black}Si los jugadores pueden pagarse entre sí."
-      - ""
-      - "{warning}➥ Clic para alternar"
-      - ""
-    actions:
-      - "exyliaeconomy:currency_admin_toggle %currency_id% transferable"
-
-  exchangeable:
-    slot: 20
-    material: "%exchangeable_material%"
-    condition: "%currency_kind% == STORED"
-    name: "{primary}&lCAMBIO"
-    lore:
-      - ""
-      - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Actual {letters_black}» %exchangeable_status%"
-      - " {letters_black}▎ {letters_black}Si se puede cambiar según sus tasas."
-      - ""
-      - "{warning}➥ Clic para alternar"
-      - ""
-    actions:
-      - "exyliaeconomy:currency_admin_toggle %currency_id% exchangeable"
-
-  leaderboard:
-    slot: 21
-    material: "%leaderboard_material%"
-    condition: "%currency_kind% == STORED"
-    name: "{primary}&lCLASIFICACIÓN"
-    lore:
-      - ""
-      - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Actual {letters_black}» %leaderboard_status%"
-      - " {letters_black}▎ {letters_black}Si funcionan su top y sus placeholders."
-      - ""
-      - "{warning}➥ Clic para alternar"
-      - ""
-    actions:
-      - "exyliaeconomy:currency_admin_toggle %currency_id% leaderboard"
-
-  networked:
-    slot: 23
-    material: "%networked_material%"
-    condition: "%currency_kind% == STORED"
-    name: "{primary}&lCOMPARTIDA ENTRE SERVIDORES"
-    lore:
-      - ""
-      - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Actual {letters_black}» %networked_status%"
-      - " {letters_black}▎ {letters_black}Activado: un saldo en toda la red;"
-      - " {letters_black}▎ {letters_black}desactivado: uno por servidor. Cada uno"
-      - " {letters_black}▎ {letters_black}se guarda aparte; al volver, se restaura."
-      - ""
-      - "{warning}➥ Clic para alternar"
-      - ""
-    actions:
-      - "exyliaeconomy:currency_admin_toggle %currency_id% networked"
-
-  commands:
+  pay-confirm-item:
     slot: 24
-    material: "%commands_material%"
-    condition: "%currency_kind% == STORED"
-    name: "{primary}&lCOMANDOS ACTIVADOS"
-    lore:
-      - ""
-      - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Actual {letters_black}» %commands_status%"
-      - " {letters_black}▎ {letters_black}Si sus nombres de comando existen."
-      - ""
-      - "{warning}➥ Clic para alternar"
-      - ""
-    actions:
-      - "exyliaeconomy:currency_admin_toggle %currency_id% commands"
-
-  vault:
-    slot: 25
-    material: "%vault_material%"
-    condition: "%currency_kind% == STORED"
-    name: "{primary}&lECONOMÍA DE VAULT"
-    lore:
-      - ""
-      - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Actual {letters_black}» %vault_status%"
-      - " {letters_black}▎ {letters_black}La publica como la economía Vault del"
-      - " {letters_black}▎ {letters_black}servidor, reemplazando la anterior."
-      - ""
-      - "{warning}➥ Clic para alternar"
-      - ""
-    actions:
-      - "exyliaeconomy:currency_admin_toggle %currency_id% vault"
-
-  pay-confirm:
-    slot: 29
-    material: PAPER
+    material: "PAPER"
+    condition: "%currency_kind% == ITEM"
     name: "{primary}&lCONFIRMACIÓN DE PAGO"
     lore:
       - ""
       - "{secondary}Información:"
-      - " {letters_black}▎ {letters}Pregunta por encima de {letters_black}» {info}%currency_pay_confirm%"
-      - " {letters_black}▎ {letters_black}Un /pay por encima pide confirmación."
+      - " {letters_black}▎ {letters}Un /pay por encima pide confirmación."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Pregunta desde {letters_black}» {info}%currency_pay_confirm%"
       - ""
       - "{warning}➥ Clic para editar"
       - ""
     actions:
       - "exyliaeconomy:currency_admin_pay_confirm %currency_id%"
 
-  banknotes:
-    slot: 30
-    material: "%banknotes_material%"
-    condition: "%currency_kind% == STORED"
-    name: "{primary}&lBILLETES"
-    lore:
-      - ""
-      - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Actual {letters_black}» %banknotes_status%"
-      - " {letters_black}▎ {letters_black}Si /withdraw puede emitirla como billete."
-      - ""
-      - "{warning}➥ Clic para alternar"
-      - ""
-    actions:
-      - "exyliaeconomy:currency_admin_toggle %currency_id% banknotes"
-
-  interest:
-    slot: 32
-    material: EXPERIENCE_BOTTLE
-    condition: "%currency_kind% == STORED"
-    name: "{primary}&lINTERÉS"
+  general-display:
+    slot: 21
+    material: "NAME_TAG"
+    condition: "%currency_kind% == DISPLAY"
+    name: "{primary}&lGENERAL"
     lore:
       - ""
       - "{secondary}Información:"
-      - " {letters_black}▎ {letters}Tasa {letters_black}» {info}%currency_interest_rate%"
-      - " {letters_black}▎ {letters}Cada {letters_black}» {info}%currency_interest_interval% ⌚"
-      - " {letters_black}▎ {letters}Máximo por pago {letters_black}» {info}%currency_interest_max%"
-      - " {letters_black}▎ {letters_black}Se paga a quien tenga el permiso de interés."
+      - " {letters_black}▎ {letters}Nombres, cantidades, icono y orden."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Nombre {letters_black}» {info}%currency_name%"
+      - " {letters_black}▎ {letters}Se ve así {letters_black}» {letters}%currency_preview%"
+      - ""
+      - "{warning}➥ Clic para abrir"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% general"
+
+  pay-confirm-display:
+    slot: 23
+    material: "PAPER"
+    condition: "%currency_kind% == DISPLAY"
+    name: "{primary}&lCONFIRMACIÓN DE PAGO"
+    lore:
+      - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Un /pay por encima pide confirmación."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Pregunta desde {letters_black}» {info}%currency_pay_confirm%"
       - ""
       - "{warning}➥ Clic para editar"
       - ""
     actions:
-      - "exyliaeconomy:currency_admin_interest %currency_id%"
-
-  interest-offline:
-    slot: 33
-    material: "%interest_offline_material%"
-    condition: "%currency_kind% == STORED"
-    name: "{primary}&lINTERÉS SIN CONEXIÓN"
-    lore:
-      - ""
-      - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Actual {letters_black}» %interest_offline_status%"
-      - " {letters_black}▎ {letters_black}También paga a quien no está conectado,"
-      - " {letters_black}▎ {letters_black}sin comprobar su permiso."
-      - ""
-      - "{warning}➥ Clic para alternar"
-      - ""
-    actions:
-      - "exyliaeconomy:currency_admin_toggle %currency_id% interest_offline"
+      - "exyliaeconomy:currency_admin_pay_confirm %currency_id%"
 
   back:
     slot: 40
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"
-    material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0='
-    name: '{error}&lVOLVER'
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{error}&lVOLVER"
     lore:
       - ""
-      - " {letters_black}▎ {letters}Vuelve a la lista de monedas"
+      - " {letters_black}▎ {letters}Vuelve a la lista de monedas."
       - ""
       - "{warning}➥ Clic para volver"
       - ""
@@ -347,12 +305,11 @@ items:
 
   delete:
     slot: 44
-    material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUwZmQxMDE5OWU4ZTRmY2RhYmNhZTRmODVjODU5MTgxMjdhN2M1NTUzYWQyMzVmMDFjNTZkMThiYjk0NzBkMyJ9fX0='
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUwZmQxMDE5OWU4ZTRmY2RhYmNhZTRmODVjODU5MTgxMjdhN2M1NTUzYWQyMzVmMDFjNTZkMThiYjk0NzBkMyJ9fX0="
     name: "{error}&lELIMINAR MONEDA"
     lore:
       - ""
-      - "{secondary}Información:"
-      - " {letters_black}▎ {letters}Quita la moneda. Los saldos guardados"
+      - " {letters_black}▎ {letters}Elimina la moneda. Los saldos guardados"
       - " {letters_black}▎ {letters}quedan en la base de datos, sin uso."
       - " {letters_black}▎ {letters_black}Se te pedirá confirmación."
       - ""

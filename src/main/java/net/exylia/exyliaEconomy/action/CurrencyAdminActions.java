@@ -79,7 +79,14 @@ public final class CurrencyAdminActions {
         button("currency_admin_open_list", (player, args, store) -> CurrencyAdminMenus.openList(player, store));
         button("currency_admin_settings", (player, args, store) -> CurrencyAdminMenus.openSettings(player, store));
         button("currency_admin_create", this::create);
-        withRow("currency_admin_edit", (player, store, row) -> CurrencyAdminMenus.openEdit(player, row));
+        withRow("currency_admin_edit", (player, store, row) -> CurrencyAdminMenus.edit(player, row));
+        // currency_admin_page <id> <page>: one section of a currency, or its hub.
+        button("currency_admin_page", (player, args, store) -> {
+            String currency = args.string(0, "");
+            store.get(currency).ifPresentOrElse(
+                    row -> CurrencyAdminMenus.openPage(player, row, args.string(1, "hub").toLowerCase(Locale.ROOT)),
+                    () -> Messages.send(player, EconomyMessages.get().currencyNotFound(), Values.of("id", currency)));
+        });
         withRow("currency_admin_delete", this::delete);
         withRow("currency_admin_appearance", this::appearance);
         withRow("currency_admin_rules", this::rules);

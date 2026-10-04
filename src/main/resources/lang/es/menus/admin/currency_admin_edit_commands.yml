@@ -1,0 +1,72 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# The commands of one stored currency.
+
+title: "{primary}&lCOMANDOS {letters_black}» {highlight}%currency_id%"
+size: 36
+type: SIMPLE
+refresh:
+  mode: ON_CLICK
+  click_delay: 4
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  aliases:
+    slot: 12
+    material: "COMMAND_BLOCK"
+    name: "{primary}&lNOMBRES DE COMANDO"
+    lore:
+      - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}El primero es el comando;"
+      - " {letters_black}▎ {letters}el resto, sus alias."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Nombres {letters_black}» {info}%currency_aliases%"
+      - ""
+      - "{warning}➥ Clic para editar"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_aliases %currency_id%"
+
+  commands:
+    slot: 14
+    material: "%commands_material%"
+    name: "{primary}&lCOMANDOS ACTIVADOS"
+    lore:
+      - ""
+      - "{secondary}Información:"
+      - " {letters_black}▎ {letters}Si sus comandos existen."
+      - ""
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Actual {letters_black}» %commands_status%"
+      - ""
+      - "{warning}➥ Clic para alternar"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_toggle %currency_id% commands"
+
+  back:
+    slot: 31
+    sound: "minecraft:item.bundle.remove_one|1.0|0.5"
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{error}&lVOLVER"
+    lore:
+      - ""
+      - " {letters_black}▎ {letters}Vuelve al resumen de la moneda."
+      - ""
+      - "{warning}➥ Clic para volver"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% hub"

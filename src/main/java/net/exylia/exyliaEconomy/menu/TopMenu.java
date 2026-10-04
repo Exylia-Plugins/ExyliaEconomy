@@ -45,6 +45,7 @@ public final class TopMenu {
         ExyliaEconomy.getInstance().getMenus().open(viewer, ID, Values.of()
                 .put("currency_id", currency)
                 .put("currency", info.namePlural())
+                .put("currency_icon", info.icon())
                 .put("top_size", entries.size())
                 .put("top_total", info.format(StoredEconomy.total(currency)))
                 .map(), rows);

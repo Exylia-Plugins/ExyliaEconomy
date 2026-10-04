@@ -32,13 +32,15 @@ import java.util.Optional;
 public final class EconomyMenus {
 
     /** Every screen, by the id the rest of the plugin opens it with: its path without the extension. */
-    private static final List<String> IDS = List.of(
-            CurrencyAdminMenus.LIST,
-            CurrencyAdminMenus.EDIT,
-            CurrencyAdminMenus.SETTINGS,
-            WalletMenu.ID,
-            TopMenu.ID,
-            HistoryMenu.ID);
+    private static final List<String> IDS = java.util.stream.Stream.concat(
+            java.util.stream.Stream.of(
+                    CurrencyAdminMenus.LIST,
+                    CurrencyAdminMenus.EDIT,
+                    CurrencyAdminMenus.SETTINGS,
+                    WalletMenu.ID,
+                    TopMenu.ID,
+                    HistoryMenu.ID),
+            CurrencyAdminMenus.PAGES.stream().map(page -> CurrencyAdminMenus.EDIT + "_" + page)).toList();
 
     private final ExyliaEconomy plugin;
     private final PluginMenus menus;

@@ -1,11 +1,15 @@
-# The wallet: every currency somebody holds.
+# The wallet: every currency somebody holds. /wallet
 #
-# Written once, when it is missing, and never overwritten.
+# Yours to restyle: edits are kept across updates. A release that has to
+# change the layout raises menu-version below; the file is then replaced
+# and your previous one is kept next to it.
 #
 # Values: %wallet_owner% %wallet_currencies%
 # Each currency: %currency% %currency_icon% %currency_balance% %currency_kind%
 
-title: "{primary}&lCARTEIRA {letters_black}» {highlight}%wallet_owner%"
+menu-version: 1
+
+title: "{primary}&lCARTEIRA {letters_black}» {highlight}%wallet_owner% {muted}%current_page%/%total_pages%"
 size: 54
 type: PAGINATION
 
@@ -22,28 +26,29 @@ filler:
     hide_tooltip: true
   pagination:
     material: LIGHT_GRAY_STAINED_GLASS_PANE
-    name: "{letters_black}&lNENHUMA MOEDA"
+    name: "{muted}Não há mais moedas"
     lore:
       - ""
-      - " {letters_black}▎ {letters}Este servidor não tem moeda"
-      - " {letters_black}▎ {letters}que você possa ter."
+      - " {letters_black}▎ {letters}As moedas que você pode ter aparecem aqui."
       - ""
     hide_tooltip: false
 
 pagination:
-  slots: '10-16,19-25,28-34'
+  slots: '0-35'
 
   item_template:
     material: "%currency_icon%"
     name: "{primary}&l%currency%"
     lore:
       - ""
-      - "{secondary}Moeda:"
-      - " {letters_black}▎ {letters}Saldo {letters_black}» {success}%currency_balance%"
+      - "{secondary}Informação:"
       - " {letters_black}▎ {letters}Tipo {letters_black}» {info}%currency_kind%"
       - ""
-      - "{warning}➥ Clique esq. para o histórico"
-      - "{warning}➥ Clique dir. para o ranking"
+      - "{secondary}Estado:"
+      - " {letters_black}▎ {letters}Saldo {letters_black}» {success}%currency_balance%"
+      - ""
+      - "{warning}➥ Clique esquerdo para o histórico"
+      - "{warning}➥ Clique direito para o ranking"
       - ""
     actions:
       - "left: exyliaeconomy:economy_history %currency_id% %wallet_owner_id%"
@@ -53,8 +58,8 @@ pagination:
     previous:
       slot: 48
       sound: "minecraft:item.book.page_turn|1.0|1.0"
-      material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0='
-      name: '{error}&l← PÁGINA ANTERIOR'
+      material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0="
+      name: "{error}&l← PÁGINA ANTERIOR"
       lore:
         - ""
         - " {letters_black}▎ {letters}Página {info}%current_page%{letters_black}/{info}%total_pages%"
@@ -64,8 +69,8 @@ pagination:
     next:
       slot: 50
       sound: "minecraft:item.book.page_turn|1.0|1.0"
-      material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0='
-      name: '{success}&lPRÓXIMA PÁGINA →'
+      material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0="
+      name: "{success}&lPRÓXIMA PÁGINA →"
       lore:
         - ""
         - " {letters_black}▎ {letters}Página {info}%current_page%{letters_black}/{info}%total_pages%"
@@ -75,15 +80,15 @@ pagination:
 
 items:
   owner:
-    slot: 4
-    material: 'playerhead-%wallet_owner%'
+    slot: 49
+    material: "playerhead-%wallet_owner%"
     name: "{primary}&l%wallet_owner%"
     lore:
       - ""
-      - "{secondary}Carteira:"
+      - "{secondary}Informação:"
+      - " {letters_black}▎ {letters}Tudo o que esta carteira guarda,"
+      - " {letters_black}▎ {letters}neste servidor e em toda a rede."
+      - ""
+      - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Moedas {letters_black}» {info}%wallet_currencies%"
       - ""
-      - " {letters_black}▎ {letters_black}Tudo o que esta carteira tem,"
-      - " {letters_black}▎ {letters_black}neste servidor e na rede."
-      - ""
-
