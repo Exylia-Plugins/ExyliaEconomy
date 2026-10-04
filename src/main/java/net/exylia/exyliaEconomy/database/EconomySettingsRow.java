@@ -46,7 +46,7 @@ public record EconomySettingsRow(
     public static final String GLOBAL = "global";
     public static final int DEFAULT_LEDGER_DAYS = 90;
     /** What the settings screen cycles the language through. */
-    public static final List<String> LANGUAGES = List.of("default", "en", "es", "pt");
+    public static final List<String> LANGUAGES = List.of("default", "en", "es", "pt", "fr");
     /** What the settings screen cycles the retention through; {@code -1} is forever. */
     private static final int[] LEDGER_STEPS = {30, 90, 180, 365, -1};
 

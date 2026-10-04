@@ -1,0 +1,193 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# The economy's switches that belong to no one currency.
+
+title: "{primary}&lPARAMÈTRES D'ÉCONOMIE"
+size: 45
+type: SIMPLE
+refresh:
+  mode: ON_CLICK
+  click_delay: 4
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  experience-levels:
+    slot: 11
+    material: "%experience_levels_material%"
+    name: "{primary}&lNIVEAUX D'EXPÉRIENCE"
+    lore:
+      - ""
+      - "{secondary}Informations :"
+      - " {letters_black}▎ {letters}Fait de xp_levels une monnaie"
+      - " {letters_black}▎ {letters}que les boutiques peuvent encaisser."
+      - ""
+      - "{secondary}État :"
+      - " {letters_black}▎ {letters}Actuel {letters_black}» %experience_levels_status%"
+      - ""
+      - "{warning}➥ Clique pour basculer"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings_toggle experience_levels"
+
+  experience-points:
+    slot: 12
+    material: "%experience_points_material%"
+    name: "{primary}&lPOINTS D'EXPÉRIENCE"
+    lore:
+      - ""
+      - "{secondary}Informations :"
+      - " {letters_black}▎ {letters}Fait de xp_points une monnaie"
+      - " {letters_black}▎ {letters}que les boutiques peuvent encaisser."
+      - ""
+      - "{secondary}État :"
+      - " {letters_black}▎ {letters}Actuel {letters_black}» %experience_points_status%"
+      - ""
+      - "{warning}➥ Clique pour basculer"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings_toggle experience_points"
+
+  vault-provide:
+    slot: 14
+    material: "GOLD_BLOCK"
+    name: "{primary}&lÉCONOMIE VAULT"
+    lore:
+      - ""
+      - "{secondary}Informations :"
+      - " {letters_black}▎ {letters}La monnaie stockée servie par Vault."
+      - " {letters_black}▎ {letters}Choisis-la sur l'écran de cette monnaie."
+      - ""
+      - "{secondary}État :"
+      - " {letters_black}▎ {letters}Publiée {letters_black}» {highlight}%vault_provide%"
+      - ""
+
+  vault-force:
+    slot: 15
+    material: "%vault_force_material%"
+    name: "{primary}&lVAULT PRIORITAIRE"
+    lore:
+      - ""
+      - "{secondary}Informations :"
+      - " {letters_black}▎ {letters}Sert Vault même si un autre"
+      - " {letters_black}▎ {letters}plugin d'économie soit installé."
+      - ""
+      - "{secondary}État :"
+      - " {letters_black}▎ {letters}Actuel {letters_black}» %vault_force_status%"
+      - ""
+      - "{warning}➥ Clique pour basculer"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings_toggle vault_force"
+
+  ledger:
+    slot: 20
+    material: "%ledger_material%"
+    name: "{primary}&lJOURNAL"
+    lore:
+      - ""
+      - "{secondary}Informations :"
+      - " {letters_black}▎ {letters}Note chaque opération enregistrée"
+      - " {letters_black}▎ {letters}pour l'écran d'historique."
+      - ""
+      - "{secondary}État :"
+      - " {letters_black}▎ {letters}Actuel {letters_black}» %ledger_status%"
+      - ""
+      - "{warning}➥ Clique pour basculer"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings_toggle ledger"
+
+  ledger-days:
+    slot: 21
+    material: "CLOCK"
+    name: "{primary}&lCONSERVATION DU JOURNAL"
+    lore:
+      - ""
+      - "{secondary}Informations :"
+      - " {letters_black}▎ {letters}Les anciennes entrées sont purgées chaque heure."
+      - ""
+      - "{secondary}État :"
+      - " {letters_black}▎ {letters}Conservé {letters_black}» {info}%ledger_days%"
+      - ""
+      - "{warning}➥ Clique pour changer"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings_toggle ledger_days"
+
+  offline-pay-notice:
+    slot: 22
+    material: "%offline_pay_notice_material%"
+    name: "{primary}&lAVIS DE PAIEMENTS HORS LIGNE"
+    lore:
+      - ""
+      - "{secondary}Informations :"
+      - " {letters_black}▎ {letters}À la connexion, prévient les joueurs de ce"
+      - " {letters_black}▎ {letters}qu'ils ont reçus pendant leur absence."
+      - ""
+      - "{secondary}État :"
+      - " {letters_black}▎ {letters}Actuel {letters_black}» %offline_pay_notice_status%"
+      - ""
+      - "{warning}➥ Clique pour basculer"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings_toggle offline_pay_notice"
+
+  language:
+    slot: 23
+    material: "WRITABLE_BOOK"
+    name: "{primary}&lLANGUE"
+    lore:
+      - ""
+      - "{secondary}Informations :"
+      - " {letters_black}▎ {letters}Par défaut, suit la langue d'ExyliaLib."
+      - ""
+      - "{secondary}État :"
+      - " {letters_black}▎ {letters}Actuel {letters_black}» {highlight}%language%"
+      - ""
+      - "{warning}➥ Clique pour changer"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings_toggle language"
+
+  debug:
+    slot: 24
+    material: "%debug_material%"
+    name: "{primary}&lDÉBOGAGE"
+    lore:
+      - ""
+      - "{secondary}Informations :"
+      - " {letters_black}▎ {letters}Détaille dans la console ce que"
+      - " {letters_black}▎ {letters}fait le plugin."
+      - ""
+      - "{secondary}État :"
+      - " {letters_black}▎ {letters}Actuel {letters_black}» %debug_status%"
+      - ""
+      - "{warning}➥ Clique pour basculer"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings_toggle debug"
+
+  back:
+    slot: 40
+    sound: "minecraft:item.bundle.remove_one|1.0|0.5"
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{error}&lRETOUR"
+    lore:
+      - ""
+      - " {letters_black}▎ {letters}Retourne à la liste des monnaies."
+      - ""
+      - "{warning}➥ Clique pour revenir"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_open_list"

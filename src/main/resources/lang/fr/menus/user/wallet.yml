@@ -1,0 +1,94 @@
+# The wallet: every currency somebody holds. /wallet
+#
+# Yours to restyle: edits are kept across updates. A release that has to
+# change the layout raises menu-version below; the file is then replaced
+# and your previous one is kept next to it.
+#
+# Values: %wallet_owner% %wallet_currencies%
+# Each currency: %currency% %currency_icon% %currency_balance% %currency_kind%
+
+menu-version: 1
+
+title: "{primary}&lPORTEFEUILLE {letters_black}» {highlight}%wallet_owner% {muted}%current_page%/%total_pages%"
+size: 54
+type: PAGINATION
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+  pagination:
+    material: LIGHT_GRAY_STAINED_GLASS_PANE
+    name: "{muted}Plus aucune monnaie"
+    lore:
+      - ""
+      - " {letters_black}▎ {letters}Les monnaies que tu peux posséder apparaissent ici."
+      - ""
+    hide_tooltip: false
+
+pagination:
+  slots: '0-35'
+
+  item_template:
+    material: "%currency_icon%"
+    name: "{primary}&l%currency%"
+    lore:
+      - ""
+      - "{secondary}Informations :"
+      - " {letters_black}▎ {letters}Type {letters_black}» {info}%currency_kind%"
+      - ""
+      - "{secondary}État :"
+      - " {letters_black}▎ {letters}Solde {letters_black}» {success}%currency_balance%"
+      - ""
+      - "{warning}➥ Clic gauche pour l'historique"
+      - "{warning}➥ Clic droit pour le top"
+      - ""
+    actions:
+      - "left: exyliaeconomy:economy_history %currency_id% %wallet_owner_id%"
+      - "right: exyliaeconomy:economy_top %currency_id%"
+
+  navigation:
+    previous:
+      slot: 48
+      sound: "minecraft:item.book.page_turn|1.0|1.0"
+      material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0="
+      name: "{error}&l← PAGE PRÉCÉDENTE"
+      lore:
+        - ""
+        - " {letters_black}▎ {letters}Page {info}%current_page%{letters_black}/{info}%total_pages%"
+        - ""
+      actions:
+        - "previous_page"
+    next:
+      slot: 50
+      sound: "minecraft:item.book.page_turn|1.0|1.0"
+      material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0="
+      name: "{success}&lPAGE SUIVANTE →"
+      lore:
+        - ""
+        - " {letters_black}▎ {letters}Page {info}%current_page%{letters_black}/{info}%total_pages%"
+        - ""
+      actions:
+        - "next_page"
+
+items:
+  owner:
+    slot: 49
+    material: "playerhead-%wallet_owner%"
+    name: "{primary}&l%wallet_owner%"
+    lore:
+      - ""
+      - "{secondary}Informations :"
+      - " {letters_black}▎ {letters}Tout ce que contient ce portefeuille,"
+      - " {letters_black}▎ {letters}sur ce serveur et sur tout le réseau."
+      - ""
+      - "{secondary}État :"
+      - " {letters_black}▎ {letters}Monnaies {letters_black}» {info}%wallet_currencies%"
+      - ""

@@ -1,0 +1,106 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# Every currency the server runs, kept in the database. /economyadmin
+
+title: "{primary}&lMONNAIES {muted}%current_page%/%total_pages%"
+size: 54
+type: PAGINATION
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+  pagination:
+    material: LIGHT_GRAY_STAINED_GLASS_PANE
+    name: "{muted}Plus aucune monnaie"
+    lore:
+      - ""
+      - " {letters_black}▎ {letters}Crée-en une avec le bouton ci-dessous."
+      - ""
+    hide_tooltip: false
+
+pagination:
+  slots: '0-35'
+
+  item_template:
+    material: "%currency_icon%"
+    name: "{primary}&l%currency_name%"
+    lore:
+      - ""
+      - "{secondary}Informations :"
+      - " {letters_black}▎ {letters}ID {letters_black}» {info}%currency_id%"
+      - " {letters_black}▎ {letters}Type {letters_black}» {info}%currency_kind%"
+      - " {letters_black}▎ {letters}Ordre {letters_black}» {info}%currency_sort_order%"
+      - ""
+      - "{secondary}Aperçu :"
+      - " {letters_black}▎ {letters}Rendu {letters_black}» {letters}%currency_preview%"
+      - ""
+      - "{warning}➥ Clic gauche pour modifier"
+      - "{error}➥ Clic droit pour supprimer"
+      - ""
+    actions:
+      - "left: exyliaeconomy:currency_admin_edit %currency_id%"
+      - "right: exyliaeconomy:currency_admin_delete %currency_id%"
+
+  navigation:
+    previous:
+      slot: 48
+      sound: "minecraft:item.book.page_turn|1.0|1.0"
+      material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0="
+      name: "{error}&l← PAGE PRÉCÉDENTE"
+      lore:
+        - ""
+        - " {letters_black}▎ {letters}Page {info}%current_page%{letters_black}/{info}%total_pages%"
+        - ""
+      actions:
+        - "previous_page"
+    next:
+      slot: 50
+      sound: "minecraft:item.book.page_turn|1.0|1.0"
+      material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0="
+      name: "{success}&lPAGE SUIVANTE →"
+      lore:
+        - ""
+        - " {letters_black}▎ {letters}Page {info}%current_page%{letters_black}/{info}%total_pages%"
+        - ""
+      actions:
+        - "next_page"
+
+items:
+  create:
+    slot: 45
+    material: "EMERALD_BLOCK"
+    name: "{primary}&lCRÉER UNE MONNAIE"
+    lore:
+      - ""
+      - "{secondary}Types :"
+      - " {letters_black}▎ {highlight}Stockée {letters_black}» {letters}soldes en base de données"
+      - " {letters_black}▎ {highlight}Objet {letters_black}» {letters}un objet exact que portent les joueurs"
+      - " {letters_black}▎ {highlight}Visuelle {letters_black}» {letters}habille celle d'un autre plugin"
+      - ""
+      - "{warning}➥ Clique pour créer"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_create"
+
+  settings:
+    slot: 53
+    material: "COMPARATOR"
+    name: "{primary}&lPARAMÈTRES D'ÉCONOMIE"
+    lore:
+      - ""
+      - "{secondary}Informations :"
+      - " {letters_black}▎ {letters}Monnaies d'expérience, journal,"
+      - " {letters_black}▎ {letters}Vault, langue et débogage."
+      - ""
+      - "{warning}➥ Clique pour ouvrir"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings"

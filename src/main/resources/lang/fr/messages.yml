@@ -1,0 +1,200 @@
+prefix: '{primary}&lÉCONOMIE {letters_black}•<reset>'
+balance: '%prefix% {letters}Ton solde de {highlight}%currency%{letters} : {success}%amount%'
+balance-other: '%prefix% {highlight}%currency% {letters}de {highlight}%player%{letters} : {success}%amount%'
+paid: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Tu as payé {highlight}%amount% {success}à {highlight}%player%{success}.'
+received: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {highlight}%player% {success}t''a payé {highlight}%amount%{success}.'
+pay-self: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Tu ne peux pas te payer toi-même.'
+pay-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}ne peut pas être envoyé à d''autres joueurs.'
+pay-minimum: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Le minimum que tu peux envoyer est {highlight}%amount%{error}.'
+not-enough: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Il te manque {highlight}%amount% {error}de {highlight}%currency%{error}.'
+invalid-amount: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Ce n''est pas un montant. Essaie {highlight}100{error}, {highlight}2.5k {error}ou {highlight}1m{error}.'
+no-currency: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Aucune monnaie nommée {highlight}%currency% {error}n''existe.'
+no-permission: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Tu ne peux pas utiliser {highlight}%currency%{error}.'
+not-available: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}n''est pas disponible pour le moment.'
+given: '%prefix% {success}Tu as donné {highlight}%amount% {success}à {highlight}%player%{success}. {letters_black}Désormais : %balance%'
+given-notify: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}Tu as reçu {highlight}%amount%{success}.'
+taken: '%prefix% {warning}Tu as retiré {highlight}%amount% {warning}à {highlight}%player%{warning}. {letters_black}Désormais : %balance%'
+taken-notify: '[sound:BLOCK_NOTE_BLOCK_BASS|1.0|0.8]%prefix% {warning}On t''a retiré {highlight}%amount%{warning}.'
+set: '%prefix% {success}Le {highlight}%currency% {success}de {highlight}%player% {success}est désormais de {highlight}%amount%{success}.'
+reset: '%prefix% {warning}Le {highlight}%currency% {warning}de {highlight}%player% {warning}a été réinitialisé.'
+queued: '%prefix% {letters}%amount% {letters}en attente pour {highlight}%player%{letters}. {letters_black}Hors ligne : il le recevra à sa prochaine connexion.'
+top-header: '{primary}&lTOP {highlight}%currency% {muted}page %page%'
+top-line: ' {letters_black}#%position% {highlight}%player% {letters_black}» {success}%amount%'
+top-empty: ' {letters_black}Personne n''en a encore.'
+history-header: '{primary}&lHISTORIQUE {highlight}%currency% {letters_black}· {letters}%player%'
+history-line: ' {letters_black}%date% %delta% {letters_black}» {info}%reason% {letters_black}(%balance%)'
+history-empty: ' {letters_black}Rien pour le moment.'
+exchanged: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Tu as échangé {highlight}%from% {success}contre {highlight}%to%{success}.'
+exchange-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}%reason%'
+wallet-header: '{primary}&lPORTEFEUILLE {letters_black}· {letters}%player%'
+wallet-line: ' {letters_black}▎ {letters}%currency% {letters_black}» {success}%amount%'
+currencies-header: '{primary}&lMONNAIES'
+currencies-line: ' {letters_black}▎ {highlight}%id% {letters_black}» {letters}%currency% {letters_black}(%kind%)'
+import-started: '%prefix% {letters}Importation des soldes de {highlight}%from% {letters}vers {highlight}%currency%{letters}…'
+import-done: '%prefix% {success}{highlight}%count% {success}soldes importés vers {highlight}%currency%{success}.'
+usage: '%prefix% {letters}Usage{letters_black} : {highlight}/%command% {letters_black}[pay <player> <amount> | top | history | exchange <amount> <to>]'
+currency-created: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.0]%prefix% {success}Monnaie {highlight}%id% {success}créée.'
+currency-deleted: '%prefix% {warning}Monnaie {highlight}%id% {warning}supprimée.'
+currency-saved: '[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}Monnaie {highlight}%id% {success}enregistrée.'
+currency-not-found: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Monnaie {highlight}%id% {error}introuvable.'
+currency-exists: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}La monnaie {highlight}%id% {error}existe déjà.'
+currency-invalid-id: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%id% {error}n''est pas un ID de monnaie valide. Utilise des minuscules, des chiffres et des tirets bas, 32 au maximum.'
+currency-invalid-rates: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Impossible de lire ces taux : {highlight}%reason%{error}. Écris-les ainsi : {highlight}shards=0.01, gems=2{error}.'
+still-loading: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {warning}Ton solde est encore en cours de chargement. Réessaie dans un instant.'
+import-already: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Les soldes de {highlight}%from% {error}ont déjà été importés vers {highlight}%currency%{error}. Ajoute {highlight}again {error}à la commande pour importer les joueurs manquants.'
+import-same: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%from% {error}et {highlight}%currency% {error}sont la même monnaie : il n''y a rien à importer.'
+reasons:
+  api: Plugin
+  vault: Plugin
+  pay: Paiement
+  pay:tax: Taxe de transfert
+  pay:tax-refund: Remboursement de taxe
+  shop: Boutique
+  shop:buy: Achat en boutique
+  shop:sell: Vente en boutique
+  worth: Valeur
+  worth:sell: Vente à la valeur
+  market: Marché
+  market:buy: Achat sur le marché
+  market:sale: Vente sur le marché
+  market:fee: Frais du marché
+  auctions: Enchères
+  auctions:bid: Offre aux enchères
+  auctions:sale: Vente aux enchères
+  orders: Commandes
+  trade: Échange
+  exchange: Change
+  admin: Staff
+  import: Importation
+  note: Billet
+  note:withdraw: Billet émis
+  note:redeem: Billet encaissé
+  interest: Intérêts
+  rollback: Annulation
+kinds:
+  stored: Monnaie du serveur
+  item: Objet
+  experience: Expérience
+  external: Autre plugin
+  unknown: Inconnue
+exchange-not-allowed: Cette monnaie ne peut pas être changée.
+exchange-no-rate: Aucun taux de %from% vers %to%.
+exchange-over-ceiling: Cela dépasserait le maximum de %currency% que tu peux détenir.
+at-ceiling: Le solde est à son maximum de %amount%.
+permission-denied: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Tu n''as pas la permission de faire cela.'
+economy-off: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}L''économie ne fonctionne pas.'
+rewards-delivered: '[sound:ENTITY_PLAYER_LEVELUP|1.0|1.4]%prefix% {success}{highlight}%amount% {success}paiements qui t''attendaient ont été livrés.'
+over-ceiling: Cela dépasserait le solde maximum, qui est de %amount%.
+refused: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}%reason%'
+import-running: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {warning}Cette importation est déjà en cours.'
+import-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}L''importation vers {highlight}%currency% {error}s''est arrêtée en cours de route. Relance-la avec {highlight}again{error} : personne ne reçoit deux fois.'
+currency-networked-locked: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%id% {error}a déjà des soldes : elle ne peut plus passer d''un partage en réseau à un solde par serveur, ils seraient laissés de côté.'
+paid-taxed: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Tu as payé {highlight}%amount% {success}à {highlight}%player%{success}. {letters_black}Taxe : {info}%tax%'
+pay-refused: Le paiement a été refusé.
+top-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}n''a pas de classement.'
+player-required: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Indique un joueur{letters_black} : {highlight}/%command% <player>'
+currency-write-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Impossible d''enregistrer {highlight}%id% {error}dans la base de données. Consulte la console et réessaie.'
+pay-cancelled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Le paiement a été annulé.'
+exchange-cancelled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Le change a été annulé.'
+pay-disabled-target: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {highlight}%player% {error}n''accepte pas les paiements pour le moment.'
+pay-toggle-off: '[sound:BLOCK_NOTE_BLOCK_BASS|1.0|0.8]%prefix% {warning}Tu ne reçois plus de paiements. {letters_black}/paytoggle les réactive.'
+pay-toggle-on: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Tu reçois de nouveau des paiements.'
+pay-toggle-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Vérification impossible pour le moment. Réessaie dans un instant.'
+pay-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Envoyer {highlight}%amount% {warning}à {highlight}%player%{warning} ? <click:run_command:''%command%''><hover:show_text:''{letters}Clique pour envoyer le paiement''>{success}&l[✔ CONFIRMER]</hover></click> {letters_black}30s ⌚'
+confirm-expired: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Rien à confirmer : la demande a expiré ou a changé. Relance la commande.'
+offline-pay-single: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {letters}Pendant ton absence, {highlight}%player% {letters}t''a payé {success}%amount%{letters}.'
+offline-pay-many: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {letters}Pendant ton absence, tu as reçu {success}%amount% {letters}de la part de {highlight}%count% {letters}joueurs.'
+top-total: ' {letters_black}▎ {letters}En circulation {letters_black}» {info}%total%'
+give-all-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Donner {highlight}%amount% {warning}à chacun des {highlight}%count% {warning}joueurs connectés ? <click:run_command:''%command%''><hover:show_text:''{letters}Clique pour le donner à tout le monde''>{success}&l[✔ CONFIRMER]</hover></click> {letters_black}30s ⌚'
+give-all-done: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Tu as donné {highlight}%amount% {success}à {highlight}%count% {success}joueurs. {letters_black}Ignorés : %skipped%'
+give-all-nobody: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Personne n''est connecté.'
+note-withdrawn: '[sound:ITEM_BOOK_PAGE_TURN|1.0|1.2]%prefix% {success}Tu as retiré un billet de {highlight}%amount%{success}.'
+note-redeemed: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}Tu as encaissé un billet de {highlight}%amount%{success}.'
+note-invalid: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Ce billet a déjà été encaissé ou n''est pas valide.'
+note-not-held: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Tiens un billet en main pour le déposer.'
+note-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}ne peut pas être retiré sous forme de billet.'
+note-inventory-full: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Libère d''abord une place dans ton inventaire.'
+note-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Impossible de traiter le billet pour le moment. Réessaie dans un instant.'
+note-wrong-server: Ce billet ne peut être encaissé que sur le serveur qui l'a émis.
+log-header: '{primary}&lJOURNAL {highlight}%currency% {letters_black}· {letters}%player% {muted}page %page%'
+log-line: ' {letters_black}#%id% {muted}%date% %delta% {letters_black}» {info}%reason% {letters_black}(%balance%)'
+export-started: '%prefix% {letters}Exportation du journal…'
+export-done: '[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}{highlight}%count% {success}lignes exportées vers {highlight}exports/%file%{success}.'
+ledger-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Impossible de lire ou d''écrire le journal. Consulte la console.'
+rollback-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Annuler {highlight}%count% {warning}mouvements de {highlight}%player%{warning} ? {letters_black}Net : %net% {letters_black}· Transferts exclus : %excluded% <click:run_command:''%command%''><hover:show_text:''{letters}Clique pour les annuler''>{success}&l[✔ CONFIRMER]</hover></click> {letters_black}30s ⌚'
+rollback-nothing: '%prefix% {letters}Il ne reste rien à annuler pour {highlight}%player% {letters}sur cette période. {letters_black}Transferts exclus : %excluded%'
+rollback-done: '[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}{highlight}%count% {success}mouvements de {highlight}%player% {success}annulés. {letters_black}Net : %net% {letters_black}· Rejetés : %failed% · Déjà faits : %skipped%'
+invalid-window: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Ce n''est pas une période. Essaie {highlight}1h{error}, {highlight}2d {error}ou une entrée comme {highlight}#42{error}.'
+interest-paid: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.6]%prefix% {success}Intérêts {highlight}+%amount% {letters_black}· prochain dans {info}%next% ⌚'
+banknote:
+  material: PAPER
+  name: '{primary}&lBILLET &8[{success}%amount%&8]'
+  lore:
+  - ''
+  - '{secondary}Informations :'
+  - ' {letters_black}▎ {letters}Monnaie {letters_black}» {highlight}%currency%'
+  - ' {letters_black}▎ {letters}Signé par {letters_black}» {highlight}%issuer%'
+  - ' {letters_black}▎ {letters}Émis le {letters_black}» {info}%date%'
+  - ''
+  - '{warning}➥ Clic droit pour encaisser'
+  - ''
+admin:
+  icon-prompt: '{warning}Choisis une icône'
+  id-prompt: '{primary}Saisis un ID pour la monnaie, comme {highlight}gems{primary} :'
+  kind-prompt: '{primary}Quel type de monnaie est {highlight}%id%{primary} ?'
+  item-prompt: '{warning}Place l''objet exact que représente cette monnaie'
+  delete-prompt: '{error}Supprimer la monnaie {highlight}%id%{error} ?'
+  delete-stored-warning: ' {letters}Les soldes restent dans la base de données, mais personne ne peut les utiliser tant qu''une monnaie avec cet ID n''existe pas de nouveau.'
+  appearance-title: '{primary}&lAPPARENCE {letters_black}» {highlight}%id%'
+  rules-title: '{primary}&lRÈGLES {letters_black}» {highlight}%id%'
+  rates-title: '{primary}&lTAUX DE CHANGE {letters_black}» {highlight}%id%'
+  commands-title: '{primary}&lCOMMANDES {letters_black}» {highlight}%id%'
+  sort-title: '{primary}&lORDRE {letters_black}» {highlight}%id%'
+  name: Nom
+  name-hint: Une unité. Accepte les marqueurs de couleur.
+  plural: Pluriel
+  symbol: Symbole
+  symbol-hint: Vide pour aucun.
+  decimals: Décimales
+  decimals-hint: 0 pour des nombres entiers, jusqu'à 8.
+  decimals-provider-hint: 0 à 8, ou -1 pour suivre le fournisseur.
+  format: Format
+  format-hint: '%amount% %symbol% %name%'
+  compact-format: Format compact
+  compact-format-hint: Idem pour les scoreboards, où %amount% s'affiche comme 1.2k.
+  start: Solde initial
+  max: Solde maximum
+  max-hint: -1 pour aucun maximum.
+  permission: Permission
+  permission-hint: 'Requise pour utiliser ses commandes. Vide : personne n''en a besoin.'
+  minimum-transfer: Minimum qu'un joueur peut envoyer
+  tax: Taxe de transfert, en pourcentage
+  tax-hint: Prélevée sur chaque transfert. 0 pour aucune.
+  rates: Taux
+  rates-hint: autre_id=taux, séparés par des virgules. shards=0.01 signifie que 1 de celle-ci vaut 0.01 shards.
+  aliases: Noms de la commande
+  aliases-hint: Séparés par des virgules, sans le slash. Le premier est la commande, les autres ses alias.
+  sort-order: Ordre
+  sort-order-hint: Le plus petit s'affiche en premier, dans les portefeuilles et les listes.
+  none: '{letters_black}Aucun'
+  provider-decimals: '{letters_black}Du fournisseur'
+  item-set: '{success}Défini'
+  item-not-set: '{error}Non défini'
+  'on': '{success}✔ Activé'
+  'off': '{error}✘ Désactivé'
+  ledger-forever: Pour toujours
+  ledger-days: '%days% jours ⌚'
+  kind-stored: Stockée
+  kind-item: Objet
+  kind-display: Visuelle uniquement
+  pay-confirm-title: '{primary}&lCONFIRMATION DE PAIEMENT {letters_black}» {highlight}%id%'
+  pay-confirm-above: Demander confirmation au-dessus de
+  pay-confirm-above-hint: Un /pay au-dessus de ce montant demande confirmation. 0 ne demande jamais.
+  interest-title: '{primary}&lINTÉRÊTS {letters_black}» {highlight}%id%'
+  interest-rate: Taux, pourcentage
+  interest-rate-hint: Du solde, versé à chaque intervalle. 0 désactive les intérêts.
+  interest-interval: Intervalle
+  interest-interval-hint: Fréquence du versement, comme 30m, 1h ou 1d. Minimum 1m.
+  interest-max: Maximum par versement
+  interest-max-hint: Le plafond d'un versement. 0 pour aucun plafond.
+  language-default: Celle du serveur
