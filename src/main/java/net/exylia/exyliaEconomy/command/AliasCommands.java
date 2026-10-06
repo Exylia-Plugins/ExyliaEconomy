@@ -7,6 +7,7 @@ import net.exylia.exyliaEconomy.model.CurrencyRules;
 import net.exylia.exyliaEconomy.service.EconomyActions;
 import net.exylia.exyliaEconomy.Permissions;
 import net.exylia.lib.command.lamp.Suggestions;
+import net.exylia.lib.debug.Debug;
 import net.exylia.lib.economy.Economy;
 import net.exylia.lib.player.ExyliaPlayers;
 import org.bukkit.Bukkit;
@@ -57,7 +58,7 @@ public final class AliasCommands {
             List<String> aliases = rules.aliases();
             Alias command = new Alias(aliases.get(0), aliases.subList(1, aliases.size()), rules.id(), actions);
             if (!Bukkit.getCommandMap().register(prefix, command)) {
-                plugin.getLogger().warning("The command /" + aliases.get(0) + " for '" + rules.id()
+                Debug.of(plugin).warn("The command /" + aliases.get(0) + " for '" + rules.id()
                         + "' is taken by another plugin; it answers as /" + prefix + ":" + aliases.get(0) + ".");
             }
             REGISTERED.add(command);

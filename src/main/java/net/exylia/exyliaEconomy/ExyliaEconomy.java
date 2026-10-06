@@ -91,12 +91,13 @@ public final class ExyliaEconomy {
         instance = this;
         this.plugin = plugin;
 
+        debug = Debug.of(plugin);
+
         // Before anything opens the database: the survival core's database.yml is what makes this
         // plugin read the balances it already holds rather than a new, empty database.
-        SurvivalCoreImport.files(plugin);
+        SurvivalCoreImport.files(plugin, debug);
 
         tasks = Tasks.of(plugin);
-        debug = Debug.of(plugin);
         inputs = Inputs.of(plugin);
         // Item and experience currencies pay through these. A payment to somebody who is not here,
         // or whose inventory is full, waits in the table and is handed over on their next join.

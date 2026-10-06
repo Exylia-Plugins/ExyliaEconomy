@@ -148,6 +148,12 @@ public final class TestServer {
                 });
     }
 
+    /** A debug channel whose lines reach the stand-in console, for code that logs outside a running plugin. */
+    public static Debug debug() {
+        install();
+        return Debug.of(plugin("test"));
+    }
+
     /** Waits until the condition holds, failing the test when it never does. */
     public static void await(String what, Duration timeout, BooleanSupplier condition) throws InterruptedException {
         long end = System.nanoTime() + timeout.toNanos();

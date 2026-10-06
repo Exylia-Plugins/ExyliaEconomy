@@ -7,6 +7,7 @@ import net.exylia.lib.database.Databases;
 import net.exylia.lib.database.MemoryDatabase;
 import net.exylia.lib.database.PluginDatabase;
 import net.exylia.lib.database.Repository;
+import net.exylia.lib.debug.Debug;
 import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /** The currencies ExyliaSurvivalCore kept under its own table names, brought over once. */
 class LegacyTablesTest {
 
-    private static final Logger LOGGER = Logger.getLogger("test");
+    private static final Debug DEBUG = TestServer.debug();
 
     private static PluginDatabase database(String name) {
         TestServer.install();
@@ -63,7 +63,7 @@ class LegacyTablesTest {
 
         Repository<CurrencyRow> currencies = database.repository(CurrencyRow.class);
         Repository<EconomySettingsRow> settings = database.repository(EconomySettingsRow.class);
-        assertEquals(2, await(LegacyTables.copy(database, currencies, settings, LOGGER)));
+        assertEquals(2, await(LegacyTables.copy(database, currencies, settings, DEBUG)));
 
         // Compared with the old row as the database hands it back, which is what was copied.
         assertEquals(await(oldCurrencies.find("gems")).orElseThrow().toRow(), await(currencies.find("gems")).orElseThrow());
@@ -79,7 +79,7 @@ class LegacyTablesTest {
 
         // An admin deletes a currency here: it is not brought back on the next start.
         await(currencies.delete("tokens"));
-        assertEquals(0, await(LegacyTables.copy(database, currencies, settings, LOGGER)));
+        assertEquals(0, await(LegacyTables.copy(database, currencies, settings, DEBUG)));
         assertTrue(await(currencies.find("tokens")).isEmpty());
         assertEquals(2L, await(oldCurrencies.count()), "the old table is never touched");
     }
@@ -94,7 +94,7 @@ class LegacyTablesTest {
         Repository<EconomySettingsRow> settings = database.repository(EconomySettingsRow.class);
         await(settings.save(new EconomySettingsRow(false, true, "", false, true)));
 
-        assertEquals(0, await(LegacyTables.copy(database, currencies, settings, LOGGER)));
+        assertEquals(0, await(LegacyTables.copy(database, currencies, settings, DEBUG)));
         assertTrue(await(currencies.findAll()).isEmpty());
     }
 }

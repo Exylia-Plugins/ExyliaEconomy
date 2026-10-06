@@ -1,5 +1,6 @@
 package net.exylia.exyliaEconomy.migration;
 
+import net.exylia.lib.debug.Debug;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -11,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Brings over the files the economy module of ExyliaSurvivalCore left behind, on the first start.
@@ -50,14 +50,13 @@ public final class SurvivalCoreImport {
     }
 
     /** Copies the files where this plugin has none of its own, once. */
-    public static void files(Plugin plugin) {
+    public static void files(Plugin plugin, Debug debug) {
         File folder = plugin.getDataFolder();
-        Logger logger = plugin.getLogger();
         if (new File(folder, MARKER).exists()) {
             try {
-                relocate(folder, logger);
+                relocate(folder, debug);
             } catch (IOException | InvalidConfigurationException | RuntimeException failure) {
-                logger.severe("Could not copy the database of " + SOURCE + " here: " + failure + ". The balances"
+                debug.error("Could not copy the database of " + SOURCE + " here: " + failure + ". The balances"
                         + " are still read from plugins/" + SOURCE + "; do not delete that folder.");
             }
             return;
@@ -65,11 +64,11 @@ public final class SurvivalCoreImport {
         File source = new File(folder.getParentFile(), SOURCE);
         if (source.isDirectory()) {
             try {
-                database(source, folder, logger);
-                languages(source, folder, logger);
+                database(source, folder, debug);
+                languages(source, folder, debug);
             } catch (IOException | InvalidConfigurationException | RuntimeException failure) {
                 // Not marked: the next start tries again rather than settling on a new, empty database.
-                logger.severe("Could not import the economy files of " + SOURCE + ": " + failure
+                debug.error("Could not import the economy files of " + SOURCE + ": " + failure
                         + ". Copy plugins/" + SOURCE + "/database.yml here by hand, or the balances"
                         + " are read from a new, empty database.");
                 return;
@@ -80,12 +79,12 @@ public final class SurvivalCoreImport {
             Files.writeString(new File(folder, MARKER).toPath(),
                     "Imported from " + SOURCE + ". Delete this file to import again.\n", StandardCharsets.UTF_8);
         } catch (IOException failure) {
-            logger.warning("Could not note that the files of " + SOURCE + " were imported: " + failure);
+            debug.warn("Could not note that the files of " + SOURCE + " were imported: " + failure);
         }
     }
 
     /** The survival core's {@code database.yml}, with an embedded file still pointing at its folder. */
-    static void database(File source, File folder, Logger logger) throws IOException, InvalidConfigurationException {
+    static void database(File source, File folder, Debug debug) throws IOException, InvalidConfigurationException {
         File from = new File(source, "database.yml");
         File to = new File(folder, "database.yml");
         if (!from.isFile() || to.exists()) return;
@@ -97,18 +96,18 @@ public final class SurvivalCoreImport {
         // copy. A file of this plugin's own already there is never written over, and the survival
         // core's stays the one read.
         if (!Path.of(file).isAbsolute()) {
-            database.set("database.h2.file", copyH2(source, folder, file, logger) ? file : "../" + SOURCE + "/" + file);
+            database.set("database.h2.file", copyH2(source, folder, file, debug) ? file : "../" + SOURCE + "/" + file);
         }
         Files.createDirectories(folder.toPath());
         database.save(to);
-        logger.info("Using the database of " + SOURCE + ": its database.yml was copied here.");
+        debug.log("Using the database of " + SOURCE + ": its database.yml was copied here.");
     }
 
     /**
      * A {@code database.yml} an earlier version wrote, still opening the survival core's H2 file:
      * given a copy of its own, so that folder can go.
      */
-    static void relocate(File folder, Logger logger) throws IOException, InvalidConfigurationException {
+    static void relocate(File folder, Debug debug) throws IOException, InvalidConfigurationException {
         File config = new File(folder, "database.yml");
         if (!config.isFile()) return;
         YamlConfiguration database = new YamlConfiguration();
@@ -117,10 +116,10 @@ public final class SurvivalCoreImport {
         String prefix = "../" + SOURCE + "/";
         if (file == null || !file.startsWith(prefix)) return;
         String own = file.substring(prefix.length());
-        if (!copyH2(new File(folder.getParentFile(), SOURCE), folder, own, logger)) return;
+        if (!copyH2(new File(folder.getParentFile(), SOURCE), folder, own, debug)) return;
         database.set("database.h2.file", own);
         database.save(config);
-        logger.info("database.yml now opens this plugin's own copy of the database; the one in plugins/"
+        debug.log("database.yml now opens this plugin's own copy of the database; the one in plugins/"
                 + SOURCE + " is no longer read.");
     }
 
@@ -133,11 +132,11 @@ public final class SurvivalCoreImport {
      * @return whether the copy is in place; {@code false} when there is no file to copy, or this
      *         plugin already has one there
      */
-    static boolean copyH2(File source, File folder, String file, Logger logger) throws IOException {
+    static boolean copyH2(File source, File folder, String file, Debug debug) throws IOException {
         for (String suffix : H2_SUFFIXES) {
             Path to = new File(folder, file + suffix).toPath();
             if (Files.exists(to)) {
-                logger.warning("Not copying the database of " + SOURCE + ": " + to + " already exists, so the"
+                debug.warn("Not copying the database of " + SOURCE + ": " + to + " already exists, so the"
                         + " survival core's file stays the one read.");
                 return false;
             }
@@ -151,34 +150,34 @@ public final class SurvivalCoreImport {
             Path partial = to.resolveSibling(to.getFileName() + ".importing");
             Files.copy(from, partial, StandardCopyOption.REPLACE_EXISTING);
             Files.move(partial, to);
-            logger.info("Copied the database " + from + " to " + to + ".");
+            debug.log("Copied the database " + from + " to " + to + ".");
             copied = true;
         }
         return copied;
     }
 
     /** Each language's messages and players' menus, where this plugin has none. */
-    private static void languages(File source, File folder, Logger logger) throws IOException {
+    private static void languages(File source, File folder, Debug debug) throws IOException {
         File[] languages = new File(source, "lang").listFiles(File::isDirectory);
         if (languages == null) return;
         for (File language : languages) {
             String code = language.getName();
             copy(new File(language, "modules/economy/messages.yml"),
-                    new File(folder, "lang/" + code + "/messages.yml"), false, logger);
+                    new File(folder, "lang/" + code + "/messages.yml"), false, debug);
             for (String menu : MENUS) {
                 copy(new File(language, "modules/economy/menus/" + menu + ".yml"),
-                        new File(folder, "lang/" + code + "/menus/user/" + menu + ".yml"), true, logger);
+                        new File(folder, "lang/" + code + "/menus/user/" + menu + ".yml"), true, debug);
             }
         }
     }
 
-    private static void copy(File from, File to, boolean menu, Logger logger) throws IOException {
+    private static void copy(File from, File to, boolean menu, Debug debug) throws IOException {
         if (!from.isFile() || to.exists()) return;
         Files.createDirectories(to.toPath().getParent());
         String text = Files.readString(from.toPath(), StandardCharsets.UTF_8);
         // The buttons name the plugin whose action they run.
         if (menu) text = text.replace("survivalcore:", "exyliaeconomy:");
         Files.writeString(to.toPath(), text, StandardCharsets.UTF_8);
-        logger.info("Imported " + to.getPath() + " from " + SOURCE + ".");
+        debug.log("Imported " + to.getPath() + " from " + SOURCE + ".");
     }
 }

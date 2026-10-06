@@ -76,7 +76,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.logging.Logger;
 
 /**
  * The runtime behind every currency this plugin keeps.
@@ -155,7 +154,6 @@ public final class StoredEconomy implements Listener {
     private static final String ANALYTICS = "net.exylia.analytics.api.ExyliaAnalytics";
 
     private final Plugin plugin;
-    private final Logger logger;
     private final Debug debug;
     private final TaskScheduler tasks;
     private final Repository<BalanceRow> balances;
@@ -252,7 +250,6 @@ public final class StoredEconomy implements Listener {
         this.plugin = plugin;
         this.afterLoad = afterLoad;
         this.store = new CurrencyStore(plugin);
-        this.logger = plugin.getLogger();
         this.debug = Debug.of(plugin);
         this.tasks = Tasks.of(plugin);
         this.balances = Databases.of(plugin).repository(BalanceRow.class);
@@ -412,7 +409,7 @@ public final class StoredEconomy implements Listener {
         try {
             CompletableFuture.allOf(tails).get(SHUTDOWN_WAIT_SECONDS, TimeUnit.SECONDS);
         } catch (TimeoutException slow) {
-            logger.warning("Economy: some balance writes had not landed after " + SHUTDOWN_WAIT_SECONDS
+            debug.warn("Economy: some balance writes had not landed after " + SHUTDOWN_WAIT_SECONDS
                     + " seconds; what they changed is lost if the database never receives them.");
         } catch (InterruptedException interrupted) {
             Thread.currentThread().interrupt();
@@ -522,7 +519,7 @@ public final class StoredEconomy implements Listener {
         String provide = read.vaultProvide().toLowerCase(Locale.ROOT);
         StoredCurrency named = provide.isBlank() ? null : next.get(provide);
         if (named == null && !provide.isBlank()) {
-            logger.warning("Economy: Vault is set to '" + provide + "', which is not a stored currency.");
+            debug.warn("Economy: Vault is set to '" + provide + "', which is not a stored currency.");
         }
         // ExyliaLib's default currency is 'vault'. With no economy plugin behind
         // Vault, a name that is no currency (any more) leaves the whole server
@@ -531,7 +528,7 @@ public final class StoredEconomy implements Listener {
         StoredCurrency published = named != null || provide.isBlank() || vault.othersServe()
                 ? named : next.values().stream().findFirst().orElse(null);
         if (published != named) {
-            logger.warning("Economy: no currency is set for Vault and no economy plugin is installed, so '"
+            debug.warn("Economy: no currency is set for Vault and no economy plugin is installed, so '"
                     + published.id() + "' serves Vault. Pick another in /economyadmin.");
         }
         safely("publish the Vault economy", () -> vault.publish(published, read.vaultForce()));
@@ -543,7 +540,7 @@ public final class StoredEconomy implements Listener {
         StoredCurrency serving = vault.serving();
         if (serving != null) overlays.put("vault", serving.info().overlaid(read.overlay("vault")));
         Economy.overlays(overlays);
-        logger.info("Economy: " + next.size() + " stored, " + read.items().size() + " item and "
+        debug.log("Economy: " + next.size() + " stored, " + read.items().size() + " item and "
                 + ((read.experienceLevels() ? 1 : 0) + (read.experiencePoints() ? 1 : 0))
                 + " experience currencies.");
         safely("install the currency commands", afterLoad);
@@ -562,7 +559,7 @@ public final class StoredEconomy implements Listener {
         boolean shared = Redis.isActive() || !"h2".equalsIgnoreCase(Databases.of(plugin).engine());
         if (!shared || currencies.stream().noneMatch(currency -> currency.settings().networked())) return;
         warnedName = true;
-        logger.warning("Economy: this server's id is the default 'server-1' while balances are shared through"
+        debug.warn("Economy: this server's id is the default 'server-1' while balances are shared through"
                 + " Redis or a network database. Give every server its own server-id in database.yml, or two"
                 + " servers will write over each other's balances.");
     }
@@ -628,7 +625,7 @@ public final class StoredEconomy implements Listener {
             if (material == null || !material.isItem()) throw new IllegalArgumentException("not an item: " + raw);
             return new ItemStack(material);
         } catch (RuntimeException unreadable) {
-            logger.warning("Economy: item currency '" + settings.id() + "' holds '"
+            debug.warn("Economy: item currency '" + settings.id() + "' holds '"
                     + raw + "', which is not an item (" + unreadable.getMessage() + ").");
             return null;
         }
@@ -639,7 +636,7 @@ public final class StoredEconomy implements Listener {
             Economy.register(provider);
             return true;
         } catch (RuntimeException taken) {
-            logger.warning("Economy: the currency '" + provider.id() + "' is not registered: " + taken.getMessage());
+            debug.warn("Economy: the currency '" + provider.id() + "' is not registered: " + taken.getMessage());
             return false;
         }
     }
@@ -769,7 +766,7 @@ public final class StoredEconomy implements Listener {
                                          int attempt) {
         if (stopping || !here(player, session) || currency.isLoaded(player)) return DONE;
         if (attempt >= TAKE_ATTEMPTS) {
-            logger.warning("Economy: gave up claiming the " + currency.id() + " balance of " + player
+            debug.warn("Economy: gave up claiming the " + currency.id() + " balance of " + player
                     + " for now; it is tried again within a minute.");
             return DONE;
         }
@@ -886,20 +883,20 @@ public final class StoredEconomy implements Listener {
             }
             Throwable thrown = unread != null ? unread : failure;
             if (thrown != null && !Outages.is(thrown)) {
-                logger.severe("Economy: the database refused the " + row.currency() + " balance of " + row.player()
+                debug.error("Economy: the database refused the " + row.currency() + " balance of " + row.player()
                         + " (" + row.amount().toPlainString() + ") and it is not tried again; set it by hand if the"
                         + " database holds another amount (" + thrown + ").");
                 return CompletableFuture.completedFuture(Wrote.UNKNOWN);
             }
             Throwable cause = thrown != null ? thrown : new IllegalStateException("the row was not written");
             if (stopping && attempt >= STOPPING_ATTEMPTS) {
-                logger.severe("Economy: gave up writing the " + row.currency() + " balance of " + row.player()
+                debug.error("Economy: gave up writing the " + row.currency() + " balance of " + row.player()
                         + ": it is " + row.amount().toPlainString() + ", and the database may still hold an older"
                         + " amount. Set it by hand if it does (" + cause + ").");
                 return CompletableFuture.completedFuture(Wrote.UNKNOWN);
             }
             if (attempt == 0) {
-                logger.warning("Economy: could not write the " + row.currency() + " balance of " + row.player()
+                debug.warn("Economy: could not write the " + row.currency() + " balance of " + row.player()
                         + " (" + cause + "); trying again every second.");
             }
             return later(RETRY_TICKS).thenCompose(ignored -> write(row, expected, attempt + 1, unsure));
@@ -950,7 +947,7 @@ public final class StoredEconomy implements Listener {
                                 : pending.exists(row.id()).thenApply(still -> !still))
                                 .thenCompose(gone -> gone))
                 .exceptionally(failure -> {
-                    logger.severe("Economy: could not tell whether the queued change " + row.amount().toPlainString()
+                    debug.error("Economy: could not tell whether the queued change " + row.amount().toPlainString()
                             + " " + row.currency() + " for " + row.player() + " (row " + row.id() + ") was taken;"
                             + " if that row is gone, apply it by hand (" + failure + ").");
                     return false;
@@ -1052,7 +1049,7 @@ public final class StoredEconomy implements Listener {
                 yield writeLedger(player, moves);
             }
             case LOST -> {
-                logger.warning("Economy: another server took over the " + currency.id() + " balance of " + player
+                debug.warn("Economy: another server took over the " + currency.id() + " balance of " + player
                         + "; the changes made here are queued for it.");
                 currency.lost(player);
                 yield requeue(currency, player, moves);
@@ -1060,7 +1057,7 @@ public final class StoredEconomy implements Listener {
             // Queued again they may be paid twice; not queued they may be
             // missing. Missing and logged is the one an admin can repair.
             case UNSURE -> {
-                logger.severe("Economy: a write of the " + currency.id() + " balance of " + player + " ("
+                debug.error("Economy: a write of the " + currency.id() + " balance of " + player + " ("
                         + amount.toPlainString() + ") went unanswered and another server has written it since,"
                         + " so whether these changes reached it is unknown: " + describe(moves) + ". They are not"
                         + " queued again; check the balance and apply what is missing by hand.");
@@ -1256,16 +1253,16 @@ public final class StoredEconomy implements Listener {
             UUID payer = UUID.fromString(row.initiator());
             EconomyResponse back = currency.deposit(payer, cut, Transaction.of("pay:refund").by(player));
             if (back.isSuccess()) {
-                logger.warning("Economy: " + cut.toPlainString() + " " + currency.id() + " paid to " + player
+                debug.warn("Economy: " + cut.toPlainString() + " " + currency.id() + " paid to " + player
                         + " did not fit under the ceiling and went back to " + payer + ".");
                 return;
             }
-            logger.severe("Economy: " + cut.toPlainString() + " " + currency.id() + " paid by " + payer + " to "
+            debug.error("Economy: " + cut.toPlainString() + " " + currency.id() + " paid by " + payer + " to "
                     + player + " did not fit under the ceiling, and the refund was refused (" + back.message()
                     + "). Give it back by hand.");
             return;
         }
-        logger.severe("Economy: " + cut.toPlainString() + " " + currency.id() + " queued for " + player + " ("
+        debug.error("Economy: " + cut.toPlainString() + " " + currency.id() + " queued for " + player + " ("
                 + row.reason() + ", by " + row.initiator() + ") did not fit under the ceiling and was not added.");
     }
 
@@ -1304,13 +1301,13 @@ public final class StoredEconomy implements Listener {
                 .handle((ignored, failure) -> {
                     if (failure == null) return DONE;
                     if (!Outages.is(failure) || stopping && attempt >= STOPPING_ATTEMPTS) {
-                        logger.severe("Economy: could not queue " + (row.absolute() ? "a set to " : "")
+                        debug.error("Economy: could not queue " + (row.absolute() ? "a set to " : "")
                                 + row.amount().toPlainString() + " " + row.currency() + " for " + row.player()
                                 + " (" + row.reason() + ", by " + row.initiator() + "). Apply it by hand (" + failure + ").");
                         return DONE;
                     }
                     if (attempt == 0) {
-                        logger.warning("Economy: could not queue a change for " + row.player() + " (" + failure
+                        debug.warn("Economy: could not queue a change for " + row.player() + " (" + failure
                                 + "); trying again every second.");
                     }
                     return later(RETRY_TICKS).thenCompose(next -> insertPending(row, attempt + 1));
@@ -1632,7 +1629,7 @@ public final class StoredEconomy implements Listener {
         if (amount.signum() <= 0) return;
         EconomyResponse back = Economy.of(from.id()).deposit(player, amount, Transaction.of("exchange:refund").by(player));
         if (!back.isSuccess()) {
-            logger.severe("Economy: an exchange could not refund " + amount.toPlainString() + " " + from.id()
+            debug.error("Economy: an exchange could not refund " + amount.toPlainString() + " " + from.id()
                     + " to " + player + " (" + back.message() + "). Give it back by hand.");
         }
     }
@@ -1684,7 +1681,7 @@ public final class StoredEconomy implements Listener {
                         BigDecimal amount = target.info().scale(balance);
                         if (amount.signum() <= 0) return DONE;
                         if (amount.compareTo(target.ceiling()) > 0) {
-                            economy.logger.warning("Economy: the " + from + " balance of " + player + " ("
+                            economy.debug.warn("Economy: the " + from + " balance of " + player + " ("
                                     + amount.toPlainString() + ") is over the ceiling of " + into + "; not imported.");
                             return DONE;
                         }
@@ -1696,7 +1693,7 @@ public final class StoredEconomy implements Listener {
                                     count.incrementAndGet();
                                     return DONE;
                                 }
-                                economy.logger.warning("Economy: could not import " + amount.toPlainString() + " "
+                                economy.debug.warn("Economy: could not import " + amount.toPlainString() + " "
                                         + from + " for " + player + " (" + paid.message() + ").");
                                 return economy.imported.delete(id).thenApply(gone -> (Void) null);
                             }
@@ -1724,7 +1721,7 @@ public final class StoredEconomy implements Listener {
         try {
             work.run();
         } catch (RuntimeException | LinkageError failure) {
-            logger.warning("Economy: could not " + what + ": " + failure);
+            debug.warn("Economy: could not " + what + ": " + failure);
         }
     }
 }

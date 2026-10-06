@@ -291,7 +291,7 @@ public final class BanknoteService implements Listener {
         }, () -> {
             // ponytail: they left before the answer; a refused or failed note is logged rather than queued back.
             if (failure != null || done.outcome() == Banknotes.Outcome.REFUSED || done.outcome() == Banknotes.Outcome.STUCK) {
-                ExyliaEconomy.getInstance().getPlugin().getLogger().severe("Economy: banknote " + id + " of " + uuid
+                ExyliaEconomy.getInstance().getDebug().error("Economy: banknote " + id + " of " + uuid
                         + " was not redeemed and its holder left before the item could be handed back. It is still"
                         + " unredeemed in exylia_banknotes: pay its amount by hand and mark the row redeemed.");
             }

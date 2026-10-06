@@ -1,5 +1,6 @@
 package net.exylia.exyliaEconomy.manager;
 
+import net.exylia.lib.debug.Debug;
 import net.exylia.lib.economy.CurrencyInfo;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,7 +16,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * {@code currencies.yml}: where the currencies used to be
@@ -110,10 +110,10 @@ public final class CurrencyFile {
      * first when it is missing.
      *
      * @param dataFolder this plugin's data folder
-     * @param logger     where a bad block is reported
+     * @param debug      where a bad block is reported
      * @return what it says
      */
-    public static @NotNull Contents load(@NotNull File dataFolder, @NotNull Logger logger) {
+    public static @NotNull Contents load(@NotNull File dataFolder, @NotNull Debug debug) {
         File file = new File(dataFolder, FILE);
         File source = file;
         if (!file.exists()) {
@@ -122,9 +122,9 @@ public final class CurrencyFile {
             if (legacy != null && legacy.isFile()) {
                 // A copy that failed is read where it is, once more: the owner's
                 // currencies this start, and another try at the next.
-                source = adopt(legacy, file, logger) ? file : legacy;
+                source = adopt(legacy, file, debug) ? file : legacy;
             } else {
-                writeDefaults(file, logger);
+                writeDefaults(file, debug);
             }
         }
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(source);
@@ -146,7 +146,7 @@ public final class CurrencyFile {
                 if (block == null) continue;
                 String clean = id.toLowerCase(Locale.ROOT);
                 if (!clean.matches("[a-z0-9_]{1,32}")) {
-                    logger.warning("currencies.yml: '" + id + "' is not a currency id (letters, digits"
+                    debug.warn("currencies.yml: '" + id + "' is not a currency id (letters, digits"
                             + " and underscores, up to 32); the block is skipped.");
                     continue;
                 }
@@ -163,7 +163,7 @@ public final class CurrencyFile {
                 String clean = id.toLowerCase(Locale.ROOT);
                 String item = block.getString("item", "");
                 if (item == null || item.isBlank()) {
-                    logger.warning("currencies.yml: item currency '" + id + "' names no item; skipped.");
+                    debug.warn("currencies.yml: item currency '" + id + "' names no item; skipped.");
                     continue;
                 }
                 items.put(clean, new Item(clean, info(clean, block, 0), item.trim(),
@@ -187,15 +187,15 @@ public final class CurrencyFile {
      *
      * @return whether the copy is in place
      */
-    private static boolean adopt(File legacy, File file, Logger logger) {
+    private static boolean adopt(File legacy, File file, Debug debug) {
         try {
             Files.createDirectories(file.toPath().getParent());
             Files.copy(legacy.toPath(), file.toPath());
-            logger.info("currencies.yml: copied " + legacy.getPath() + " to " + file.getPath()
+            debug.log("currencies.yml: copied " + legacy.getPath() + " to " + file.getPath()
                     + "; edit it there from now on, the old file is no longer read.");
             return true;
         } catch (IOException failure) {
-            logger.warning("currencies.yml: could not copy " + legacy.getPath() + " to "
+            debug.warn("currencies.yml: could not copy " + legacy.getPath() + " to "
                     + file.getPath() + " (" + failure.getMessage() + "); reading the old file for now.");
             return false;
         }
@@ -255,13 +255,13 @@ public final class CurrencyFile {
         return List.copyOf(out);
     }
 
-    private static void writeDefaults(File file, Logger logger) {
+    private static void writeDefaults(File file, Debug debug) {
         try {
             File parent = file.getParentFile();
             if (parent != null) parent.mkdirs();
             Files.writeString(file.toPath(), DEFAULTS);
         } catch (IOException failure) {
-            logger.warning("Could not write " + FILE + ": " + failure.getMessage());
+            debug.warn("Could not write " + FILE + ": " + failure.getMessage());
         }
     }
 

@@ -4,10 +4,10 @@ import net.exylia.exyliaEconomy.database.CurrencyRow;
 import net.exylia.exyliaEconomy.database.EconomySettingsRow;
 import net.exylia.lib.database.PluginDatabase;
 import net.exylia.lib.database.Repository;
+import net.exylia.lib.debug.Debug;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Logger;
 
 /**
  * Copies the currencies and the economy settings from the tables ExyliaSurvivalCore named
@@ -33,7 +33,7 @@ public final class LegacyTables {
      * @return how many currencies were copied; completes once they are written
      */
     public static CompletableFuture<Integer> copy(PluginDatabase database, Repository<CurrencyRow> currencies,
-                                                  Repository<EconomySettingsRow> settings, Logger logger) {
+                                                  Repository<EconomySettingsRow> settings, Debug debug) {
         return currencies.count().thenCombine(settings.count(), (rows, global) -> rows + global)
                 .thenCompose(existing -> {
                     if (existing > 0) return CompletableFuture.completedFuture(0);
@@ -46,7 +46,7 @@ public final class LegacyTables {
                                 .thenCompose(ignored -> settings.saveAll(copiedSettings))
                                 .thenApply(ignored -> {
                                     if (!copied.isEmpty() || !copiedSettings.isEmpty()) {
-                                        logger.info("Economy: copied " + copied.size() + " currencies and the settings"
+                                        debug.log("Economy: copied " + copied.size() + " currencies and the settings"
                                                 + " from the tables of ExyliaSurvivalCore. Those tables are left as they were.");
                                     }
                                     return copied.size();

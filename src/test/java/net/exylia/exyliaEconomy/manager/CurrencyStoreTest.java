@@ -2,6 +2,7 @@ package net.exylia.exyliaEconomy.manager;
 
 import net.exylia.exyliaEconomy.database.CurrencyRow;
 import net.exylia.exyliaEconomy.database.EconomySettingsRow;
+import net.exylia.exyliaEconomy.testing.TestServer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -11,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -28,11 +28,11 @@ class CurrencyStoreTest {
     @DisplayName("a file imported into rows registers exactly what the file did")
     void importRoundTrip() throws Exception {
         java.io.File folder = plugins.resolve("ExyliaEconomy").toFile();
-        CurrencyFile.load(folder, Logger.getLogger("test"));
+        CurrencyFile.load(folder, TestServer.debug());
         Path file = folder.toPath().resolve(CurrencyFile.FILE);
         // An overlay on a currency the file also defines must not replace it.
         Files.writeString(file, Files.readString(file).replace("display:\n", "display:\n  dollars:\n    name: Nope\n"));
-        CurrencyFile.Contents read = CurrencyFile.load(folder, Logger.getLogger("test"));
+        CurrencyFile.Contents read = CurrencyFile.load(folder, TestServer.debug());
 
         List<CurrencyRow> rows = CurrencyStore.rows(read);
         EconomySettingsRow settings = new EconomySettingsRow(read.experienceLevels(), read.experiencePoints(),

@@ -7,6 +7,7 @@ import net.exylia.exyliaEconomy.migration.LegacyTables;
 import net.exylia.lib.config.Languages;
 import net.exylia.lib.database.Databases;
 import net.exylia.lib.database.Repository;
+import net.exylia.lib.debug.Debug;
 import net.exylia.lib.economy.Economy;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +27,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 /**
  * Where the currencies live: {@code exylia_currencies} and {@code exylia_economy_settings}.
@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 public final class CurrencyStore {
 
     private final Plugin plugin;
-    private final Logger logger;
+    private final Debug debug;
     private final Repository<CurrencyRow> rows;
     private final Repository<EconomySettingsRow> settingsRows;
     private final Map<String, CurrencyRow> cache = new ConcurrentHashMap<>();
@@ -49,7 +49,7 @@ public final class CurrencyStore {
 
     CurrencyStore(Plugin plugin) {
         this.plugin = plugin;
-        this.logger = plugin.getLogger();
+        this.debug = Debug.of(plugin);
         this.rows = Databases.of(plugin).repository(CurrencyRow.class);
         this.settingsRows = Databases.of(plugin).repository(EconomySettingsRow.class);
     }
@@ -66,7 +66,7 @@ public final class CurrencyStore {
         // than an empty table it would fill with the defaults.
         // Only asked where ExyliaSurvivalCore has run: a fresh install never creates its old tables.
         CompletableFuture<Integer> legacy = new File(plugin.getDataFolder().getParentFile(), "ExyliaSurvivalCore").isDirectory()
-                ? LegacyTables.copy(Databases.of(plugin), rows, settingsRows, logger)
+                ? LegacyTables.copy(Databases.of(plugin), rows, settingsRows, debug)
                 : CompletableFuture.completedFuture(0);
         return legacy
                 .thenCompose(copied -> rows.findAll())
@@ -76,7 +76,7 @@ public final class CurrencyStore {
             }
             File file = new File(plugin.getDataFolder(), CurrencyFile.FILE);
             if (file.isFile()) {
-                logger.warning("Economy: " + file.getPath() + " is no longer read. The currencies live in the"
+                debug.warn("Economy: " + file.getPath() + " is no longer read. The currencies live in the"
                         + " database; edit them in game with /economyadmin.");
             }
             remember(found, stored.orElse(null));
@@ -110,10 +110,10 @@ public final class CurrencyStore {
         return CompletableFuture.allOf(writes.toArray(CompletableFuture[]::new)).handle((done, failure) -> {
             // Never worth the currencies: kept for the next start, which tries again.
             if (failure != null) {
-                logger.warning("Economy: could not write the old config.yml into the database ("
+                debug.warn("Economy: could not write the old config.yml into the database ("
                         + failure.getMessage() + "); it is tried again on the next start.");
             } else if (legacy != null) {
-                legacy.setAside(logger);
+                legacy.setAside(debug);
             }
             return contents();
         });
@@ -137,7 +137,7 @@ public final class CurrencyStore {
      * keeps exactly the currencies it had.
      */
     private CompletableFuture<CurrencyFile.Contents> importFile() {
-        CurrencyFile.Contents file = CurrencyFile.load(plugin.getDataFolder(), logger);
+        CurrencyFile.Contents file = CurrencyFile.load(plugin.getDataFolder(), debug);
         List<CurrencyRow> imported = rows(file);
         EconomySettingsRow global = new EconomySettingsRow(file.experienceLevels(), file.experiencePoints(),
                 file.vaultProvide(), file.vaultForce(), file.ledger());
@@ -156,11 +156,11 @@ public final class CurrencyStore {
             File aside = new File(source.getPath() + ".imported");
             try {
                 Files.move(source.toPath(), aside.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                logger.info("Economy: imported " + imported + " currencies from " + source.getPath()
+                debug.log("Economy: imported " + imported + " currencies from " + source.getPath()
                         + " into the database and renamed it to " + aside.getName()
                         + ". Edit them in game with /economyadmin.");
             } catch (IOException failure) {
-                logger.warning("Economy: imported the currencies but could not rename " + source.getPath()
+                debug.warn("Economy: imported the currencies but could not rename " + source.getPath()
                         + " (" + failure.getMessage() + "); it is no longer read either way.");
             }
         }

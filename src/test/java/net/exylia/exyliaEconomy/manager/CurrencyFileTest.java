@@ -1,5 +1,7 @@
 package net.exylia.exyliaEconomy.manager;
 
+import net.exylia.exyliaEconomy.testing.TestServer;
+import net.exylia.lib.debug.Debug;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,7 +10,6 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class CurrencyFileTest {
 
-    private static final Logger LOGGER = Logger.getLogger("test");
+    private static final Debug DEBUG = TestServer.debug();
 
     @TempDir
     Path plugins;
@@ -38,7 +39,7 @@ class CurrencyFileTest {
     @Test
     @DisplayName("a fresh server gets the defaults, and they read back")
     void defaults() {
-        CurrencyFile.Contents read = CurrencyFile.load(folder, LOGGER);
+        CurrencyFile.Contents read = CurrencyFile.load(folder, DEBUG);
 
         assertTrue(Files.exists(file));
         assertEquals(2, read.stored().size());
@@ -69,13 +70,13 @@ class CurrencyFileTest {
     @Test
     @DisplayName("the file is the owner's: an edit survives, a bad block is skipped")
     void edits() throws Exception {
-        CurrencyFile.load(folder, LOGGER);
+        CurrencyFile.load(folder, DEBUG);
         String yaml = Files.readString(file)
                 .replace("    name: Shard\n", "    name: Buck\n")
                 .replace("stored:\n", "stored:\n  bad id!:\n    name: Nope\n");
         Files.writeString(file, yaml);
 
-        CurrencyFile.Contents read = CurrencyFile.load(folder, LOGGER);
+        CurrencyFile.Contents read = CurrencyFile.load(folder, DEBUG);
         assertEquals("Buck", read.stored().get("shards").info().name());
         assertEquals(2, read.stored().size());
     }
@@ -87,7 +88,7 @@ class CurrencyFileTest {
         Files.createDirectories(core.getParent());
         Files.writeString(core, "stored:\n  coins:\n    name: Coin\nvault:\n  provide: coins\n");
 
-        CurrencyFile.Contents read = CurrencyFile.load(folder, LOGGER);
+        CurrencyFile.Contents read = CurrencyFile.load(folder, DEBUG);
         assertEquals(java.util.Set.of("coins"), read.stored().keySet());
         assertEquals("coins", read.vaultProvide());
         assertEquals(Files.readString(core), Files.readString(file));
@@ -95,6 +96,6 @@ class CurrencyFileTest {
 
         // Copied once: what the owner edits here from now on is what is read.
         Files.writeString(core, "stored: {}\n");
-        assertEquals(1, CurrencyFile.load(folder, LOGGER).stored().size());
+        assertEquals(1, CurrencyFile.load(folder, DEBUG).stored().size());
     }
 }

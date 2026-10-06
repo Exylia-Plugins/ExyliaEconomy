@@ -4,6 +4,7 @@ import net.exylia.exyliaEconomy.database.BanknoteRow;
 import net.exylia.lib.database.Databases;
 import net.exylia.lib.database.Repository;
 import net.exylia.lib.database.internal.Outages;
+import net.exylia.lib.debug.Debug;
 import net.exylia.lib.economy.EconomyResponse;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +15,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.logging.Logger;
 
 /**
  * The banknotes /withdraw printed, as the database keeps them.
@@ -43,11 +43,11 @@ public final class Banknotes {
     public record Redeem(@NotNull Outcome outcome, @Nullable BanknoteRow note, @Nullable EconomyResponse credit) { }
 
     private final Repository<BanknoteRow> rows;
-    private final Logger logger;
+    private final Debug debug;
 
     public Banknotes(@NotNull Plugin plugin) {
         this.rows = Databases.of(plugin).repository(BanknoteRow.class);
-        this.logger = plugin.getLogger();
+        this.debug = Debug.of(plugin);
     }
 
     /** Records a note before it is printed: a note without a row is worth nothing. */
@@ -90,7 +90,7 @@ public final class Banknotes {
                 EconomyResponse refused = paid;
                 return release(note, claimed.redeemedAt(), 0).thenApply(released -> {
                     if (released) return new Redeem(Outcome.REFUSED, note, refused);
-                    logger.severe("Economy: banknote " + note.id() + " (" + note.amount().toPlainString() + " "
+                    debug.error("Economy: banknote " + note.id() + " (" + note.amount().toPlainString() + " "
                             + note.currency() + ") was refused for " + player + " but stays marked redeemed: the"
                             + " database did not answer. Set redeemed_at to 0 on that row of exylia_banknotes"
                             + " to make it redeemable again.");

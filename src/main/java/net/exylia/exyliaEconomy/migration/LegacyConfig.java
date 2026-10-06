@@ -3,6 +3,7 @@ package net.exylia.exyliaEconomy.migration;
 import net.exylia.exyliaEconomy.database.CurrencyRow;
 import net.exylia.exyliaEconomy.database.EconomySettingsRow;
 import net.exylia.lib.config.Languages;
+import net.exylia.lib.debug.Debug;
 import net.exylia.lib.economy.Economy;
 import net.exylia.lib.input.FormField;
 import net.exylia.lib.input.FormKey;
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
 
 /**
  * The {@code config.yml} earlier versions wrote, imported into the database once.
@@ -103,14 +103,14 @@ public final class LegacyConfig {
     }
 
     /** Renames the file so it is never imported again. */
-    public void setAside(@NotNull Logger logger) {
+    public void setAside(@NotNull Debug debug) {
         File aside = new File(file.getPath() + ".migrated");
         try {
             Files.move(file.toPath(), aside.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            logger.info("Economy: imported " + file.getPath() + " into the database and renamed it to "
+            debug.log("Economy: imported " + file.getPath() + " into the database and renamed it to "
                     + aside.getName() + ". Every setting is edited in game with /economyadmin.");
         } catch (IOException failure) {
-            logger.warning("Economy: imported " + file.getPath() + " but could not rename it ("
+            debug.warn("Economy: imported " + file.getPath() + " but could not rename it ("
                     + failure.getMessage() + "); it is imported again, where nothing is set, on the next start.");
         }
     }

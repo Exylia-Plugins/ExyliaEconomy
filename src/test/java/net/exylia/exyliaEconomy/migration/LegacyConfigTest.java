@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -128,7 +127,7 @@ class LegacyConfigTest {
         assertTrue(coin.interestOffline());
         assertEquals(0, new BigDecimal("10000").compareTo(coin.confirmAbove()));
 
-        legacy.setAside(Logger.getLogger("test"));
+        legacy.setAside(TestServer.debug());
         assertFalse(config.exists());
         assertTrue(folder.resolve(LegacyConfig.FILE + ".migrated").toFile().isFile());
         assertNull(LegacyConfig.find(folder.toFile()));
@@ -146,7 +145,7 @@ class LegacyConfigTest {
         assertTrue(global.offlinePayNotice());
         assertTrue(legacy.currencies(List.of(CurrencyRow.blank("dollars", CurrencyRow.Kind.STORED, 0)), "dollars")
                 .isEmpty());
-        legacy.setAside(Logger.getLogger("test"));
+        legacy.setAside(TestServer.debug());
         assertNull(LegacyConfig.find(folder.toFile()));
     }
 }

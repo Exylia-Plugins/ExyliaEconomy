@@ -1,6 +1,7 @@
 package net.exylia.exyliaEconomy.manager;
 
 import io.papermc.paper.plugin.provider.classloader.ConfiguredPluginClassLoader;
+import net.exylia.lib.debug.Debug;
 import net.exylia.lib.economy.CurrencyInfo;
 import net.exylia.lib.economy.Economy;
 import net.exylia.lib.economy.EconomyResponse;
@@ -111,7 +112,7 @@ final class VaultBridge {
                 typeClass = Class.forName(RESPONSE_TYPE).asSubclass(Enum.class);
                 constructor = Class.forName(RESPONSE).getConstructor(double.class, double.class, typeClass, String.class);
             } catch (ReflectiveOperationException unexpected) {
-                plugin.getLogger().warning("Economy: Vault's EconomyResponse is not the expected shape: " + unexpected);
+                Debug.of(plugin).warn("Economy: Vault's EconomyResponse is not the expected shape: " + unexpected);
             }
         }
         this.responseConstructor = constructor;
@@ -123,7 +124,7 @@ final class VaultBridge {
     void publish(@Nullable StoredCurrency currency, boolean force) {
         if (proxy == null) {
             if (currency != null) {
-                plugin.getLogger().warning("Economy: vault.provide names '" + currency.id()
+                Debug.of(plugin).warn("Economy: vault.provide names '" + currency.id()
                         + "' but Vault is not installed, so nothing is published.");
             }
             return;
@@ -134,7 +135,7 @@ final class VaultBridge {
         refresh();
         if (currency == null) {
             if (other == null) {
-                plugin.getLogger().warning("Economy: no stored currency is published to Vault and no other"
+                Debug.of(plugin).warn("Economy: no stored currency is published to Vault and no other"
                         + " economy plugin is installed, so plugins that use Vault, and the 'vault' currency,"
                         + " have no economy. Turn Vault on for a currency in /economyadmin.");
             }
@@ -143,11 +144,11 @@ final class VaultBridge {
         registerService(force ? ServicePriority.Highest : ServicePriority.Lowest);
         refresh();
         if (other != null && !force) {
-            plugin.getLogger().info("Economy: " + other.getPlugin().getName() + " provides the Vault economy; '"
+            Debug.of(plugin).log("Economy: " + other.getPlugin().getName() + " provides the Vault economy; '"
                     + currency.id() + "' is registered beneath it and serves only without it."
                     + " Set vault.force to put it on top.");
         } else {
-            plugin.getLogger().info("Economy: '" + currency.id() + "' is the server's Vault economy.");
+            Debug.of(plugin).log("Economy: '" + currency.id() + "' is the server's Vault economy.");
         }
     }
 
