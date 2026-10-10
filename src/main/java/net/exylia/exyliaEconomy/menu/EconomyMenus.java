@@ -116,6 +116,15 @@ public final class EconomyMenus {
         plugin.getTasks().runAtEntity(player, () -> menus.openNow(player, definition.get(), context, sections));
     }
 
+    /**
+     * Redraws the menu this player has open from a new snapshot, keeping the page.
+     *
+     * @return {@code false} when that menu is not the one open, so nothing was drawn
+     */
+    public boolean update(Player player, String id, Map<String, ?> context) {
+        return menus.update(player, id, context);
+    }
+
     /** The session this player has open, when it is one of ours. */
     public Optional<UiSession> session(Player player) {
         return menus.session(player);

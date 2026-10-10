@@ -2,8 +2,7 @@ package net.exylia.exyliaEconomy.service;
 
 import net.exylia.exyliaEconomy.ExyliaEconomy;
 import net.exylia.exyliaEconomy.Permissions;
-import net.exylia.exyliaEconomy.common.Messages;
-import net.exylia.exyliaEconomy.common.Values;
+import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.database.BalanceRow;
 import net.exylia.exyliaEconomy.database.CurrencyRow;
@@ -117,7 +116,7 @@ public final class Interest {
                     || StoredEconomy.loading(id, currency)) continue;
             pay(currency, key, slot, id, Economy.of(currency).balance(id), settings).thenAccept(paid -> {
                 if (paid.signum() <= 0) return;
-                ExyliaEconomy.getInstance().getTasks().runAtEntity(player, () -> Messages.send(player,
+                ExyliaEconomy.getInstance().getTasks().runAtEntity(player, () -> ExyliaEconomy.getInstance().getMessages().send(player,
                         EconomyMessages.get().interestPaid(), Values.of().put("amount", Economy.info(currency).format(paid))
                                 .put("currency", Economy.info(currency).namePlural())
                                 .put("next", TimeFormats.render(next, TimeFormats.Style.COMPACT))));

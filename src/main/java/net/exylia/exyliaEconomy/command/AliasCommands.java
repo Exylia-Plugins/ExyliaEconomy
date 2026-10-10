@@ -1,8 +1,8 @@
 package net.exylia.exyliaEconomy.command;
 
+import net.exylia.exyliaEconomy.ExyliaEconomy;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
-import net.exylia.exyliaEconomy.common.Messages;
-import net.exylia.exyliaEconomy.common.Values;
+import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.model.CurrencyRules;
 import net.exylia.exyliaEconomy.service.EconomyActions;
 import net.exylia.exyliaEconomy.Permissions;
@@ -181,11 +181,11 @@ public final class AliasCommands {
         }
 
         private static void denied(CommandSender sender) {
-            Messages.send(sender, EconomyMessages.get().permissionDenied());
+            ExyliaEconomy.getInstance().getMessages().send(sender, EconomyMessages.get().permissionDenied());
         }
 
         private static void usage(CommandSender sender, String label) {
-            Messages.send(sender, EconomyMessages.get().usage(), Values.of().put("command", label));
+            ExyliaEconomy.getInstance().getMessages().send(sender, EconomyMessages.get().usage(), Values.of().put("command", label));
         }
 
         private static int page(String typed) {

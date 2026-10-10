@@ -1,8 +1,7 @@
 package net.exylia.exyliaEconomy.service;
 
 import net.exylia.exyliaEconomy.ExyliaEconomy;
-import net.exylia.exyliaEconomy.common.Messages;
-import net.exylia.exyliaEconomy.common.Values;
+import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.database.CurrencyRow;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.database.BanknoteRow;
@@ -81,17 +80,17 @@ public final class BanknoteService implements Listener {
         if (currency == null) return;
         CurrencyInfo info = Economy.info(currency);
         if (Economy.kind(currency) != CurrencyKind.STORED || !StoredEconomy.row(currency).map(CurrencyRow::banknotes).orElse(false)) {
-            Messages.send(player, text().noteDisabled(), Values.of().put("currency", info.namePlural()));
+            ExyliaEconomy.getInstance().getMessages().send(player, text().noteDisabled(), Values.of().put("currency", info.namePlural()));
             return;
         }
         BigDecimal typed = Economy.parseAmount(typedAmount);
         BigDecimal amount = typed == null ? null : info.scale(typed);
         if (amount == null || amount.signum() <= 0) {
-            Messages.send(player, text().invalidAmount());
+            ExyliaEconomy.getInstance().getMessages().send(player, text().invalidAmount());
             return;
         }
         if (StoredEconomy.loading(player.getUniqueId(), currency)) {
-            Messages.send(player, text().stillLoading());
+            ExyliaEconomy.getInstance().getMessages().send(player, text().stillLoading());
             return;
         }
         Economy.CurrencyView view = Economy.of(currency);
@@ -100,14 +99,14 @@ public final class BanknoteService implements Listener {
             return;
         }
         if (player.getInventory().firstEmpty() < 0) {
-            Messages.send(player, text().noteInventoryFull());
+            ExyliaEconomy.getInstance().getMessages().send(player, text().noteInventoryFull());
             return;
         }
         if (!Cooldowns.tryStart(player, "exyliaeconomy:withdraw", COOLDOWN)) return;
         long now = System.currentTimeMillis();
         String scope = StoredEconomy.storageKey(currency);
         if (scope == null) {
-            Messages.send(player, text().noteDisabled(), Values.of().put("currency", info.namePlural()));
+            ExyliaEconomy.getInstance().getMessages().send(player, text().noteDisabled(), Values.of().put("currency", info.namePlural()));
             return;
         }
         BanknoteRow row = new BanknoteRow(UUID.randomUUID().toString(), currency, scope, amount,
@@ -117,7 +116,7 @@ public final class BanknoteService implements Listener {
         notes.issue(row).whenComplete((ignored, failure) -> ExyliaEconomy.getInstance().getTasks().runAtEntity(player, () -> {
             if (failure != null) {
                 ExyliaEconomy.getInstance().getDebug().error("Economy: could not record a banknote.", failure);
-                Messages.send(player, text().noteFailed());
+                ExyliaEconomy.getInstance().getMessages().send(player, text().noteFailed());
                 return;
             }
             print(player, row, info);
@@ -128,7 +127,7 @@ public final class BanknoteService implements Listener {
     private void print(Player player, BanknoteRow row, CurrencyInfo info) {
         if (player.getInventory().firstEmpty() < 0) {
             discard(row);
-            Messages.send(player, text().noteInventoryFull());
+            ExyliaEconomy.getInstance().getMessages().send(player, text().noteInventoryFull());
             return;
         }
         UUID id = player.getUniqueId();
@@ -143,7 +142,7 @@ public final class BanknoteService implements Listener {
             return;
         }
         give(player, item(player, row, info));
-        Messages.send(player, text().noteWithdrawn(), Values.of().put("amount", info.format(row.amount())));
+        ExyliaEconomy.getInstance().getMessages().send(player, text().noteWithdrawn(), Values.of().put("amount", info.format(row.amount())));
     }
 
     private void discard(BanknoteRow row) {
@@ -231,7 +230,7 @@ public final class BanknoteService implements Listener {
     /** {@code /deposit}: the note in the main hand, or the off hand. */
     public void deposit(Player player) {
         if (redeem(player, EquipmentSlot.HAND) || redeem(player, EquipmentSlot.OFF_HAND)) return;
-        Messages.send(player, text().noteNotHeld());
+        ExyliaEconomy.getInstance().getMessages().send(player, text().noteNotHeld());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -250,11 +249,11 @@ public final class BanknoteService implements Listener {
         // Asked here, on the player's thread: the row read later must name this same currency.
         String currency = items.values().text(held, "banknote_currency", "");
         if (!Economy.currencies().contains(currency)) {
-            Messages.send(player, text().noteInvalid());
+            ExyliaEconomy.getInstance().getMessages().send(player, text().noteInvalid());
             return true;
         }
         if (!Economy.canUse(player, currency)) {
-            Messages.send(player, text().noPermission(), Values.of().put("currency", Economy.info(currency).namePlural()));
+            ExyliaEconomy.getInstance().getMessages().send(player, text().noPermission(), Values.of().put("currency", Economy.info(currency).namePlural()));
             return true;
         }
         if (!Cooldowns.tryStart(player, "exyliaeconomy:redeem", COOLDOWN)) return true;
@@ -275,18 +274,18 @@ public final class BanknoteService implements Listener {
             if (failure != null) {
                 ExyliaEconomy.getInstance().getDebug().error("Economy: could not redeem banknote " + id + ".", failure);
                 give(player, one);
-                Messages.send(player, text().noteFailed());
+                ExyliaEconomy.getInstance().getMessages().send(player, text().noteFailed());
                 return;
             }
             switch (done.outcome()) {
-                case PAID -> Messages.send(player, text().noteRedeemed(), Values.of()
+                case PAID -> ExyliaEconomy.getInstance().getMessages().send(player, text().noteRedeemed(), Values.of()
                         .put("amount", Economy.info(done.note().currency()).format(done.note().amount())));
                 case REFUSED, STUCK -> {
                     // A stuck note comes back too: once an admin clears its claim, it redeems again.
                     give(player, one);
                     EconomyActions.refused(player, done.credit(), Economy.info(done.note().currency()));
                 }
-                default -> Messages.send(player, text().noteInvalid());
+                default -> ExyliaEconomy.getInstance().getMessages().send(player, text().noteInvalid());
             }
         }, () -> {
             // ponytail: they left before the answer; a refused or failed note is logged rather than queued back.

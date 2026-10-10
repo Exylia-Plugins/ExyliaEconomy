@@ -1,8 +1,7 @@
 package net.exylia.exyliaEconomy.service;
 
 import net.exylia.exyliaEconomy.ExyliaEconomy;
-import net.exylia.exyliaEconomy.common.Messages;
-import net.exylia.exyliaEconomy.common.Values;
+import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.database.LedgerRow;
 import net.exylia.exyliaEconomy.manager.Claims;
@@ -84,14 +83,14 @@ public final class LedgerTools {
 
     private static void failed(CommandSender sender, String what, Throwable failure) {
         ExyliaEconomy.getInstance().getDebug().error("Economy: could not " + what + ".", failure);
-        sync(() -> Messages.send(sender, text().ledgerFailed()));
+        sync(() -> ExyliaEconomy.getInstance().getMessages().send(sender, text().ledgerFailed()));
     }
 
     /** A stored currency's key, told to the sender when the currency keeps no ledger. */
     private static @Nullable String key(CommandSender sender, String currency) {
         String key = StoredEconomy.storageKey(currency);
         if (key == null) {
-            Messages.send(sender, text().notAvailable(), Values.of().put("currency", Economy.info(currency).namePlural()));
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().notAvailable(), Values.of().put("currency", Economy.info(currency).namePlural()));
         }
         return key;
     }
@@ -115,11 +114,11 @@ public final class LedgerTools {
                         return;
                     }
                     sync(() -> {
-                        Messages.send(sender, text().logHeader(), Values.of().put("currency", info.namePlural())
+                        ExyliaEconomy.getInstance().getMessages().send(sender, text().logHeader(), Values.of().put("currency", info.namePlural())
                                 .put("player", found.name()).put("page", shown));
-                        if (rows.isEmpty()) Messages.send(sender, text().historyEmpty());
+                        if (rows.isEmpty()) ExyliaEconomy.getInstance().getMessages().send(sender, text().historyEmpty());
                         for (LedgerRow row : rows) {
-                            Messages.send(sender, text().logLine(), Values.of().put("id", row.id())
+                            ExyliaEconomy.getInstance().getMessages().send(sender, text().logLine(), Values.of().put("id", row.id())
                                     .put("date", Formats.relative(row.createdAt())).put("delta", signed(info, row.delta()))
                                     .put("reason", EconomyActions.reasonLabel(row.reason()))
                                     .put("balance", info.format(row.balanceAfter())));
@@ -146,7 +145,7 @@ public final class LedgerTools {
         if (!all) {
             String currency = EconomyActions.currency(scope).orElse(null);
             if (currency == null) {
-                Messages.send(sender, text().noCurrency(), Values.of().put("currency", scope));
+                ExyliaEconomy.getInstance().getMessages().send(sender, text().noCurrency(), Values.of().put("currency", scope));
                 return;
             }
             key = key(sender, currency);
@@ -157,7 +156,7 @@ public final class LedgerTools {
         String name = "ledger-" + (all ? "all" : scope.toLowerCase(java.util.Locale.ROOT)) + "-"
                 + LocalDateTime.now().format(FILE_STAMP) + ".csv";
         Path file = plugin().getDataFolder().toPath().resolve("exports").resolve(name);
-        Messages.send(sender, text().exportStarted());
+        ExyliaEconomy.getInstance().getMessages().send(sender, text().exportStarted());
         CompletableFuture<List<LedgerRow>> read = days > 0 ? readDays(days) : readAll(0, new ArrayList<>());
         read.thenApply(rows -> {
             List<LedgerRow> kept = rows.stream().filter(wanted).toList();
@@ -172,7 +171,7 @@ public final class LedgerTools {
                 failed(sender, "export the ledger to " + file, failure);
                 return;
             }
-            sync(() -> Messages.send(sender, text().exportDone(), Values.of().put("count", count).put("file", name)));
+            sync(() -> ExyliaEconomy.getInstance().getMessages().send(sender, text().exportDone(), Values.of().put("count", count).put("file", name)));
         });
     }
 
@@ -241,7 +240,7 @@ public final class LedgerTools {
         Long entry = window.startsWith("#") ? parseId(window.substring(1)) : null;
         Duration span = entry == null ? InputParser.duration().parse(window.trim()).value() : null;
         if (entry == null && (span == null || span.isZero() || span.isNegative())) {
-            Messages.send(sender, text().invalidWindow());
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().invalidWindow());
             return;
         }
         String key = key(sender, currency);
@@ -253,7 +252,7 @@ public final class LedgerTools {
             if (confirmed) {
                 List<LedgerRow> rows = PENDING.remove(who);
                 if (rows == null || !Confirmations.confirm(who, what, System.currentTimeMillis())) {
-                    Messages.send(sender, text().confirmExpired());
+                    ExyliaEconomy.getInstance().getMessages().send(sender, text().confirmExpired());
                     return;
                 }
                 apply(sender, found, currency, rows, initiator);
@@ -273,13 +272,13 @@ public final class LedgerTools {
                 sync(() -> {
                     CurrencyInfo info = Economy.info(currency);
                     if (rows.isEmpty()) {
-                        Messages.send(sender, text().rollbackNothing(), Values.of().put("player", found.name())
+                        ExyliaEconomy.getInstance().getMessages().send(sender, text().rollbackNothing(), Values.of().put("player", found.name())
                                 .put("excluded", excluded));
                         return;
                     }
                     PENDING.put(who, rows);
                     Confirmations.ask(who, what, System.currentTimeMillis());
-                    Messages.send(sender, text().rollbackConfirm(), Values.of().put("player", found.name())
+                    ExyliaEconomy.getInstance().getMessages().send(sender, text().rollbackConfirm(), Values.of().put("player", found.name())
                             .put("count", rows.size()).put("net", signed(info, reversal(rows))).put("excluded", excluded)
                             .put("command", "/economyadmin rollback " + found.name() + " " + window + " " + currency + " confirm"));
                 });
@@ -358,7 +357,7 @@ public final class LedgerTools {
                 return;
             }
             CurrencyInfo info = Economy.info(currency);
-            sync(() -> Messages.send(sender, text().rollbackDone(), Values.of().put("player", found.name())
+            sync(() -> ExyliaEconomy.getInstance().getMessages().send(sender, text().rollbackDone(), Values.of().put("player", found.name())
                     .put("count", result.reverted().size()).put("net", signed(info, reversal(result.reverted())))
                     .put("failed", result.failed()).put("skipped", result.skipped())));
         });

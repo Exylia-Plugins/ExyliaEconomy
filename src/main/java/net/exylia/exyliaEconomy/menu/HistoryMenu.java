@@ -1,7 +1,7 @@
 package net.exylia.exyliaEconomy.menu;
 
 import net.exylia.exyliaEconomy.ExyliaEconomy;
-import net.exylia.exyliaEconomy.common.Values;
+import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
 import net.exylia.exyliaEconomy.model.LedgerEntry;
 import net.exylia.exyliaEconomy.service.EconomyActions;

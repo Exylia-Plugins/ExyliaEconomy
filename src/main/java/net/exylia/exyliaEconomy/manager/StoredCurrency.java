@@ -1,6 +1,6 @@
 package net.exylia.exyliaEconomy.manager;
 
-import net.exylia.exyliaEconomy.common.Values;
+import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.database.PendingRow;
 import net.exylia.exyliaEconomy.database.CurrencyRow;

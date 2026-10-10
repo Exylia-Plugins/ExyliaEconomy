@@ -1,8 +1,7 @@
 package net.exylia.exyliaEconomy.menu;
 
 import net.exylia.exyliaEconomy.ExyliaEconomy;
-import net.exylia.exyliaEconomy.common.Screens;
-import net.exylia.exyliaEconomy.common.Values;
+import net.exylia.lib.text.Values;
 
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.database.CurrencyRow;
@@ -142,7 +141,7 @@ public final class CurrencyAdminMenus {
         toggle(context, "banknotes", row.banknotes());
         toggle(context, "interest_offline", row.interestOffline());
         String file = file(player, row);
-        if (inPlace && Screens.update(player, file, context)) return;
+        if (inPlace && menus().update(player, file, context.map())) return;
         menus().open(player, file, context.map());
     }
 
@@ -170,7 +169,7 @@ public final class CurrencyAdminMenus {
         toggle(context, "ledger", settings.ledger());
         toggle(context, "offline_pay_notice", settings.offlinePayNotice());
         toggle(context, "debug", settings.debug());
-        if (inPlace && Screens.update(player, SETTINGS, context)) return;
+        if (inPlace && menus().update(player, SETTINGS, context.map())) return;
         menus().open(player, SETTINGS, context.map());
     }
 

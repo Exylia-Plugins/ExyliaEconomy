@@ -2,8 +2,7 @@ package net.exylia.exyliaEconomy.action;
 
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.ExyliaEconomy;
-import net.exylia.exyliaEconomy.common.Messages;
-import net.exylia.exyliaEconomy.common.Values;
+import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.database.CurrencyRow;
 import net.exylia.exyliaEconomy.database.EconomySettingsRow;
 import net.exylia.exyliaEconomy.manager.CurrencyStore;
@@ -85,7 +84,7 @@ public final class CurrencyAdminActions {
             String currency = args.string(0, "");
             store.get(currency).ifPresentOrElse(
                     row -> CurrencyAdminMenus.openPage(player, row, args.string(1, "hub").toLowerCase(Locale.ROOT)),
-                    () -> Messages.send(player, EconomyMessages.get().currencyNotFound(), Values.of("id", currency)));
+                    () -> ExyliaEconomy.getInstance().getMessages().send(player, EconomyMessages.get().currencyNotFound(), Values.of("id", currency)));
         });
         withRow("currency_admin_delete", this::delete);
         withRow("currency_admin_appearance", this::appearance);
@@ -115,12 +114,12 @@ public final class CurrencyAdminActions {
                 typed -> {
                     String id = typed.trim().toLowerCase(Locale.ROOT);
                     if (!ID.matcher(id).matches()) {
-                        Messages.send(player, EconomyMessages.get().currencyInvalidId(), Values.of("id", id));
+                        ExyliaEconomy.getInstance().getMessages().send(player, EconomyMessages.get().currencyInvalidId(), Values.of("id", id));
                         CurrencyAdminMenus.openList(player, store);
                         return;
                     }
                     if (store.get(id).isPresent()) {
-                        Messages.send(player, EconomyMessages.get().currencyExists(), Values.of("id", id));
+                        ExyliaEconomy.getInstance().getMessages().send(player, EconomyMessages.get().currencyExists(), Values.of("id", id));
                         CurrencyAdminMenus.openList(player, store);
                         return;
                     }
@@ -232,7 +231,7 @@ public final class CurrencyAdminActions {
                     try {
                         parsed = CurrencyRow.decodeRates(typed);
                     } catch (IllegalArgumentException unreadable) {
-                        Messages.send(player, EconomyMessages.get().currencyInvalidRates(),
+                        ExyliaEconomy.getInstance().getMessages().send(player, EconomyMessages.get().currencyInvalidRates(),
                                 Values.of("reason", unreadable.getMessage()));
                         CurrencyAdminMenus.openEdit(player, row);
                         return;
@@ -329,7 +328,7 @@ public final class CurrencyAdminActions {
     private void toggle(Player player, ActionArguments args, CurrencyStore store) {
         CurrencyRow row = store.get(args.string(0, "")).orElse(null);
         if (row == null) {
-            Messages.send(player, EconomyMessages.get().currencyNotFound(), Values.of("id", args.string(0, "")));
+            ExyliaEconomy.getInstance().getMessages().send(player, EconomyMessages.get().currencyNotFound(), Values.of("id", args.string(0, "")));
             return;
         }
         if (row.kind() != CurrencyRow.Kind.STORED) return;
@@ -374,11 +373,11 @@ public final class CurrencyAdminActions {
             if (failure != null) plugin.getDebug().error("Economy: could not count the balances of " + row.id() + ".", failure);
             CurrencyRow current = store.get(row.id()).orElse(null);
             if (current == null) {
-                Messages.send(player, EconomyMessages.get().currencyNotFound(), Values.of("id", row.id()));
+                ExyliaEconomy.getInstance().getMessages().send(player, EconomyMessages.get().currencyNotFound(), Values.of("id", row.id()));
                 return;
             }
             if (failure != null || Boolean.TRUE.equals(held)) {
-                Messages.send(player, EconomyMessages.get().currencyNetworkedLocked(), Values.of("id", row.id()));
+                ExyliaEconomy.getInstance().getMessages().send(player, EconomyMessages.get().currencyNetworkedLocked(), Values.of("id", row.id()));
                 return;
             }
             CurrencyRow changed = current.edit(draft -> draft.networked = !draft.networked);
@@ -435,7 +434,7 @@ public final class CurrencyAdminActions {
     private void reported(Player player, CompletableFuture<?> written, String id, @Nullable String done) {
         written.whenComplete((ignored, failure) -> {
             if (failure == null && done == null) return;
-            plugin.getTasks().runAtEntity(player, () -> Messages.send(player,
+            plugin.getTasks().runAtEntity(player, () -> ExyliaEconomy.getInstance().getMessages().send(player,
                     failure == null ? done : EconomyMessages.get().currencyWriteFailed(), Values.of("id", id)));
         });
     }
@@ -462,12 +461,12 @@ public final class CurrencyAdminActions {
             Player player = ctx.player();
             if (player == null) return ActionResult.success();
             if (!player.hasPermission(Permissions.ADMIN)) {
-                Messages.send(player, EconomyMessages.get().permissionDenied());
+                ExyliaEconomy.getInstance().getMessages().send(player, EconomyMessages.get().permissionDenied());
                 return ActionResult.success();
             }
             CurrencyStore store = StoredEconomy.store();
             if (store == null) {
-                Messages.send(player, EconomyMessages.get().economyOff());
+                ExyliaEconomy.getInstance().getMessages().send(player, EconomyMessages.get().economyOff());
                 return ActionResult.success();
             }
             button.click(player, args, store);
@@ -480,7 +479,7 @@ public final class CurrencyAdminActions {
         button(id, (player, args, store) -> {
             String currency = args.string(0, "");
             store.get(currency).ifPresentOrElse(row -> button.click(player, store, row),
-                    () -> Messages.send(player, EconomyMessages.get().currencyNotFound(), Values.of("id", currency)));
+                    () -> ExyliaEconomy.getInstance().getMessages().send(player, EconomyMessages.get().currencyNotFound(), Values.of("id", currency)));
         });
     }
 

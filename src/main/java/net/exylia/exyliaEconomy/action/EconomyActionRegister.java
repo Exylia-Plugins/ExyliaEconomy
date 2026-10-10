@@ -3,8 +3,7 @@ package net.exylia.exyliaEconomy.action;
 import net.exylia.lib.economy.Economy;
 import net.exylia.exyliaEconomy.ExyliaEconomy;
 import net.exylia.exyliaEconomy.menu.HistoryMenu;
-import net.exylia.exyliaEconomy.common.Messages;
-import net.exylia.exyliaEconomy.common.Values;
+import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.menu.WalletMenu;
 import net.exylia.exyliaEconomy.service.EconomyActions;
@@ -62,11 +61,11 @@ public final class EconomyActionRegister {
     private static boolean usable(Player viewer, String typed) {
         String currency = EconomyActions.currency(typed).orElse(null);
         if (currency == null) {
-            Messages.send(viewer, EconomyMessages.get().noCurrency(), Values.of().put("currency", typed));
+            ExyliaEconomy.getInstance().getMessages().send(viewer, EconomyMessages.get().noCurrency(), Values.of().put("currency", typed));
             return false;
         }
         if (!Economy.canUse(viewer, currency)) {
-            Messages.send(viewer, EconomyMessages.get().noPermission(),
+            ExyliaEconomy.getInstance().getMessages().send(viewer, EconomyMessages.get().noPermission(),
                     Values.of().put("currency", Economy.info(currency).namePlural()));
             return false;
         }

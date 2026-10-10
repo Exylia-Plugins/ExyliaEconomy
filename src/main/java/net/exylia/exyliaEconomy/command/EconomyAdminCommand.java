@@ -1,7 +1,6 @@
 package net.exylia.exyliaEconomy.command;
 
 import net.exylia.exyliaEconomy.ExyliaEconomy;
-import net.exylia.exyliaEconomy.common.Messages;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.manager.CurrencyStore;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
@@ -52,7 +51,7 @@ public final class EconomyAdminCommand {
     public void open(Player player) {
         CurrencyStore store = StoredEconomy.store();
         if (store == null) {
-            Messages.send(player, EconomyMessages.get().economyOff());
+            ExyliaEconomy.getInstance().getMessages().send(player, EconomyMessages.get().economyOff());
             return;
         }
         CurrencyAdminMenus.openList(player, store);

@@ -7,7 +7,7 @@ import net.exylia.exyliaEconomy.database.CurrencyRow;
 import net.exylia.exyliaEconomy.database.EconomySettingsRow;
 import net.exylia.exyliaEconomy.database.ImportedRow;
 import net.exylia.exyliaEconomy.database.LedgerRow;
-import net.exylia.exyliaEconomy.common.Values;
+import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.database.PendingRow;
 import net.exylia.exyliaEconomy.database.TakenRow;

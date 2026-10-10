@@ -1,5 +1,6 @@
 package net.exylia.exyliaEconomy;
 
+import net.exylia.exyliaEconomy.ExyliaEconomy;
 import lombok.Getter;
 import net.exylia.exyliaEconomy.action.EconomyActionRegister;
 import net.exylia.exyliaEconomy.command.AliasCommands;
@@ -12,8 +13,8 @@ import net.exylia.exyliaEconomy.command.PayToggleCommand;
 import net.exylia.exyliaEconomy.command.WalletCommand;
 import net.exylia.exyliaEconomy.command.WithdrawCommand;
 import net.exylia.exyliaEconomy.command.DepositCommand;
-import net.exylia.exyliaEconomy.common.Messages;
-import net.exylia.exyliaEconomy.common.Values;
+import net.exylia.lib.text.PluginMessages;
+import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.database.EconomySettingsRow;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
@@ -72,6 +73,7 @@ public final class ExyliaEconomy {
     private JavaPlugin plugin;
 
     private TaskScheduler tasks;
+    private PluginMessages messages;
     private Debug debug;
     private PluginInputs inputs;
     private PluginRewards rewards;
@@ -92,6 +94,7 @@ public final class ExyliaEconomy {
         this.plugin = plugin;
 
         debug = Debug.of(plugin);
+        messages = PluginMessages.of(plugin);
 
         // Before anything opens the database: the survival core's database.yml is what makes this
         // plugin read the balances it already holds rather than a new, empty database.
@@ -106,7 +109,7 @@ public final class ExyliaEconomy {
                 .pending(PendingRewards.database(plugin))
                 .claimOnJoin((viewer, delivery) -> {
                     if (delivery.given() <= 0) return;
-                    Messages.send(viewer, EconomyMessages.get().rewardsDelivered(),
+                    getMessages().send(viewer, EconomyMessages.get().rewardsDelivered(),
                             Values.of().put("amount", delivery.given()));
                 });
 

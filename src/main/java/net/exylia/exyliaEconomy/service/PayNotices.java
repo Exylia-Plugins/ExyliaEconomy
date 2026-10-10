@@ -1,8 +1,7 @@
 package net.exylia.exyliaEconomy.service;
 
 import net.exylia.exyliaEconomy.ExyliaEconomy;
-import net.exylia.exyliaEconomy.common.Messages;
-import net.exylia.exyliaEconomy.common.Values;
+import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.database.PayNoticeRow;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
@@ -85,7 +84,7 @@ public final class PayNotices implements Listener {
             CurrencyInfo info = Economy.info(summary.currency());
             Values values = Values.of().put("amount", info.format(summary.amount()))
                     .put("player", summary.payerName()).put("count", summary.payers());
-            Messages.send(player, summary.payers() == 1 ? text.offlinePaySingle() : text.offlinePayMany(), values);
+            ExyliaEconomy.getInstance().getMessages().send(player, summary.payers() == 1 ? text.offlinePaySingle() : text.offlinePayMany(), values);
         }
     }
 

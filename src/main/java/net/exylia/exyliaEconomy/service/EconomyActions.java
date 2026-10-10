@@ -5,8 +5,7 @@ import net.exylia.exyliaEconomy.api.event.EconomyPayEvent;
 import net.exylia.exyliaEconomy.database.CurrencyRow;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.ExyliaEconomy;
-import net.exylia.exyliaEconomy.common.Messages;
-import net.exylia.exyliaEconomy.common.Values;
+import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.manager.CurrencyStore;
 import net.exylia.exyliaEconomy.manager.PlayerFlags;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
@@ -78,19 +77,19 @@ public final class EconomyActions {
         CurrencyInfo info = Economy.info(currency);
         if (targetName == null || targetName.isBlank()) {
             if (!(sender instanceof Player self)) {
-                Messages.send(sender, text().playerRequired(), Values.of().put("command", "economy balance"));
+                ExyliaEconomy.getInstance().getMessages().send(sender, text().playerRequired(), Values.of().put("command", "economy balance"));
                 return;
             }
-            Messages.send(sender, text().balance(), Values.of().put("currency", info.namePlural())
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().balance(), Values.of().put("currency", info.namePlural())
                     .put("amount", info.format(Economy.of(currency).balance(self.getUniqueId()))));
             return;
         }
         if (!sender.hasPermission(Permissions.OTHERS)) {
-            Messages.send(sender, EconomyMessages.get().permissionDenied());
+            ExyliaEconomy.getInstance().getMessages().send(sender, EconomyMessages.get().permissionDenied());
             return;
         }
         ExyliaPlayers.then(sender, targetName, found -> later(Economy.of(currency).balanceLater(found.id()),
-                amount -> Messages.send(sender, text().balanceOther(),
+                amount -> ExyliaEconomy.getInstance().getMessages().send(sender, text().balanceOther(),
                         Values.of().put("player", found.name()).put("currency", info.namePlural())
                                 .put("amount", info.format(amount)))));
     }
@@ -119,12 +118,12 @@ public final class EconomyActions {
             // drawn line by line as reads land is a wallet in no order.
             CompletableFuture.allOf(reads.toArray(new CompletableFuture[0])).thenRun(() ->
                     ExyliaEconomy.getInstance().getTasks().run(() -> {
-                        Messages.send(sender, text().walletHeader(), Values.of().put("player", found.name()));
+                        ExyliaEconomy.getInstance().getMessages().send(sender, text().walletHeader(), Values.of().put("player", found.name()));
                         for (int line = 0; line < ids.size(); line++) {
                             BigDecimal amount = reads.get(line).join();
                             if (amount == null) continue;
                             CurrencyInfo info = Economy.info(ids.get(line));
-                            Messages.send(sender, text().walletLine(), Values.of()
+                            ExyliaEconomy.getInstance().getMessages().send(sender, text().walletLine(), Values.of()
                                     .put("currency", info.namePlural())
                                     .put("amount", info.format(amount)));
                         }
@@ -132,21 +131,21 @@ public final class EconomyActions {
         };
         if (targetName == null || targetName.isBlank()) {
             if (sender instanceof Player self) show.accept(ExyliaPlayers.of(self));
-            else Messages.send(sender, text().playerRequired(), Values.of().put("command", "economy wallet"));
+            else ExyliaEconomy.getInstance().getMessages().send(sender, text().playerRequired(), Values.of().put("command", "economy wallet"));
             return;
         }
         if (!sender.hasPermission(Permissions.OTHERS)) {
-            Messages.send(sender, EconomyMessages.get().permissionDenied());
+            ExyliaEconomy.getInstance().getMessages().send(sender, EconomyMessages.get().permissionDenied());
             return;
         }
         ExyliaPlayers.then(sender, targetName, show);
     }
 
     public void currencies(CommandSender sender) {
-        Messages.send(sender, text().currenciesHeader());
+        ExyliaEconomy.getInstance().getMessages().send(sender, text().currenciesHeader());
         for (String currency : Economy.ordered()) {
             CurrencyInfo info = Economy.info(currency);
-            Messages.send(sender, text().currenciesLine(), Values.of().put("id", currency)
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().currenciesLine(), Values.of().put("id", currency)
                     .put("currency", info.namePlural())
                     .put("kind", kindLabel(currency)));
         }
@@ -159,7 +158,7 @@ public final class EconomyActions {
         // Only a stored currency with its leaderboard on is ranked: anything
         // else would read as an empty board, as if nobody had any.
         if (!StoredEconomy.rules(currency).map(CurrencyRules::leaderboard).orElse(false)) {
-            Messages.send(sender, text().topDisabled(), Values.of().put("currency", info.namePlural()));
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().topDisabled(), Values.of().put("currency", info.namePlural()));
             return;
         }
         if (sender instanceof Player viewer) {
@@ -170,14 +169,14 @@ public final class EconomyActions {
         int from = Math.max(0, page - 1) * size;
         StoredEconomy.topLater(currency, from + size).thenAccept(entries ->
                 ExyliaEconomy.getInstance().getTasks().run(() -> {
-                    Messages.send(sender, text().topHeader(), Values.of().put("currency", info.namePlural()).put("page", page));
-                    Messages.send(sender, text().topTotal(), Values.of().put("total", info.format(StoredEconomy.total(currency))));
+                    ExyliaEconomy.getInstance().getMessages().send(sender, text().topHeader(), Values.of().put("currency", info.namePlural()).put("page", page));
+                    ExyliaEconomy.getInstance().getMessages().send(sender, text().topTotal(), Values.of().put("total", info.format(StoredEconomy.total(currency))));
                     if (entries.size() <= from) {
-                        Messages.send(sender, text().topEmpty());
+                        ExyliaEconomy.getInstance().getMessages().send(sender, text().topEmpty());
                         return;
                     }
                     for (StoredEconomy.TopEntry entry : entries.subList(from, entries.size())) {
-                        Messages.send(sender, text().topLine(), Values.of().put("position", entry.position())
+                        ExyliaEconomy.getInstance().getMessages().send(sender, text().topLine(), Values.of().put("position", entry.position())
                                 .put("player", entry.name()).put("amount", info.format(entry.amount())));
                     }
                 }));
@@ -194,15 +193,15 @@ public final class EconomyActions {
             }
             StoredEconomy.history(currency, found.id(), 15)
                 .thenAccept(lines -> ExyliaEconomy.getInstance().getTasks().run(() -> {
-                    Messages.send(sender, text().historyHeader(),
+                    ExyliaEconomy.getInstance().getMessages().send(sender, text().historyHeader(),
                             Values.of().put("currency", info.namePlural()).put("player", found.name()));
                     if (lines.isEmpty()) {
-                        Messages.send(sender, text().historyEmpty());
+                        ExyliaEconomy.getInstance().getMessages().send(sender, text().historyEmpty());
                         return;
                     }
                     for (LedgerEntry line : lines) {
                         String delta = (line.isDeposit() ? "{success}+" : "{error}-") + info.format(line.delta().abs());
-                        Messages.send(sender, text().historyLine(), Values.of()
+                        ExyliaEconomy.getInstance().getMessages().send(sender, text().historyLine(), Values.of()
                                 .put("date", Formats.relative(line.at())).put("delta", delta)
                                 .put("reason", reasonLabel(line.reason())).put("balance", info.format(line.balanceAfter())));
                     }
@@ -210,11 +209,11 @@ public final class EconomyActions {
         };
         if (targetName == null || targetName.isBlank()) {
             if (sender instanceof Player self) show.accept(ExyliaPlayers.of(self));
-            else Messages.send(sender, text().playerRequired(), Values.of().put("command", "economy history"));
+            else ExyliaEconomy.getInstance().getMessages().send(sender, text().playerRequired(), Values.of().put("command", "economy history"));
             return;
         }
         if (!sender.hasPermission(Permissions.OTHERS)) {
-            Messages.send(sender, EconomyMessages.get().permissionDenied());
+            ExyliaEconomy.getInstance().getMessages().send(sender, EconomyMessages.get().permissionDenied());
             return;
         }
         ExyliaPlayers.then(sender, targetName, show);
@@ -237,25 +236,25 @@ public final class EconomyActions {
         CurrencyInfo info = Economy.info(currency);
         BigDecimal amount = amount(typedAmount);
         if (amount == null) {
-            Messages.send(sender, text().invalidAmount());
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().invalidAmount());
             return;
         }
         CurrencyRules rules = StoredEconomy.rules(currency).orElse(null);
         if (rules != null && !rules.transferable()) {
-            Messages.send(sender, text().payDisabled(), Values.of().put("currency", info.namePlural()));
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().payDisabled(), Values.of().put("currency", info.namePlural()));
             return;
         }
         if (rules != null && amount.compareTo(rules.minimumTransfer()) < 0) {
-            Messages.send(sender, text().payMinimum(), Values.of().put("amount", info.format(rules.minimumTransfer())));
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().payMinimum(), Values.of().put("amount", info.format(rules.minimumTransfer())));
             return;
         }
         if (StoredEconomy.loading(sender.getUniqueId(), currency)) {
-            Messages.send(sender, text().stillLoading());
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().stillLoading());
             return;
         }
         ExyliaPlayers.then(sender, targetName, found -> {
             if (found.id().equals(sender.getUniqueId())) {
-                Messages.send(sender, text().paySelf());
+                ExyliaEconomy.getInstance().getMessages().send(sender, text().paySelf());
                 return;
             }
             // Read where it is kept, not remembered: a toggle on another server applies here at once.
@@ -264,9 +263,9 @@ public final class EconomyActions {
                     ? CompletableFuture.completedFuture(false) : flags.has(found.id(), PlayerFlags.PAY_OFF);
             off.whenComplete((refuses, failure) -> ExyliaEconomy.getInstance().getTasks().runAtEntity(sender, () -> {
                 if (failure != null) {
-                    Messages.send(sender, text().payToggleFailed());
+                    ExyliaEconomy.getInstance().getMessages().send(sender, text().payToggleFailed());
                 } else if (refuses) {
-                    Messages.send(sender, text().payDisabledTarget(), Values.of().put("player", found.name()));
+                    ExyliaEconomy.getInstance().getMessages().send(sender, text().payDisabledTarget(), Values.of().put("player", found.name()));
                 } else {
                     transfer(sender, currency, info, rules, found, amount, confirmed);
                 }
@@ -285,7 +284,7 @@ public final class EconomyActions {
             // A confirm dropped by the cooldown below must not use the question up first.
             if (confirmed && Cooldowns.isActive(sender, "exyliaeconomy:pay:" + found.id())) return;
             if (confirmed && !Confirmations.confirm(who, what, System.currentTimeMillis())) {
-                Messages.send(sender, text().confirmExpired());
+                ExyliaEconomy.getInstance().getMessages().send(sender, text().confirmExpired());
                 return;
             }
             if (!confirmed) {
@@ -295,7 +294,7 @@ public final class EconomyActions {
                     return;
                 }
                 Confirmations.ask(who, what, System.currentTimeMillis());
-                Messages.send(sender, text().payConfirm(), Values.of().put("player", found.name())
+                ExyliaEconomy.getInstance().getMessages().send(sender, text().payConfirm(), Values.of().put("player", found.name())
                         .put("amount", info.format(amount))
                         .put("command", "/pay " + found.name() + " " + amount.toPlainString() + " " + currency + " confirm"));
                 return;
@@ -314,7 +313,7 @@ public final class EconomyActions {
         }
         EconomyPayEvent event = new EconomyPayEvent(sender, found.id(), found.name(), currency, amount, tax);
         if (!event.callEvent()) {
-            Messages.send(sender, event.cancelMessage() == null ? text().payCancelled() : event.cancelMessage());
+            ExyliaEconomy.getInstance().getMessages().send(sender, event.cancelMessage() == null ? text().payCancelled() : event.cancelMessage());
             return;
         }
         if (tax.signum() > 0 && !view.withdraw(sender.getUniqueId(), tax,
@@ -329,20 +328,20 @@ public final class EconomyActions {
             switch (result.type()) {
                 case INSUFFICIENT_FUNDS -> notEnough(sender, info,
                         amount.add(tax).subtract(view.balance(sender.getUniqueId())).max(BigDecimal.ZERO));
-                case INVALID_AMOUNT -> Messages.send(sender, text().invalidAmount());
-                case NOT_AVAILABLE -> Messages.send(sender, text().notAvailable(), Values.of().put("currency", info.namePlural()));
+                case INVALID_AMOUNT -> ExyliaEconomy.getInstance().getMessages().send(sender, text().invalidAmount());
+                case NOT_AVAILABLE -> ExyliaEconomy.getInstance().getMessages().send(sender, text().notAvailable(), Values.of().put("currency", info.namePlural()));
                 // The receiver's ceiling, or anything else the currency
                 // refused: its own words, never a "you need more".
-                default -> Messages.send(sender, text().refused(), Values.of().put("reason",
+                default -> ExyliaEconomy.getInstance().getMessages().send(sender, text().refused(), Values.of().put("reason",
                         result.message() == null ? text().payRefused() : result.message()));
             }
             return;
         }
-        Messages.send(sender, tax.signum() > 0 ? text().paidTaxed() : text().paid(), Values.of()
+        ExyliaEconomy.getInstance().getMessages().send(sender, tax.signum() > 0 ? text().paidTaxed() : text().paid(), Values.of()
                 .put("player", found.name()).put("amount", info.format(amount)).put("tax", info.format(tax)));
         Player receiver = found.here();
         if (receiver != null) {
-            Messages.send(receiver, text().received(), Values.of().put("player", sender.getName())
+            ExyliaEconomy.getInstance().getMessages().send(receiver, text().received(), Values.of().put("player", sender.getName())
                     .put("amount", info.format(amount)));
         } else if (!found.isConnected()) {
             // Somebody playing on another server is paid there now; the notice is for whoever was away.
@@ -351,7 +350,7 @@ public final class EconomyActions {
     }
 
     static void notEnough(CommandSender sender, CurrencyInfo info, BigDecimal missing) {
-        Messages.send(sender, text().notEnough(), Values.of().put("currency", info.namePlural())
+        ExyliaEconomy.getInstance().getMessages().send(sender, text().notEnough(), Values.of().put("currency", info.namePlural())
                 .put("amount", info.format(missing)));
     }
 
@@ -359,15 +358,15 @@ public final class EconomyActions {
     public void payToggle(Player sender) {
         PlayerFlags flags = StoredEconomy.flags();
         if (flags == null) {
-            Messages.send(sender, text().economyOff());
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().economyOff());
             return;
         }
         UUID id = sender.getUniqueId();
         flags.has(id, PlayerFlags.PAY_OFF)
                 .thenCompose(off -> flags.set(id, PlayerFlags.PAY_OFF, !off).thenApply(ignored -> !off))
                 .whenComplete((nowOff, failure) -> ExyliaEconomy.getInstance().getTasks().runAtEntity(sender, () -> {
-                    if (failure != null) Messages.send(sender, text().payToggleFailed());
-                    else Messages.send(sender, nowOff ? text().payToggleOff() : text().payToggleOn());
+                    if (failure != null) ExyliaEconomy.getInstance().getMessages().send(sender, text().payToggleFailed());
+                    else ExyliaEconomy.getInstance().getMessages().send(sender, nowOff ? text().payToggleOff() : text().payToggleOn());
                 }));
     }
 
@@ -376,37 +375,37 @@ public final class EconomyActions {
         if (from == null) return;
         BigDecimal amount = amount(typedAmount);
         if (amount == null) {
-            Messages.send(sender, text().invalidAmount());
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().invalidAmount());
             return;
         }
         // Whoever may not use the target may not be paid in it either. An id
         // that is no currency is left to the exchange, which says so.
         String to = currency(toId).orElse(null);
         if (to != null && !Economy.canUse(sender, to)) {
-            Messages.send(sender, text().noPermission(), Values.of().put("currency", Economy.info(to).namePlural()));
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().noPermission(), Values.of().put("currency", Economy.info(to).namePlural()));
             return;
         }
         if (StoredEconomy.loading(sender.getUniqueId(), from)) {
-            Messages.send(sender, text().stillLoading());
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().stillLoading());
             return;
         }
         EconomyExchangeEvent event = new EconomyExchangeEvent(sender, from, toId, amount);
         if (!event.callEvent()) {
-            Messages.send(sender, event.cancelMessage() == null ? text().exchangeCancelled() : event.cancelMessage());
+            ExyliaEconomy.getInstance().getMessages().send(sender, event.cancelMessage() == null ? text().exchangeCancelled() : event.cancelMessage());
             return;
         }
         StoredEconomy.Exchange exchange = StoredEconomy.exchange(sender.getUniqueId(), from, toId, amount);
         EconomyResponse response = exchange.response();
         if (!response.isSuccess()) {
             if (response.type() == EconomyResponse.Type.INSUFFICIENT_FUNDS) {
-                Messages.send(sender, text().notEnough(), Values.of().put("currency", Economy.info(from).namePlural())
+                ExyliaEconomy.getInstance().getMessages().send(sender, text().notEnough(), Values.of().put("currency", Economy.info(from).namePlural())
                         .put("amount", Economy.info(from).format(response.shortfall())));
                 return;
             }
-            Messages.send(sender, text().exchangeFailed(), Values.of().put("reason", String.valueOf(response.message())));
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().exchangeFailed(), Values.of().put("reason", String.valueOf(response.message())));
             return;
         }
-        Messages.send(sender, text().exchanged(), Values.of().put("from", Economy.info(from).format(exchange.taken()))
+        ExyliaEconomy.getInstance().getMessages().send(sender, text().exchanged(), Values.of().put("from", Economy.info(from).format(exchange.taken()))
                 .put("to", Economy.format(toId, response.amount())));
     }
 
@@ -425,10 +424,10 @@ public final class EconomyActions {
                 queued(sender, found, "{success}+" + info.format(amount));
                 return;
             }
-            Messages.send(sender, text().given(), Values.of().put("player", found.name())
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().given(), Values.of().put("player", found.name())
                     .put("amount", info.format(amount)).put("balance", info.format(response.balance())));
             Player target = found.here();
-            if (target != null) Messages.send(target, text().givenNotify(), Values.of().put("amount", info.format(amount)));
+            if (target != null) ExyliaEconomy.getInstance().getMessages().send(target, text().givenNotify(), Values.of().put("amount", info.format(amount)));
         });
     }
 
@@ -439,10 +438,10 @@ public final class EconomyActions {
                     .withdraw(found.id(), amount, Transaction.of("admin:take").by(initiator(sender)));
             if (!response.isSuccess()) {
                 if (response.type() == EconomyResponse.Type.INSUFFICIENT_FUNDS) {
-                    Messages.send(sender, text().notEnough(), Values.of().put("currency", info.namePlural())
+                    ExyliaEconomy.getInstance().getMessages().send(sender, text().notEnough(), Values.of().put("currency", info.namePlural())
                             .put("amount", info.format(response.shortfall())));
                 } else if (StoredEconomy.loading(found.id(), currency)) {
-                    Messages.send(sender, text().stillLoading());
+                    ExyliaEconomy.getInstance().getMessages().send(sender, text().stillLoading());
                 } else {
                     refused(sender, response, info);
                 }
@@ -452,10 +451,10 @@ public final class EconomyActions {
                 queued(sender, found, "{error}-" + info.format(amount));
                 return;
             }
-            Messages.send(sender, text().taken(), Values.of().put("player", found.name())
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().taken(), Values.of().put("player", found.name())
                     .put("amount", info.format(amount)).put("balance", info.format(response.balance())));
             Player target = found.here();
-            if (target != null) Messages.send(target, text().takenNotify(), Values.of().put("amount", info.format(amount)));
+            if (target != null) ExyliaEconomy.getInstance().getMessages().send(target, text().takenNotify(), Values.of().put("amount", info.format(amount)));
         });
     }
 
@@ -471,13 +470,13 @@ public final class EconomyActions {
         if (currency == null) return;
         BigDecimal amount = amount(typedAmount);
         if (amount == null) {
-            Messages.send(sender, text().invalidAmount());
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().invalidAmount());
             return;
         }
         CurrencyInfo info = Economy.info(currency);
         List<Player> online = List.copyOf(Bukkit.getOnlinePlayers());
         if (online.isEmpty()) {
-            Messages.send(sender, text().giveAllNobody());
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().giveAllNobody());
             return;
         }
         UUID initiator = initiator(sender);
@@ -485,13 +484,13 @@ public final class EconomyActions {
         String what = "giveall|" + currency + "|" + Confirmations.amount(amount);
         if (!confirmed) {
             Confirmations.ask(who, what, System.currentTimeMillis());
-            Messages.send(sender, text().giveAllConfirm(), Values.of().put("amount", info.format(amount))
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().giveAllConfirm(), Values.of().put("amount", info.format(amount))
                     .put("count", online.size())
                     .put("command", "/economyadmin giveall " + currency + " " + amount.toPlainString() + " confirm"));
             return;
         }
         if (!Confirmations.confirm(who, what, System.currentTimeMillis())) {
-            Messages.send(sender, text().confirmExpired());
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().confirmExpired());
             return;
         }
         Transaction transaction = Transaction.of("admin:giveall").by(initiator);
@@ -502,9 +501,9 @@ public final class EconomyActions {
                 continue;
             }
             given++;
-            Messages.send(player, text().givenNotify(), Values.of().put("amount", info.format(amount)));
+            ExyliaEconomy.getInstance().getMessages().send(player, text().givenNotify(), Values.of().put("amount", info.format(amount)));
         }
-        Messages.send(sender, text().giveAllDone(), Values.of().put("amount", info.format(amount))
+        ExyliaEconomy.getInstance().getMessages().send(sender, text().giveAllDone(), Values.of().put("amount", info.format(amount))
                 .put("count", given).put("skipped", online.size() - given));
     }
 
@@ -513,7 +512,7 @@ public final class EconomyActions {
         if (currency == null) return;
         BigDecimal amount = "0".equals(typedAmount) ? BigDecimal.ZERO : amount(typedAmount);
         if (amount == null) {
-            Messages.send(sender, text().invalidAmount());
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().invalidAmount());
             return;
         }
         ExyliaPlayers.then(sender, targetName, found -> {
@@ -528,7 +527,7 @@ public final class EconomyActions {
                 queued(sender, found, "{highlight}= " + info.format(amount));
                 return;
             }
-            Messages.send(sender, text().set(), Values.of().put("player", found.name())
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().set(), Values.of().put("player", found.name())
                     .put("currency", info.namePlural()).put("amount", info.format(response.balance())));
         });
     }
@@ -549,7 +548,7 @@ public final class EconomyActions {
                 queued(sender, found, "{highlight}= " + info.format(start));
                 return;
             }
-            Messages.send(sender, text().reset(), Values.of().put("player", found.name())
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().reset(), Values.of().put("player", found.name())
                     .put("currency", info.namePlural()));
         });
     }
@@ -567,12 +566,12 @@ public final class EconomyActions {
         String from = currency(fromId).orElse(null);
         String into = currency(intoId).orElse(null);
         if (from == null || into == null || Economy.kind(into) != CurrencyKind.STORED) {
-            Messages.send(sender, text().noCurrency(), Values.of().put("currency", from == null ? fromId : intoId));
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().noCurrency(), Values.of().put("currency", from == null ? fromId : intoId));
             return;
         }
         CurrencyStore store = StoredEconomy.store();
         if (store == null) {
-            Messages.send(sender, EconomyMessages.get().economyOff());
+            ExyliaEconomy.getInstance().getMessages().send(sender, EconomyMessages.get().economyOff());
             return;
         }
         Values names = Values.of().put("from", Economy.info(from).namePlural())
@@ -580,21 +579,21 @@ public final class EconomyActions {
         // Both are canonical, so vault names the currency serving it: copying
         // a currency into itself would double every balance.
         if (from.equals(into)) {
-            Messages.send(sender, text().importSame(), names);
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().importSame(), names);
             return;
         }
         if (!again && store.settings().imported(from, into)) {
-            Messages.send(sender, text().importAlready(), names);
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().importAlready(), names);
             return;
         }
         // A second run typed while this one reads is refused; one after it
         // skips whoever this one paid.
         String pair = from + ">" + into;
         if (!IMPORTING.add(pair)) {
-            Messages.send(sender, text().importRunning(), names);
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().importRunning(), names);
             return;
         }
-        Messages.send(sender, text().importStarted(), names);
+        ExyliaEconomy.getInstance().getMessages().send(sender, text().importStarted(), names);
         List<UUID> players = Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getUniqueId).toList();
         StoredEconomy.importBalances(from, into, players, initiator(sender)).whenComplete((count, failure) ->
                 ExyliaEconomy.getInstance().getTasks().run(() -> {
@@ -602,11 +601,11 @@ public final class EconomyActions {
                     if (failure != null) {
                         ExyliaEconomy.getInstance().getDebug().error("Economy: the import from " + from + " into "
                                 + into + " stopped.", failure);
-                        Messages.send(sender, text().importFailed(), names);
+                        ExyliaEconomy.getInstance().getMessages().send(sender, text().importFailed(), names);
                         return;
                     }
                     store.save(store.settings().withImport(from, into));
-                    Messages.send(sender, text().importDone(), Values.of().put("count", count)
+                    ExyliaEconomy.getInstance().getMessages().send(sender, text().importDone(), Values.of().put("count", count)
                             .put("currency", Economy.info(into).namePlural()));
                 }));
     }
@@ -623,7 +622,7 @@ public final class EconomyActions {
         if (currency == null) return;
         BigDecimal amount = amount(typedAmount);
         if (amount == null) {
-            Messages.send(sender, text().invalidAmount());
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().invalidAmount());
             return;
         }
         ExyliaPlayers.then(sender, targetName, found -> op.run(currency, found, amount));
@@ -643,11 +642,11 @@ public final class EconomyActions {
     /** Why a change was refused, in the currency's own words when it gave any. */
     static void refused(CommandSender sender, EconomyResponse response, CurrencyInfo info) {
         if (response.type() == EconomyResponse.Type.FAILURE && response.message() != null) {
-            Messages.send(sender, text().refused(), Values.of().put("reason", response.message()));
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().refused(), Values.of().put("reason", response.message()));
         } else if (response.type() == EconomyResponse.Type.INVALID_AMOUNT) {
-            Messages.send(sender, text().invalidAmount());
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().invalidAmount());
         } else {
-            Messages.send(sender, text().notAvailable(), Values.of().put("currency", info.namePlural()));
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().notAvailable(), Values.of().put("currency", info.namePlural()));
         }
     }
 
@@ -655,11 +654,11 @@ public final class EconomyActions {
     static @Nullable String resolved(CommandSender sender, @Nullable String currencyId) {
         Optional<String> currency = currency(currencyId);
         if (currency.isEmpty()) {
-            Messages.send(sender, text().noCurrency(), Values.of().put("currency", currencyId == null ? "" : currencyId));
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().noCurrency(), Values.of().put("currency", currencyId == null ? "" : currencyId));
             return null;
         }
         if (!Economy.canUse(sender, currency.get())) {
-            Messages.send(sender, text().noPermission(), Values.of().put("currency", Economy.info(currency.get()).namePlural()));
+            ExyliaEconomy.getInstance().getMessages().send(sender, text().noPermission(), Values.of().put("currency", Economy.info(currency.get()).namePlural()));
             return null;
         }
         return currency.get();
@@ -679,7 +678,7 @@ public final class EconomyActions {
 
     /** Tells the sender a change is waiting, with its sign so it reads right. */
     private static void queued(CommandSender sender, ExyliaPlayer found, String change) {
-        Messages.send(sender, text().queued(), Values.of()
+        ExyliaEconomy.getInstance().getMessages().send(sender, text().queued(), Values.of()
                 .put("player", found.name()).put("amount", change));
     }
 
