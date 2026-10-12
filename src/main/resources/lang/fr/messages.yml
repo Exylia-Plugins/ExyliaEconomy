@@ -54,6 +54,11 @@ reasons:
   shop:sell: Vente en boutique
   worth: Valeur
   worth:sell: Vente à la valeur
+  sell: Vente
+  sell:command: Vendu avec /sell
+  sell:wand: Baguette de vente
+  sell:autosell: Vente auto
+  bazaar: Bazar
   market: Marché
   market:buy: Achat sur le marché
   market:sale: Vente sur le marché

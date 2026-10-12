@@ -54,6 +54,11 @@ reasons:
   shop:sell: Venda na loja
   worth: Valor
   worth:sell: Venda por valor
+  sell: Venda
+  sell:command: Vendido com /sell
+  sell:wand: Varinha de venda
+  sell:autosell: Autovenda
+  bazaar: Bazar
   market: Mercado
   market:buy: Compra no mercado
   market:sale: Venda no mercado
