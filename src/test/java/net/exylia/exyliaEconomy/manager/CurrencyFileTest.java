@@ -17,8 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * {@code currencies.yml}: the defaults a fresh server gets, the owner's edits,
- * and the copy the survival core kept before the currencies moved here.
+ * {@code currencies.yml}: the defaults a fresh server gets and the owner's edits.
  */
 class CurrencyFileTest {
 
@@ -79,23 +78,5 @@ class CurrencyFileTest {
         CurrencyFile.Contents read = CurrencyFile.load(folder, DEBUG);
         assertEquals("Buck", read.stored().get("shards").info().name());
         assertEquals(2, read.stored().size());
-    }
-
-    @Test
-    @DisplayName("the survival core's file is copied over once, with the owner's edits, and left where it was")
-    void adoptsTheSurvivalCoreFile() throws Exception {
-        Path core = plugins.resolve(CurrencyFile.SURVIVAL_CORE);
-        Files.createDirectories(core.getParent());
-        Files.writeString(core, "stored:\n  coins:\n    name: Coin\nvault:\n  provide: coins\n");
-
-        CurrencyFile.Contents read = CurrencyFile.load(folder, DEBUG);
-        assertEquals(java.util.Set.of("coins"), read.stored().keySet());
-        assertEquals("coins", read.vaultProvide());
-        assertEquals(Files.readString(core), Files.readString(file));
-        assertTrue(Files.exists(core), "the old file is the backup nobody had to take");
-
-        // Copied once: what the owner edits here from now on is what is read.
-        Files.writeString(core, "stored: {}\n");
-        assertEquals(1, CurrencyFile.load(folder, DEBUG).stored().size());
     }
 }

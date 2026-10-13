@@ -3,7 +3,6 @@ package net.exylia.exyliaEconomy.manager;
 import net.exylia.exyliaEconomy.database.CurrencyRow;
 import net.exylia.exyliaEconomy.database.EconomySettingsRow;
 import net.exylia.exyliaEconomy.migration.LegacyConfig;
-import net.exylia.exyliaEconomy.migration.LegacyTables;
 import net.exylia.lib.config.Languages;
 import net.exylia.lib.database.Databases;
 import net.exylia.lib.database.Repository;
@@ -62,14 +61,7 @@ public final class CurrencyStore {
      * before the server's first tick, so a join during enable never returns.
      */
     @NotNull CompletableFuture<CurrencyFile.Contents> load() {
-        // First, so a server moving from ExyliaSurvivalCore finds its own currencies here rather
-        // than an empty table it would fill with the defaults.
-        // Only asked where ExyliaSurvivalCore has run: a fresh install never creates its old tables.
-        CompletableFuture<Integer> legacy = new File(plugin.getDataFolder().getParentFile(), "ExyliaSurvivalCore").isDirectory()
-                ? LegacyTables.copy(Databases.of(plugin), rows, settingsRows, debug)
-                : CompletableFuture.completedFuture(0);
-        return legacy
-                .thenCompose(copied -> rows.findAll())
+        return rows.findAll()
                 .thenCompose(found -> settingsRows.find(EconomySettingsRow.GLOBAL).thenCompose(stored -> {
             if (found.isEmpty() && stored.isEmpty()) {
                 return importFile();
@@ -133,7 +125,7 @@ public final class CurrencyStore {
      * Writes {@code currencies.yml} into the tables, then puts the file aside.
      *
      * <p>{@link CurrencyFile#load} already knows every way the file can be
-     * found — the owner's, the one the survival core kept, or the defaults — so a server
+     * found — the owner's or the defaults — so a server
      * keeps exactly the currencies it had.
      */
     private CompletableFuture<CurrencyFile.Contents> importFile() {

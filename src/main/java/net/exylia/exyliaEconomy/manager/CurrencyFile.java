@@ -29,14 +29,6 @@ import java.util.Map;
  * {@link #DEFAULTS}. The records below are what {@code StoredEconomy} and the
  * currencies it builds have always read, whichever source filled them.
  *
- * <h2>Where it came from</h2>
- * The economy module of ExyliaSurvivalCore kept it as
- * {@code plugins/ExyliaSurvivalCore/modules/economy/currencies.yml}. A server
- * that has that one and not this one gets it copied over once, edits and all,
- * rather than the defaults. A survival core that already moved
- * its file into its tables renamed it, and those tables are copied instead
- * (see {@code LegacyTables}).
- *
  * <h2>What is in it</h2>
  * <ul>
  *   <li>{@code stored} — currencies kept in this plugin's own table.</li>
@@ -50,9 +42,6 @@ import java.util.Map;
 public final class CurrencyFile {
 
     public static final String FILE = "currencies.yml";
-
-    /** Where ExyliaSurvivalCore kept it, relative to the plugins folder. */
-    static final String SURVIVAL_CORE = "ExyliaSurvivalCore/modules/economy/currencies.yml";
 
     /** One currency this plugin stores. */
     public record Stored(
@@ -106,8 +95,7 @@ public final class CurrencyFile {
     }
 
     /**
-     * Reads the file, bringing the survival core's copy over or writing the defaults
-     * first when it is missing.
+     * Reads the file, writing the defaults first when it is missing.
      *
      * @param dataFolder this plugin's data folder
      * @param debug      where a bad block is reported
@@ -115,19 +103,8 @@ public final class CurrencyFile {
      */
     public static @NotNull Contents load(@NotNull File dataFolder, @NotNull Debug debug) {
         File file = new File(dataFolder, FILE);
-        File source = file;
-        if (!file.exists()) {
-            File plugins = dataFolder.getAbsoluteFile().getParentFile();
-            File legacy = plugins == null ? null : new File(plugins, SURVIVAL_CORE);
-            if (legacy != null && legacy.isFile()) {
-                // A copy that failed is read where it is, once more: the owner's
-                // currencies this start, and another try at the next.
-                source = adopt(legacy, file, debug) ? file : legacy;
-            } else {
-                writeDefaults(file, debug);
-            }
-        }
-        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(source);
+        if (!file.exists()) writeDefaults(file, debug);
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
 
         Map<String, CurrencyInfo> display = new LinkedHashMap<>();
         ConfigurationSection displaySection = yaml.getConfigurationSection("display");
@@ -177,28 +154,6 @@ public final class CurrencyFile {
                 yaml.getString("vault.provide", "") == null ? "" : yaml.getString("vault.provide", "").trim(),
                 yaml.getBoolean("vault.force", false),
                 yaml.getBoolean("ledger.enabled", true));
-    }
-
-    /**
-     * Copies the file the survival core kept into this plugin's folder.
-     *
-     * <p>Copied, not moved: nothing reads it there any more, and leaving it
-     * where it was is the backup nobody had to take.
-     *
-     * @return whether the copy is in place
-     */
-    private static boolean adopt(File legacy, File file, Debug debug) {
-        try {
-            Files.createDirectories(file.toPath().getParent());
-            Files.copy(legacy.toPath(), file.toPath());
-            debug.log("currencies.yml: copied " + legacy.getPath() + " to " + file.getPath()
-                    + "; edit it there from now on, the old file is no longer read.");
-            return true;
-        } catch (IOException failure) {
-            debug.warn("currencies.yml: could not copy " + legacy.getPath() + " to "
-                    + file.getPath() + " (" + failure.getMessage() + "); reading the old file for now.");
-            return false;
-        }
     }
 
     private static Stored stored(String id, ConfigurationSection block) {

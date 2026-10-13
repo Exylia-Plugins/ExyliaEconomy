@@ -23,7 +23,7 @@ softdepend:
   # Handed the money supply when present.
   - ExyliaAnalytics
 
-# Plugins that look for a Vault economy during their own enable: they must find ours there.
+# Load order only: these look for a Vault economy during their own enable and must find ours there.
 loadbefore:
   - ExyliaSurvivalCore
   - ExyliaMines
@@ -72,27 +72,6 @@ permissions:
       exyliaeconomy.others: true
   exyliaeconomy.*:
     description: Every ExyliaEconomy permission.
-    default: op
-    children:
-      exyliaeconomy.admin: true
-  # What staff were granted while the economy lived in ExyliaSurvivalCore keeps working.
-  exyliasurvivalcore.economy:
-    description: The ExyliaSurvivalCore name of exyliaeconomy.use.
-    default: true
-    children:
-      exyliaeconomy.use: true
-  exyliasurvivalcore.economy.pay:
-    description: The ExyliaSurvivalCore name of exyliaeconomy.pay.
-    default: true
-    children:
-      exyliaeconomy.pay: true
-  exyliasurvivalcore.economy.others:
-    description: The ExyliaSurvivalCore name of exyliaeconomy.others.
-    default: op
-    children:
-      exyliaeconomy.others: true
-  exyliasurvivalcore.economy.admin:
-    description: The ExyliaSurvivalCore name of exyliaeconomy.admin.
     default: op
     children:
       exyliaeconomy.admin: true

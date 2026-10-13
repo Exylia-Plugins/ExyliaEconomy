@@ -19,7 +19,6 @@ import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.database.EconomySettingsRow;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
 import net.exylia.exyliaEconomy.menu.EconomyMenus;
-import net.exylia.exyliaEconomy.migration.SurvivalCoreImport;
 import net.exylia.exyliaEconomy.placeholder.EconomyPlaceholder;
 import net.exylia.exyliaEconomy.service.EconomyActions;
 import net.exylia.exyliaEconomy.service.BanknoteService;
@@ -99,10 +98,6 @@ public final class ExyliaEconomy {
         Logs.of(plugin).action("pay", "GOLD_NUGGET")
                 .action("give", "GOLD_INGOT").action("take", "GOLD_INGOT").action("set", "GOLD_INGOT")
                 .action("reset", "GOLD_INGOT").action("giveall", "GOLD_INGOT");
-
-        // Before anything opens the database: the survival core's database.yml is what makes this
-        // plugin read the balances it already holds rather than a new, empty database.
-        SurvivalCoreImport.files(plugin, debug);
 
         tasks = Tasks.of(plugin);
         inputs = Inputs.of(plugin);

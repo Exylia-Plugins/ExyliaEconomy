@@ -145,18 +145,6 @@ public void onPay(EconomyPayEvent event) {
 
 What happened afterwards is ExyliaLib's `BalanceChangeEvent`, one per side of a payment; there is no separate post-payment event.
 
-## Moving from ExyliaSurvivalCore
-
-ExyliaEconomy is the economy module of ExyliaSurvivalCore, as its own plugin. On its first start next to ExyliaSurvivalCore it brings over, once:
-
-- **The database.** `plugins/ExyliaSurvivalCore/database.yml` is copied here, so ExyliaEconomy opens **the same database** the survival core used, with the same Redis server id; an embedded H2 file stays where it is. The balances, pending changes and ledger are read from the tables they are already in. Do not point ExyliaEconomy at another database: the balances are in that one.
-- **The currencies and settings**, copied from `sc_currencies` and `sc_economy_settings` into `exylia_currencies` and `exylia_economy_settings`. The old tables are never deleted.
-- **Messages and the players' menus** (wallet, top, history), where this plugin has none of its own.
-
-**Update every server of a network together.** Servers tell each other about balance changes on a Redis channel whose key includes the plugin's name, so a server still running the old module does not hear one running ExyliaEconomy, and the reverse.
-
-The old permissions (`exyliasurvivalcore.economy`, `.pay`, `.others`, `.admin`) still grant the new ones.
-
 ## Download
 
 Download `ExyliaEconomy.jar` from the [latest release](https://github.com/Exylia-Plugins/ExyliaEconomy/releases/latest) and put it in `plugins/`.

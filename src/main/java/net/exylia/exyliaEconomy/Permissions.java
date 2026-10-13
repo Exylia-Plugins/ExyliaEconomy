@@ -2,9 +2,6 @@ package net.exylia.exyliaEconomy;
 
 /**
  * The permission nodes this plugin checks, as plugin.yml declares them.
- *
- * <p>plugin.yml also declares the nodes these had while the economy lived in ExyliaSurvivalCore,
- * each with its new node as a child, so a permission setup written for those keeps working.
  */
 public final class Permissions {
 
