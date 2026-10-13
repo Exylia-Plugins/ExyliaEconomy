@@ -22,6 +22,7 @@ import net.exylia.lib.economy.EconomyResponse;
 import net.exylia.lib.economy.Transaction;
 import net.exylia.lib.economy.TransferResult;
 import net.exylia.lib.format.Formats;
+import net.exylia.lib.log.Logs;
 import net.exylia.lib.player.ExyliaPlayer;
 import net.exylia.lib.player.ExyliaPlayers;
 import net.exylia.lib.util.Cooldowns;
@@ -337,6 +338,7 @@ public final class EconomyActions {
             }
             return;
         }
+        log("pay", sender, found, Logs.money(currency, amount));
         ExyliaEconomy.getInstance().getMessages().send(sender, tax.signum() > 0 ? text().paidTaxed() : text().paid(), Values.of()
                 .put("player", found.name()).put("amount", info.format(amount)).put("tax", info.format(tax)));
         Player receiver = found.here();
@@ -420,6 +422,7 @@ public final class EconomyActions {
                 refused(sender, response, info);
                 return;
             }
+            log("give", sender, found, "+" + Logs.money(currency, amount));
             if (queues(found, currency)) {
                 queued(sender, found, "{success}+" + info.format(amount));
                 return;
@@ -447,6 +450,7 @@ public final class EconomyActions {
                 }
                 return;
             }
+            log("take", sender, found, "-" + Logs.money(currency, amount));
             if (queues(found, currency)) {
                 queued(sender, found, "{error}-" + info.format(amount));
                 return;
@@ -503,6 +507,7 @@ public final class EconomyActions {
             given++;
             ExyliaEconomy.getInstance().getMessages().send(player, text().givenNotify(), Values.of().put("amount", info.format(amount)));
         }
+        if (given > 0) log("giveall", sender, null, "+" + Logs.money(currency, amount) + " to " + given + " online players");
         ExyliaEconomy.getInstance().getMessages().send(sender, text().giveAllDone(), Values.of().put("amount", info.format(amount))
                 .put("count", given).put("skipped", online.size() - given));
     }
@@ -523,6 +528,7 @@ public final class EconomyActions {
                 refused(sender, response, info);
                 return;
             }
+            log("set", sender, found, "= " + Logs.money(currency, amount));
             if (queues(found, currency)) {
                 queued(sender, found, "{highlight}= " + info.format(amount));
                 return;
@@ -544,6 +550,7 @@ public final class EconomyActions {
                 refused(sender, response, info);
                 return;
             }
+            log("reset", sender, found, "= " + Logs.money(currency, start));
             if (queues(found, currency)) {
                 queued(sender, found, "{highlight}= " + info.format(start));
                 return;
@@ -674,6 +681,11 @@ public final class EconomyActions {
      */
     private static boolean queues(ExyliaPlayer found, String currency) {
         return found.here() == null && Economy.kind(currency) == CurrencyKind.STORED;
+    }
+
+    /** One line in the staff log, written only once the change went through. */
+    private static void log(String action, CommandSender actor, @Nullable ExyliaPlayer target, String detail) {
+        Logs.of(ExyliaEconomy.getInstance().getPlugin()).record(action, actor, target, detail);
     }
 
     /** Tells the sender a change is waiting, with its sign so it reads right. */

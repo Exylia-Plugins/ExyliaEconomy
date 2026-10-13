@@ -32,6 +32,7 @@ import net.exylia.lib.config.Languages;
 import net.exylia.lib.debug.Debug;
 import net.exylia.lib.input.Inputs;
 import net.exylia.lib.input.PluginInputs;
+import net.exylia.lib.log.Logs;
 import net.exylia.lib.reload.Reloads;
 import net.exylia.lib.task.TaskScheduler;
 import net.exylia.lib.task.Tasks;
@@ -95,6 +96,9 @@ public final class ExyliaEconomy {
 
         debug = Debug.of(plugin);
         messages = PluginMessages.of(plugin);
+        Logs.of(plugin).action("pay", "GOLD_NUGGET")
+                .action("give", "GOLD_INGOT").action("take", "GOLD_INGOT").action("set", "GOLD_INGOT")
+                .action("reset", "GOLD_INGOT").action("giveall", "GOLD_INGOT");
 
         // Before anything opens the database: the survival core's database.yml is what makes this
         // plugin read the balances it already holds rather than a new, empty database.
