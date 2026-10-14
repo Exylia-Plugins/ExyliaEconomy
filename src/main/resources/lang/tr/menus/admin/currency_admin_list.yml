@@ -1,0 +1,106 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# Every currency the server runs, kept in the database. /economyadmin
+
+title: "{primary}&lPARA BİRİMLERİ {muted}%current_page%/%total_pages%"
+size: 54
+type: PAGINATION
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+  pagination:
+    material: LIGHT_GRAY_STAINED_GLASS_PANE
+    name: "{muted}Başka para birimi yok"
+    lore:
+      - ""
+      - " {letters_black}▎ {letters}Aşağıdaki düğmeyle bir tane oluştur."
+      - ""
+    hide_tooltip: false
+
+pagination:
+  slots: '0-35'
+
+  item_template:
+    material: "%currency_icon%"
+    name: "{primary}&l%currency_name%"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}ID {letters_black}» {info}%currency_id%"
+      - " {letters_black}▎ {letters}Tür {letters_black}» {info}%currency_kind%"
+      - " {letters_black}▎ {letters}Sıralama düzeni {letters_black}» {info}%currency_sort_order%"
+      - ""
+      - "{secondary}Önizleme:"
+      - " {letters_black}▎ {letters}Görünüm {letters_black}» {letters}%currency_preview%"
+      - ""
+      - "{warning}➥ Düzenlemek için sol tıkla"
+      - "{error}➥ Silmek için sağ tıkla"
+      - ""
+    actions:
+      - "left: exyliaeconomy:currency_admin_edit %currency_id%"
+      - "right: exyliaeconomy:currency_admin_delete %currency_id%"
+
+  navigation:
+    previous:
+      slot: 48
+      sound: "minecraft:item.book.page_turn|1.0|1.0"
+      material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0="
+      name: "{error}&l← ÖNCEKİ SAYFA"
+      lore:
+        - ""
+        - " {letters_black}▎ {letters}Sayfa {info}%current_page%{letters_black}/{info}%total_pages%"
+        - ""
+      actions:
+        - "previous_page"
+    next:
+      slot: 50
+      sound: "minecraft:item.book.page_turn|1.0|1.0"
+      material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0="
+      name: "{success}&lSONRAKİ SAYFA →"
+      lore:
+        - ""
+        - " {letters_black}▎ {letters}Sayfa {info}%current_page%{letters_black}/{info}%total_pages%"
+        - ""
+      actions:
+        - "next_page"
+
+items:
+  create:
+    slot: 45
+    material: "EMERALD_BLOCK"
+    name: "{primary}&lPARA BİRİMİ OLUŞTUR"
+    lore:
+      - ""
+      - "{secondary}Türler:"
+      - " {letters_black}▎ {highlight}Depolanan {letters_black}» {letters}bakiyeler veritabanında"
+      - " {letters_black}▎ {highlight}Eşya {letters_black}» {letters}oyuncuların taşıdığı birebir eşya"
+      - " {letters_black}▎ {highlight}Yalnızca görüntü {letters_black}» {letters}başka eklentininkini biçimlendirir"
+      - ""
+      - "{warning}➥ Oluşturmak için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_create"
+
+  settings:
+    slot: 53
+    material: "COMPARATOR"
+    name: "{primary}&lEKONOMİ AYARLARI"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Tecrübe para birimleri, kayıt,"
+      - " {letters_black}▎ {letters}Vault, dil ve hata ayıklama."
+      - ""
+      - "{warning}➥ Açmak için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_settings"

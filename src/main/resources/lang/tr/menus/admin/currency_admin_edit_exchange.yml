@@ -1,0 +1,73 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# What one stored currency is worth in the others.
+
+title: "{primary}&lTAKAS {letters_black}» {highlight}%currency_id%"
+size: 36
+type: SIMPLE
+refresh:
+  mode: ON_CLICK
+  click_delay: 4
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  exchangeable:
+    slot: 12
+    material: "%exchangeable_material%"
+    name: "{primary}&lTAKAS"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Oranlarıyla takas edilip edilemeyeceği."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Şu an {letters_black}» %exchangeable_status%"
+      - ""
+      - "{warning}➥ Değiştirmek için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_toggle %currency_id% exchangeable"
+
+  rates:
+    slot: 14
+    material: "SUNFLOWER"
+    name: "{primary}&lTAKAS ORANLARI"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}shards=0.01, bunun 1 tanesinin"
+      - " {letters_black}▎ {letters}0.01 shard ettiği anlamına gelir."
+      - " {letters_black}▎ {letters}Yalnızca takas açıkken kullanılır."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Oranlar {letters_black}» {info}%currency_rates%"
+      - ""
+      - "{warning}➥ Düzenlemek için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_rates %currency_id%"
+
+  back:
+    slot: 31
+    sound: "minecraft:item.bundle.remove_one|1.0|0.5"
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{error}&lGERİ"
+    lore:
+      - ""
+      - " {letters_black}▎ {letters}Para birimi özetine döner."
+      - ""
+      - "{warning}➥ Geri dönmek için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% hub"

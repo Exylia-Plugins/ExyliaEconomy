@@ -1,0 +1,319 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# One currency: an overview that opens each section of it. A stored
+# currency has every section; an item currency its item, commands and
+# pay confirmation; a display-only one its look and pay confirmation.
+
+title: "{primary}&lPARA BİRİMİ {letters_black}» {highlight}%currency_id%"
+size: 45
+type: SIMPLE
+refresh:
+  mode: ON_CLICK
+  click_delay: 4
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  summary:
+    slot: 4
+    material: "%currency_icon%"
+    name: "{primary}&l%currency_plural%"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}ID {letters_black}» {info}%currency_id%"
+      - " {letters_black}▎ {letters}Tür {letters_black}» {info}%currency_kind_label%"
+      - ""
+      - "{secondary}Önizleme:"
+      - " {letters_black}▎ {letters}Tam {letters_black}» {letters}%currency_preview%"
+      - " {letters_black}▎ {letters}Kısa {letters_black}» {letters}%currency_preview_compact%"
+      - ""
+
+  general:
+    slot: 19
+    material: "NAME_TAG"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lGENEL"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Adlar, miktarlar, simge ve sıra."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Ad {letters_black}» {info}%currency_name%"
+      - " {letters_black}▎ {letters}Görünüm {letters_black}» {letters}%currency_preview%"
+      - ""
+      - "{warning}➥ Açmak için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% general"
+
+  commands:
+    slot: 20
+    material: "COMMAND_BLOCK"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lKOMUTLAR"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Oyuncuların kullanmak için yazdığı."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Adlar {letters_black}» {info}%currency_aliases%"
+      - " {letters_black}▎ {letters}Etkin {letters_black}» %commands_status%"
+      - ""
+      - "{warning}➥ Açmak için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% commands"
+
+  rules:
+    slot: 21
+    material: "BOOK"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lKURALLAR"
+    lore:
+      - ""
+      - "{secondary}Bakiyeler:"
+      - " {letters_black}▎ {letters}Başlangıç {letters_black}» {info}%currency_start%"
+      - " {letters_black}▎ {letters}Sınır {letters_black}» {info}%currency_max%"
+      - " {letters_black}▎ {letters}İzin {letters_black}» {info}%currency_permission%"
+      - ""
+      - "{secondary}Transferler:"
+      - " {letters_black}▎ {letters}En az {letters_black}» {info}%currency_minimum_transfer%"
+      - " {letters_black}▎ {letters}Vergi {letters_black}» {info}%currency_tax%"
+      - ""
+      - "{warning}➥ Düzenlemek için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_rules %currency_id%"
+
+  payments:
+    slot: 22
+    material: "GOLD_NUGGET"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lÖDEMELER"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Transferler, onaylar ve banknotlar."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Transferler {letters_black}» %transferable_status%"
+      - " {letters_black}▎ {letters}Şunun üstünde sorar {letters_black}» {info}%currency_pay_confirm%"
+      - " {letters_black}▎ {letters}Banknotlar {letters_black}» %banknotes_status%"
+      - ""
+      - "{warning}➥ Açmak için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% payments"
+
+  exchange:
+    slot: 23
+    material: "SUNFLOWER"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lTAKAS"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Diğer para birimleriyle takası."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Takas {letters_black}» %exchangeable_status%"
+      - " {letters_black}▎ {letters}Oranlar {letters_black}» {info}%currency_rates%"
+      - ""
+      - "{warning}➥ Açmak için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% exchange"
+
+  interest:
+    slot: 24
+    material: "EXPERIENCE_BOTTLE"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lFAİZ"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Sahiplerine zamanla ödediği."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Oran {letters_black}» {info}%currency_interest_rate%"
+      - " {letters_black}▎ {letters}Sıklık {letters_black}» {info}%currency_interest_interval% ⌚"
+      - " {letters_black}▎ {letters}Çevrimdışı {letters_black}» %interest_offline_status%"
+      - ""
+      - "{warning}➥ Açmak için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% interest"
+
+  integrations:
+    slot: 25
+    material: "ENDER_EYE"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lENTEGRASYONLAR"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Sıralaması, Vault ve ağ."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Sıralama {letters_black}» %leaderboard_status%"
+      - " {letters_black}▎ {letters}Ağ {letters_black}» %networked_status%"
+      - " {letters_black}▎ {letters}Vault {letters_black}» %vault_status%"
+      - ""
+      - "{warning}➥ Açmak için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% integrations"
+
+  general-item:
+    slot: 20
+    material: "NAME_TAG"
+    condition: "%currency_kind% == ITEM"
+    name: "{primary}&lGENEL"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Adlar, miktarlar, simge ve sıra."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Ad {letters_black}» {info}%currency_name%"
+      - " {letters_black}▎ {letters}Görünüm {letters_black}» {letters}%currency_preview%"
+      - ""
+      - "{warning}➥ Açmak için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% general"
+
+  commands-item:
+    slot: 21
+    material: "COMMAND_BLOCK"
+    condition: "%currency_kind% == ITEM"
+    name: "{primary}&lKOMUTLAR"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}İlki komuttur,"
+      - " {letters_black}▎ {letters}kalanlar takma adlarıdır."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Adlar {letters_black}» {info}%currency_aliases%"
+      - ""
+      - "{warning}➥ Düzenlemek için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_aliases %currency_id%"
+
+  item:
+    slot: 23
+    material: "%currency_item_icon%"
+    condition: "%currency_kind% == ITEM"
+    name: "{primary}&lEŞYA"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Yalnızca birebir aynı yığınlar sayılır:"
+      - " {letters_black}▎ {letters}ad, açıklama ve model dahil."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Eşya {letters_black}» %currency_item_state%"
+      - ""
+      - "{warning}➥ Yenisini koymak için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_item %currency_id%"
+
+  pay-confirm-item:
+    slot: 24
+    material: "PAPER"
+    condition: "%currency_kind% == ITEM"
+    name: "{primary}&lÖDEME ONAYI"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Bunun üstündeki /pay önce ödeyene sorar."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Şunun üstünde sorar {letters_black}» {info}%currency_pay_confirm%"
+      - ""
+      - "{warning}➥ Düzenlemek için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_pay_confirm %currency_id%"
+
+  general-display:
+    slot: 21
+    material: "NAME_TAG"
+    condition: "%currency_kind% == DISPLAY"
+    name: "{primary}&lGENEL"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Adlar, miktarlar, simge ve sıra."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Ad {letters_black}» {info}%currency_name%"
+      - " {letters_black}▎ {letters}Görünüm {letters_black}» {letters}%currency_preview%"
+      - ""
+      - "{warning}➥ Açmak için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% general"
+
+  pay-confirm-display:
+    slot: 23
+    material: "PAPER"
+    condition: "%currency_kind% == DISPLAY"
+    name: "{primary}&lÖDEME ONAYI"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Bunun üstündeki /pay önce ödeyene sorar."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Şunun üstünde sorar {letters_black}» {info}%currency_pay_confirm%"
+      - ""
+      - "{warning}➥ Düzenlemek için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_pay_confirm %currency_id%"
+
+  back:
+    slot: 40
+    sound: "minecraft:item.bundle.remove_one|1.0|0.5"
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{error}&lGERİ"
+    lore:
+      - ""
+      - " {letters_black}▎ {letters}Para birimi listesine döner."
+      - ""
+      - "{warning}➥ Geri dönmek için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_open_list"
+
+  delete:
+    slot: 44
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUwZmQxMDE5OWU4ZTRmY2RhYmNhZTRmODVjODU5MTgxMjdhN2M1NTUzYWQyMzVmMDFjNTZkMThiYjk0NzBkMyJ9fX0="
+    name: "{error}&lPARA BİRİMİNİ SİL"
+    lore:
+      - ""
+      - " {letters_black}▎ {letters}Para birimini kaldırır. Depolanan"
+      - " {letters_black}▎ {letters}bakiyeler veritabanında kullanılmadan kalır."
+      - " {letters_black}▎ {letters_black}Onaylaman istenecek."
+      - ""
+      - "{error}➥ Silmek için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_delete %currency_id%"

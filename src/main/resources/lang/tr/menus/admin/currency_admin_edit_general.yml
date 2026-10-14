@@ -1,0 +1,90 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# The look of one currency: its names, amounts, icon and place in lists.
+
+title: "{primary}&lGENEL {letters_black}» {highlight}%currency_id%"
+size: 36
+type: SIMPLE
+refresh:
+  mode: ON_CLICK
+  click_delay: 4
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  icon:
+    slot: 11
+    material: "%currency_icon%"
+    name: "{primary}&lSİMGE"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Cüzdan ve listelerde nasıl göründüğü."
+      - ""
+      - "{warning}➥ Seçmek için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_icon %currency_id%"
+
+  appearance:
+    slot: 13
+    material: "NAME_TAG"
+    name: "{primary}&lGÖRÜNÜM"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Her miktarının nasıl yazıldığı."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Ad {letters_black}» {letters}%currency_name%"
+      - " {letters_black}▎ {letters}Çoğul {letters_black}» {letters}%currency_plural%"
+      - " {letters_black}▎ {letters}Sembol {letters_black}» {letters}%currency_symbol%"
+      - " {letters_black}▎ {letters}Ondalık {letters_black}» {info}%currency_decimals%"
+      - " {letters_black}▎ {letters}Görünüm {letters_black}» {letters}%currency_preview%"
+      - " {letters_black}▎ {letters}Kısa {letters_black}» {letters}%currency_preview_compact%"
+      - ""
+      - "{warning}➥ Düzenlemek için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_appearance %currency_id%"
+
+  sort-order:
+    slot: 15
+    material: "HOPPER"
+    name: "{primary}&lSIRALAMA DÜZENİ"
+    lore:
+      - ""
+      - "{secondary}Bilgi:"
+      - " {letters_black}▎ {letters}Düşük olan listelerde önce gösterilir."
+      - ""
+      - "{secondary}Durum:"
+      - " {letters_black}▎ {letters}Şu an {letters_black}» {info}%currency_sort_order%"
+      - ""
+      - "{warning}➥ Ayarlamak için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_sort %currency_id%"
+
+  back:
+    slot: 31
+    sound: "minecraft:item.bundle.remove_one|1.0|0.5"
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{error}&lGERİ"
+    lore:
+      - ""
+      - " {letters_black}▎ {letters}Para birimi özetine döner."
+      - ""
+      - "{warning}➥ Geri dönmek için tıkla"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% hub"

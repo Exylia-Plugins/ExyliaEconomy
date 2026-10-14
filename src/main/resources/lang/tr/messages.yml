@@ -1,0 +1,206 @@
+prefix: '{primary}&lEKONOMİ {letters_black}•<reset>'
+balance: '%prefix% {letters}Senin {highlight}%currency%{letters}: {success}%amount%'
+balance-other: '%prefix% {highlight}%player% {letters}oyuncusunun {highlight}%currency%{letters}: {success}%amount%'
+paid: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Ödeme yapıldı: {highlight}%amount% {success}→ {highlight}%player%{success}.'
+received: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {highlight}%player% {success}sana ödeme yaptı: {highlight}%amount%{success}.'
+pay-self: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Kendine ödeme yapamazsın.'
+pay-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}diğer oyunculara gönderilemez.'
+pay-minimum: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Gönderebileceğin en az miktar {highlight}%amount%{error}.'
+not-enough: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Şu kadar daha {highlight}%currency% {error}gerekiyor: {highlight}%amount%{error}.'
+invalid-amount: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Bu bir miktar değil. Şunu dene: {highlight}100{error}, {highlight}2.5k {error}veya {highlight}1m{error}.'
+no-currency: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}adında bir para birimi yok.'
+no-permission: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}kullanamazsın.'
+not-available: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}şu anda kullanılamıyor.'
+given: '%prefix% {success}Verildi: {highlight}%amount% {success}→ {highlight}%player%{success}. {letters_black}Şimdi: %balance%'
+given-notify: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}Aldın: {highlight}%amount%{success}.'
+taken: '%prefix% {warning}Alındı: {highlight}%amount% {warning}← {highlight}%player%{warning}. {letters_black}Şimdi: %balance%'
+taken-notify: '[sound:BLOCK_NOTE_BLOCK_BASS|1.0|0.8]%prefix% {warning}Senden {highlight}%amount% {warning}alındı.'
+set: '%prefix% {success}{highlight}%player% {success}oyuncusunun {highlight}%currency% {success}miktarı artık {highlight}%amount%{success}.'
+reset: '%prefix% {warning}{highlight}%player% {warning}oyuncusunun {highlight}%currency% {warning}bakiyesi sıfırlandı.'
+queued: '%prefix% {letters}%amount% {letters}sıraya alındı, alıcı {highlight}%player%{letters}. {letters_black}Oyuncu çevrimdışı; bir sonraki girişinde ulaşacak.'
+top-header: '{primary}&lSIRALAMA {highlight}%currency% {muted}sayfa %page%'
+top-line: ' {letters_black}#%position% {highlight}%player% {letters_black}» {success}%amount%'
+top-empty: ' {letters_black}Henüz kimsede yok.'
+history-header: '{primary}&lGEÇMİŞ {highlight}%currency% {letters_black}· {letters}%player%'
+history-line: ' {letters_black}%date% %delta% {letters_black}» {info}%reason% {letters_black}(%balance%)'
+history-empty: ' {letters_black}Henüz bir şey yok.'
+exchanged: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Takas edildi: {highlight}%from% {success}→ {highlight}%to%{success}.'
+exchange-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}%reason%'
+wallet-header: '{primary}&lCÜZDAN {letters_black}· {letters}%player%'
+wallet-line: ' {letters_black}▎ {letters}%currency% {letters_black}» {success}%amount%'
+currencies-header: '{primary}&lPARA BİRİMLERİ'
+currencies-line: ' {letters_black}▎ {highlight}%id% {letters_black}» {letters}%currency% {letters_black}(%kind%)'
+import-started: '%prefix% {letters}Bakiyeler {highlight}%from% {letters}kaynağından {highlight}%currency% {letters}birimine aktarılıyor…'
+import-done: '%prefix% {success}{highlight}%count% {success}bakiye {highlight}%currency% {success}birimine aktarıldı.'
+usage: '%prefix% {letters}Kullanım{letters_black}: {highlight}/%command% {letters_black}[pay <player> <amount> | top | history | exchange <amount> <to>]'
+currency-created: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.0]%prefix% {success}Para birimi {highlight}%id% {success}oluşturuldu.'
+currency-deleted: '%prefix% {warning}Para birimi {highlight}%id% {warning}silindi.'
+currency-saved: '[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}Para birimi {highlight}%id% {success}kaydedildi.'
+currency-not-found: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Para birimi {highlight}%id% {error}bulunamadı.'
+currency-exists: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Para birimi {highlight}%id% {error}zaten var.'
+currency-invalid-id: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%id% {error}geçerli bir para birimi ID''si değil. Küçük harf, rakam ve alt çizgi kullan, en fazla 32.'
+currency-invalid-rates: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Bu oranlar okunamadı: {highlight}%reason%{error}. Şöyle yaz: {highlight}shards=0.01, gems=2{error}.'
+still-loading: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {warning}Bakiyen hâlâ yükleniyor. Birazdan tekrar dene.'
+import-already: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%from% {error}bakiyeleri zaten {highlight}%currency% {error}birimine aktarıldı. Henüz aktarılmamış oyuncular için komuta {highlight}again {error}ekle.'
+import-same: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%from% {error}ve {highlight}%currency% {error}aynı para birimi, aktarılacak bir şey yok.'
+reasons:
+  api: Eklenti
+  vault: Eklenti
+  pay: Ödeme
+  pay:tax: Transfer vergisi
+  pay:tax-refund: Vergi iadesi
+  shop: Market
+  shop:buy: Market alışı
+  shop:sell: Market satışı
+  worth: Değer
+  worth:sell: Değer satışı
+  sell: Satış
+  sell:command: /sell ile satıldı
+  sell:wand: Satış asası
+  sell:autosell: Otomatik satış
+  bazaar: Pazar
+  market: Pazar yeri
+  market:buy: Pazar yeri alışı
+  market:sale: Pazar yeri satışı
+  market:fee: Pazar yeri komisyonu
+  auctions: Açık artırmalar
+  auctions:bid: Açık artırma teklifi
+  auctions:sale: Açık artırma satışı
+  orders: Siparişler
+  trade: Ticaret
+  exchange: Döviz
+  admin: Yetkili
+  import: İçe aktarma
+  note: Banknot
+  note:withdraw: Banknot basıldı
+  note:redeem: Banknot bozduruldu
+  interest: Faiz
+  rollback: Geri alma
+kinds:
+  stored: Sunucu parası
+  item: Eşya
+  experience: Tecrübe
+  external: Başka eklenti
+  unknown: Bilinmiyor
+exchange-not-allowed: Bu para birimi takas edilemez.
+exchange-no-rate: '%from% → %to% için bir oran yok.'
+exchange-over-ceiling: Bu, %currency% miktarını tutabileceğin sınırın üstüne çıkarır.
+at-ceiling: Bakiye %amount% sınırında.
+permission-denied: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Bunu yapmak için iznin yok.'
+economy-off: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Ekonomi çalışmıyor.'
+rewards-delivered: '[sound:ENTITY_PLAYER_LEVELUP|1.0|1.4]%prefix% {success}Seni bekleyen {highlight}%amount% {success}ödeme teslim edildi.'
+over-ceiling: Bu, bakiyeyi %amount% sınırının üstüne çıkarır.
+refused: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}%reason%'
+import-running: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {warning}Bu aktarma zaten sürüyor.'
+import-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}aktarması yarıda kaldı. {highlight}again {error}ile tekrar çalıştır: kimse iki kez almaz.'
+currency-networked-locked: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%id% {error}zaten bakiye tutuyor, bu yüzden ağ genelinde ve sunucuya özel arasında geçiş yapamaz: bakiyeler geride kalır.'
+paid-taxed: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Ödeme yapıldı: {highlight}%amount% {success}→ {highlight}%player%{success}. {letters_black}Vergi: {info}%tax%'
+pay-refused: Ödeme reddedildi.
+top-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}için sıralama yok.'
+player-required: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Bir oyuncu belirt{letters_black}: {highlight}/%command% <player>'
+currency-write-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%id% {error}veritabanına kaydedilemedi. Konsolu kontrol edip tekrar dene.'
+pay-cancelled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Ödeme iptal edildi.'
+exchange-cancelled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Takas iptal edildi.'
+pay-disabled-target: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {highlight}%player% {error}şu anda ödeme kabul etmiyor.'
+pay-toggle-off: '[sound:BLOCK_NOTE_BLOCK_BASS|1.0|0.8]%prefix% {warning}Artık ödeme almıyorsun. {letters_black}/paytoggle ile tekrar açabilirsin.'
+pay-toggle-on: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Tekrar ödeme alıyorsun.'
+pay-toggle-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Şu anda kontrol edilemedi. Birazdan tekrar dene.'
+pay-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}{highlight}%amount% {warning}→ {highlight}%player%{warning} gönderilsin mi? <click:run_command:''%command%''><hover:show_text:''{letters}Ödemeyi göndermek için tıkla''>{success}&l[✔ ONAYLA]</hover></click> {letters_black}30s ⌚'
+confirm-expired: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Onaylanacak bir şey yok: süresi doldu veya değişti. Komutu tekrar çalıştır.'
+offline-pay-single: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {letters}Sen yokken {highlight}%player% {letters}sana {success}%amount% {letters}ödedi.'
+offline-pay-many: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {letters}Sen yokken {highlight}%count% {letters}oyuncudan toplam {success}%amount% {letters}aldın.'
+top-total: ' {letters_black}▎ {letters}Dolaşımda {letters_black}» {info}%total%'
+give-all-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Çevrimiçi {highlight}%count% {warning}oyuncunun her birine {highlight}%amount% {warning}verilsin mi? <click:run_command:''%command%''><hover:show_text:''{letters}Herkese vermek için tıkla''>{success}&l[✔ ONAYLA]</hover></click> {letters_black}30s ⌚'
+give-all-done: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}{highlight}%count% {success}oyuncuya {highlight}%amount% {success}verildi. {letters_black}Atlanan: %skipped%'
+give-all-nobody: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Kimse çevrimiçi değil.'
+reset-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}{highlight}%player% {warning}oyuncusunun {highlight}%currency% {warning}bakiyesi {highlight}%amount%{warning} olarak sıfırlansın mı? <click:run_command:''%command%''><hover:show_text:''{letters}Bakiyeyi sıfırlamak için tıkla''>{error}&l[✔ SIFIRLA]</hover></click> {letters_black}30s ⌚'
+note-withdrawn: '[sound:ITEM_BOOK_PAGE_TURN|1.0|1.2]%prefix% {success}{highlight}%amount% {success}değerinde banknot çektin.'
+note-redeemed: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}{highlight}%amount% {success}değerinde banknot bozduruldu.'
+note-invalid: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Bu banknot zaten bozdurulmuş veya geçersiz.'
+note-not-held: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Yatırmak için elinde bir banknot tut.'
+note-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}banknot olarak çekilemez.'
+note-inventory-full: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Önce envanterinde bir yer aç.'
+note-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Banknot şu anda işlenemedi. Birazdan tekrar dene.'
+note-wrong-server: Bu banknot yalnızca onu basan sunucuda bozdurulabilir.
+log-header: '{primary}&lKAYIT {highlight}%currency% {letters_black}· {letters}%player% {muted}sayfa %page%'
+log-line: ' {letters_black}#%id% {muted}%date% %delta% {letters_black}» {info}%reason% {letters_black}(%balance%)'
+export-started: '%prefix% {letters}Kayıt dışa aktarılıyor…'
+export-done: '[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}{highlight}%count% {success}satır {highlight}exports/%file% {success}dosyasına aktarıldı.'
+ledger-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Kayıt okunamadı veya yazılamadı. Konsolu kontrol et.'
+rollback-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}{highlight}%player% {warning}oyuncusunun {highlight}%count% {warning}hareketi geri alınsın mı? {letters_black}Net: %net% {letters_black}· Hariç tutulan transferler: %excluded% <click:run_command:''%command%''><hover:show_text:''{letters}Geri almak için tıkla''>{success}&l[✔ ONAYLA]</hover></click> {letters_black}30s ⌚'
+rollback-nothing: '%prefix% {letters}Bu aralıkta {highlight}%player% {letters}için geri alınacak bir şey kalmadı. {letters_black}Hariç tutulan transferler: %excluded%'
+rollback-done: '[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}{highlight}%player% {success}oyuncusunun {highlight}%count% {success}hareketi geri alındı. {letters_black}Net: %net% {letters_black}· Reddedilen: %failed% · Zaten yapılmış: %skipped%'
+invalid-window: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Bu bir zaman aralığı değil. Şunu dene: {highlight}1h{error}, {highlight}2d {error}veya {highlight}#42 {error}gibi bir kayıt.'
+interest-paid: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.6]%prefix% {success}Faiz {highlight}+%amount% {letters_black}· sonraki {info}%next% ⌚'
+banknote:
+  material: PAPER
+  name: '{primary}&lBANKNOT &8[{success}%amount%&8]'
+  lore:
+  - ''
+  - '{secondary}Bilgi:'
+  - ' {letters_black}▎ {letters}Para birimi {letters_black}» {highlight}%currency%'
+  - ' {letters_black}▎ {letters}İmzalayan {letters_black}» {highlight}%issuer%'
+  - ' {letters_black}▎ {letters}Basım {letters_black}» {info}%date%'
+  - ''
+  - '{warning}➥ Bozdurmak için sağ tıkla'
+  - ''
+admin:
+  icon-prompt: '{warning}Bir simge seç'
+  id-prompt: '{primary}Para birimi için bir ID yaz, örneğin {highlight}gems{primary}:'
+  kind-prompt: '{primary}{highlight}%id% {primary}ne tür bir para birimi?'
+  item-prompt: '{warning}Bu para biriminin tam eşyasını koy'
+  delete-prompt: '{error}{highlight}%id% {error}para birimi silinsin mi?'
+  delete-stored-warning: ' {letters}Bakiyeler veritabanında kalır, ancak bu ID ile bir para birimi tekrar oluşturulana kadar kimse kullanamaz.'
+  appearance-title: '{primary}&lGÖRÜNÜM {letters_black}» {highlight}%id%'
+  rules-title: '{primary}&lKURALLAR {letters_black}» {highlight}%id%'
+  rates-title: '{primary}&lTAKAS ORANLARI {letters_black}» {highlight}%id%'
+  commands-title: '{primary}&lKOMUTLAR {letters_black}» {highlight}%id%'
+  sort-title: '{primary}&lSIRALAMA DÜZENİ {letters_black}» {highlight}%id%'
+  name: Ad
+  name-hint: Tek birim. Renk yer tutucuları çalışır.
+  plural: Çoğul
+  symbol: Sembol
+  symbol-hint: Yoksa boş bırak.
+  decimals: Ondalık
+  decimals-hint: Tam sayılar için 0, en fazla 8.
+  decimals-provider-hint: 0 ile 8 arası, ya da sağlayıcınınkini kullanmak için -1.
+  format: Biçim
+  format-hint: '%amount% %symbol% %name%'
+  compact-format: Kısa biçim
+  compact-format-hint: Skor tabloları için aynısı; burada %amount% 1.2k olarak görünür.
+  start: Başlangıç bakiyesi
+  max: Bakiye sınırı
+  max-hint: Sınır yoksa -1.
+  permission: İzin
+  permission-hint: 'Komutlarını kullanmak için gerekir. Boş: kimseye gerekmez.'
+  minimum-transfer: Bir oyuncunun gönderebileceği en az miktar
+  tax: Transfer vergisi, yüzde
+  tax-hint: Her transferden kesilir. Yoksa 0.
+  rates: Oranlar
+  rates-hint: diğer_id=oran, virgülle ayrılmış. shards=0.01, bunun 1 tanesinin 0.01 shard ettiği anlamına gelir.
+  aliases: Komut adları
+  aliases-hint: Virgülle ayrılmış, eğik çizgi olmadan. İlki komut, kalanlar takma adlarıdır.
+  sort-order: Sıralama düzeni
+  sort-order-hint: Düşük olan cüzdanlarda ve listelerde önce gösterilir.
+  none: '{letters_black}Yok'
+  provider-decimals: '{letters_black}Sağlayıcınınki'
+  item-set: '{success}Ayarlandı'
+  item-not-set: '{error}Ayarlanmadı'
+  'on': '{success}✔ Açık'
+  'off': '{error}✘ Kapalı'
+  ledger-forever: Süresiz
+  ledger-days: '%days% gün ⌚'
+  kind-stored: Depolanan
+  kind-item: Eşya
+  kind-display: Yalnızca görüntü
+  pay-confirm-title: '{primary}&lÖDEME ONAYI {letters_black}» {highlight}%id%'
+  pay-confirm-above: Şu miktarın üstünde onay iste
+  pay-confirm-above-hint: Bu miktarın üstündeki bir /pay önce ödeyene sorar. 0 hiç sormaz.
+  interest-title: '{primary}&lFAİZ {letters_black}» {highlight}%id%'
+  interest-rate: Oran, yüzde
+  interest-rate-hint: Bakiyenin, her aralıkta ödenen kısmı. 0 faizi kapatır.
+  interest-interval: Aralık
+  interest-interval-hint: Ne sıklıkla ödendiği, örneğin 30m, 1h veya 1d. En az 1m.
+  interest-max: Ödeme başına en fazla
+  interest-max-hint: Tek bir ödemenin üst sınırı. Sınır yoksa 0.
+  language-default: Sunucu varsayılanı
