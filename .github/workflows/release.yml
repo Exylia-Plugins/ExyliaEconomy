@@ -27,3 +27,15 @@ jobs:
           cp "build/libs/ExyliaEconomy-${version}.jar" build/libs/ExyliaEconomy.jar
           gh release create "$GITHUB_REF_NAME" "build/libs/ExyliaEconomy-${version}.jar" build/libs/ExyliaEconomy.jar \
             --title "ExyliaEconomy ${version}" --generate-notes
+
+  # Mirrors the release above to Modrinth; skipped while MODRINTH_TOKEN or the project id is unset.
+  modrinth:
+    needs: release
+    uses: Exylia-Plugins/.github/.github/workflows/modrinth.yml@main
+    with:
+      version: ${{ github.ref_name }}
+      name: ExyliaEconomy
+      project-id: ${{ vars.MODRINTH_PROJECT_ID }}
+      loaders: '["folia","paper","purpur"]'
+      dependencies: '[{"project_id":"G0BDxMIG","dependency_type":"required"},{"project_id":"lKEzGugV","dependency_type":"optional"}]'
+    secrets: inherit
