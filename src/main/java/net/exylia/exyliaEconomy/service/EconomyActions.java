@@ -538,12 +538,26 @@ public final class EconomyActions {
         });
     }
 
-    public void reset(CommandSender sender, @Nullable String currencyId, String targetName) {
+    /** Puts a balance back to the currency's start, asking first like {@code giveall}. */
+    public void reset(CommandSender sender, @Nullable String currencyId, String targetName, boolean confirmed) {
         String currency = resolved(sender, currencyId);
         if (currency == null) return;
         ExyliaPlayers.then(sender, targetName, found -> {
             BigDecimal start = StoredEconomy.rules(currency).map(CurrencyRules::start).orElse(BigDecimal.ZERO);
             CurrencyInfo info = Economy.info(currency);
+            String who = confirmKey(sender);
+            String what = "reset|" + found.id() + "|" + currency;
+            if (!confirmed) {
+                Confirmations.ask(who, what, System.currentTimeMillis());
+                ExyliaEconomy.getInstance().getMessages().send(sender, text().resetConfirm(), Values.of()
+                        .put("player", found.name()).put("currency", info.namePlural()).put("amount", info.format(start))
+                        .put("command", "/economyadmin reset " + found.name() + " " + currency + " confirm"));
+                return;
+            }
+            if (!Confirmations.confirm(who, what, System.currentTimeMillis())) {
+                ExyliaEconomy.getInstance().getMessages().send(sender, text().confirmExpired());
+                return;
+            }
             EconomyResponse response = Economy.of(currency)
                     .set(found.id(), start, Transaction.of("admin:reset").by(initiator(sender)));
             if (!response.isSuccess()) {

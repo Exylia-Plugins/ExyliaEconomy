@@ -113,6 +113,7 @@ top-total: ' {letters_black}▎ {letters}Em circulação {letters_black}» {info
 give-all-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Dar {highlight}%amount% {warning}a cada um dos {highlight}%count% {warning}jogadores online? <click:run_command:''%command%''><hover:show_text:''{letters}Clique para dar a todos''>{success}&l[✔ CONFIRMAR]</hover></click> {letters_black}30s ⌚'
 give-all-done: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Deu {highlight}%amount% {success}a {highlight}%count% {success}jogadores. {letters_black}Ignorados: %skipped%'
 give-all-nobody: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Não há ninguém online.'
+reset-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Redefinir os {highlight}%currency% {warning}de {highlight}%player% {warning}para {highlight}%amount%{warning}? <click:run_command:''%command%''><hover:show_text:''{letters}Clique para redefinir o saldo''>{error}&l[✔ REDEFINIR]</hover></click> {letters_black}30s ⌚'
 note-withdrawn: '[sound:ITEM_BOOK_PAGE_TURN|1.0|1.2]%prefix% {success}Você sacou uma nota de {highlight}%amount%{success}.'
 note-redeemed: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}Você resgatou uma nota de {highlight}%amount%{success}.'
 note-invalid: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Esta nota já foi resgatada ou não é válida.'

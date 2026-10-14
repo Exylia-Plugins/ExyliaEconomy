@@ -130,7 +130,8 @@ public final class AliasCommands {
                         case "give" -> actions.give(sender, currency, args[1], args[2]);
                         case "take" -> actions.take(sender, currency, args[1], args[2]);
                         case "set" -> actions.set(sender, currency, args[1], args[2]);
-                        default -> actions.reset(sender, currency, args[1]);
+                        default -> actions.reset(sender, currency, args[1],
+                                args.length > 2 && "confirm".equalsIgnoreCase(args[2]));
                     }
                 }
                 default -> actions.balance(sender, currency, args[0]);

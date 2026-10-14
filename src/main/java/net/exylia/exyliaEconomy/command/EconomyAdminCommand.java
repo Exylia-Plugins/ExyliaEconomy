@@ -85,8 +85,13 @@ public final class EconomyAdminCommand {
 
     @Subcommand("reset")
     public void reset(CommandSender sender, PlayerTarget player,
-                      @Optional @SuggestWith(CurrencySuggestionProvider.class) String currency) {
-        actions.reset(sender, currency, player.typed());
+                      @Optional @SuggestWith(CurrencySuggestionProvider.class) String currency,
+                      @Optional @Suggest("confirm") String confirm) {
+        if (confirm == null && "confirm".equalsIgnoreCase(currency)) {
+            currency = null;
+            confirm = "confirm";
+        }
+        actions.reset(sender, currency, player.typed(), "confirm".equalsIgnoreCase(confirm));
     }
 
     /** Copies every known balance from one currency into another. Refused a second time unless {@code again}. */

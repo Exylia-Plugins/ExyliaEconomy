@@ -113,6 +113,7 @@ top-total: ' {letters_black}▎ {letters}В обороте {letters_black}» {in
 give-all-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Выдать {highlight}%amount% {warning}каждому из {highlight}%count% {warning}игроков онлайн? <click:run_command:''%command%''><hover:show_text:''{letters}Нажми, чтобы выдать всем''>{success}&l[✔ ПОДТВЕРДИТЬ]</hover></click> {letters_black}30s ⌚'
 give-all-done: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Ты выдал {highlight}%amount% {success}игрокам: {highlight}%count%{success}. {letters_black}Пропущено: %skipped%'
 give-all-nobody: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Никого нет в сети.'
+reset-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Сбросить {highlight}%currency% {warning}игрока {highlight}%player% {warning}до {highlight}%amount%{warning}? <click:run_command:''%command%''><hover:show_text:''{letters}Нажми, чтобы сбросить баланс''>{error}&l[✔ СБРОСИТЬ]</hover></click> {letters_black}30s ⌚'
 note-withdrawn: '[sound:ITEM_BOOK_PAGE_TURN|1.0|1.2]%prefix% {success}Ты снял банкноту на {highlight}%amount%{success}.'
 note-redeemed: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}Ты обналичил банкноту на {highlight}%amount%{success}.'
 note-invalid: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Эта банкнота уже обналичена или недействительна.'

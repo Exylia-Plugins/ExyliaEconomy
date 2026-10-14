@@ -10,6 +10,7 @@ import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.CommandPlaceholder;
 import revxrsal.commands.annotation.Default;
 import revxrsal.commands.annotation.Optional;
+import revxrsal.commands.annotation.Suggest;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.annotation.SuggestWith;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
@@ -132,8 +133,13 @@ public final class EconomyCommand {
     @Subcommand("reset")
     @CommandPermission(Permissions.ADMIN)
     public void reset(CommandSender sender, PlayerTarget player,
-                      @Optional @SuggestWith(CurrencySuggestionProvider.class) String currency) {
-        actions.reset(sender, currency, typed(player));
+                      @Optional @SuggestWith(CurrencySuggestionProvider.class) String currency,
+                      @Optional @Suggest("confirm") String confirm) {
+        if (confirm == null && "confirm".equalsIgnoreCase(currency)) {
+            currency = null;
+            confirm = "confirm";
+        }
+        actions.reset(sender, currency, typed(player), "confirm".equalsIgnoreCase(confirm));
     }
 
     @Subcommand("import")

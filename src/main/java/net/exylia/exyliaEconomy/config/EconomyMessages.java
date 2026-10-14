@@ -120,6 +120,8 @@ public record EconomyMessages(
         String giveAllDone,
         @Comment("/economyadmin giveall with nobody online.")
         String giveAllNobody,
+        @Comment("/economyadmin reset asking first. Placeholders: %player% %currency% %amount% %command%.")
+        String resetConfirm,
         @Comment("/withdraw printed a banknote. Placeholder: %amount%.")
         String noteWithdrawn,
         @Comment("A banknote was redeemed. Placeholder: %amount%.")
@@ -266,6 +268,9 @@ public record EconomyMessages(
                 "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Gave {highlight}%amount% {success}to"
                         + " {highlight}%count% {success}players. {letters_black}Skipped: %skipped%",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Nobody is online.",
+                "[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Reset the {highlight}%currency% {warning}of"
+                        + " {highlight}%player% {warning}to {highlight}%amount%{warning}? <click:run_command:'%command%'><hover:show_text:"
+                        + "'{letters}Click to reset the balance'>{error}&l[✔ RESET]</hover></click> {letters_black}30s ⌚",
                 "[sound:ITEM_BOOK_PAGE_TURN|1.0|1.2]%prefix% {success}You withdrew a banknote of {highlight}%amount%{success}.",
                 "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}Redeemed a banknote of {highlight}%amount%{success}.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}This banknote was already redeemed or is not valid.",

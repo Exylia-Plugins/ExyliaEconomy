@@ -113,6 +113,7 @@ top-total: ' {letters_black}▎ {letters}En circulation {letters_black}» {info}
 give-all-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Donner {highlight}%amount% {warning}à chacun des {highlight}%count% {warning}joueurs connectés ? <click:run_command:''%command%''><hover:show_text:''{letters}Clique pour le donner à tout le monde''>{success}&l[✔ CONFIRMER]</hover></click> {letters_black}30s ⌚'
 give-all-done: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Tu as donné {highlight}%amount% {success}à {highlight}%count% {success}joueurs. {letters_black}Ignorés : %skipped%'
 give-all-nobody: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Personne n''est connecté.'
+reset-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Réinitialiser les {highlight}%currency% {warning}de {highlight}%player% {warning}à {highlight}%amount%{warning} ? <click:run_command:''%command%''><hover:show_text:''{letters}Clique pour réinitialiser le solde''>{error}&l[✔ RÉINITIALISER]</hover></click> {letters_black}30s ⌚'
 note-withdrawn: '[sound:ITEM_BOOK_PAGE_TURN|1.0|1.2]%prefix% {success}Tu as retiré un billet de {highlight}%amount%{success}.'
 note-redeemed: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}Tu as encaissé un billet de {highlight}%amount%{success}.'
 note-invalid: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Ce billet a déjà été encaissé ou n''est pas valide.'
