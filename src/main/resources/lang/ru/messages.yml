@@ -1,0 +1,205 @@
+prefix: '{primary}&lЭКОНОМИКА {letters_black}•<reset>'
+balance: '%prefix% {letters}Твой баланс {highlight}%currency%{letters}: {success}%amount%'
+balance-other: '%prefix% {highlight}%currency% {letters}игрока {highlight}%player%{letters}: {success}%amount%'
+paid: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Ты заплатил {highlight}%amount% {success}игроку {highlight}%player%{success}.'
+received: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {highlight}%player% {success}заплатил тебе {highlight}%amount%{success}.'
+pay-self: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Нельзя заплатить самому себе.'
+pay-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}нельзя переводить другим игрокам.'
+pay-minimum: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Минимальная сумма перевода — {highlight}%amount%{error}.'
+not-enough: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Тебе не хватает {highlight}%amount% {error}валюты {highlight}%currency%{error}.'
+invalid-amount: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Это не сумма. Попробуй {highlight}100{error}, {highlight}2.5k {error}или {highlight}1m{error}.'
+no-currency: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Валюты {highlight}%currency% {error}не существует.'
+no-permission: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Тебе нельзя использовать {highlight}%currency%{error}.'
+not-available: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}сейчас недоступна.'
+given: '%prefix% {success}Ты выдал {highlight}%amount% {success}игроку {highlight}%player%{success}. {letters_black}Теперь: %balance%'
+given-notify: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}Ты получил {highlight}%amount%{success}.'
+taken: '%prefix% {warning}Ты забрал {highlight}%amount% {warning}у {highlight}%player%{warning}. {letters_black}Теперь: %balance%'
+taken-notify: '[sound:BLOCK_NOTE_BLOCK_BASS|1.0|0.8]%prefix% {warning}У тебя забрали {highlight}%amount%{warning}.'
+set: '%prefix% {success}{highlight}%currency% {success}игрока {highlight}%player% {success}теперь {highlight}%amount%{success}.'
+reset: '%prefix% {warning}{highlight}%currency% {warning}игрока {highlight}%player% {warning}сброшена.'
+queued: '%prefix% {letters}%amount% {letters}ожидает игрока {highlight}%player%{letters}. {letters_black}Не в сети: получит при следующем входе.'
+top-header: '{primary}&lТОП {highlight}%currency% {muted}стр. %page%'
+top-line: ' {letters_black}#%position% {highlight}%player% {letters_black}» {success}%amount%'
+top-empty: ' {letters_black}Пока ни у кого нет.'
+history-header: '{primary}&lИСТОРИЯ {highlight}%currency% {letters_black}· {letters}%player%'
+history-line: ' {letters_black}%date% %delta% {letters_black}» {info}%reason% {letters_black}(%balance%)'
+history-empty: ' {letters_black}Пока ничего.'
+exchanged: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Ты обменял {highlight}%from% {success}на {highlight}%to%{success}.'
+exchange-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}%reason%'
+wallet-header: '{primary}&lКОШЕЛЁК {letters_black}· {letters}%player%'
+wallet-line: ' {letters_black}▎ {letters}%currency% {letters_black}» {success}%amount%'
+currencies-header: '{primary}&lВАЛЮТЫ'
+currencies-line: ' {letters_black}▎ {highlight}%id% {letters_black}» {letters}%currency% {letters_black}(%kind%)'
+import-started: '%prefix% {letters}Импорт балансов из {highlight}%from% {letters}в {highlight}%currency%{letters}…'
+import-done: '%prefix% {success}Импортировано балансов в {highlight}%currency%{success}: {highlight}%count%{success}.'
+usage: '%prefix% {letters}Использование{letters_black}: {highlight}/%command% {letters_black}[pay <player> <amount> | top | history | exchange <amount> <to>]'
+currency-created: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.0]%prefix% {success}Валюта {highlight}%id% {success}создана.'
+currency-deleted: '%prefix% {warning}Валюта {highlight}%id% {warning}удалена.'
+currency-saved: '[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}Валюта {highlight}%id% {success}сохранена.'
+currency-not-found: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Валюта {highlight}%id% {error}не найдена.'
+currency-exists: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Валюта {highlight}%id% {error}уже существует.'
+currency-invalid-id: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%id% {error}— недопустимый ID валюты. Только строчные буквы, цифры и подчёркивания, до 32 символов.'
+currency-invalid-rates: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Не удалось прочитать курсы: {highlight}%reason%{error}. Пиши так: {highlight}shards=0.01, gems=2{error}.'
+still-loading: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {warning}Твой баланс ещё загружается. Попробуй через секунду.'
+import-already: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Балансы из {highlight}%from% {error}уже импортированы в {highlight}%currency%{error}. Добавь {highlight}again {error}к команде, чтобы импортировать недостающих игроков.'
+import-same: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%from% {error}и {highlight}%currency% {error}— одна и та же валюта: импортировать нечего.'
+reasons:
+  api: Плагин
+  vault: Плагин
+  pay: Перевод
+  pay:tax: Комиссия перевода
+  pay:tax-refund: Возврат комиссии
+  shop: Магазин
+  shop:buy: Покупка в магазине
+  shop:sell: Продажа в магазине
+  worth: Стоимость
+  worth:sell: Продажа по стоимости
+  sell: Продажа
+  sell:command: Продано через /sell
+  sell:wand: Жезл продажи
+  sell:autosell: Автопродажа
+  bazaar: Базар
+  market: Рынок
+  market:buy: Покупка на рынке
+  market:sale: Продажа на рынке
+  market:fee: Сбор рынка
+  auctions: Аукцион
+  auctions:bid: Ставка на аукционе
+  auctions:sale: Продажа на аукционе
+  orders: Заказы
+  trade: Обмен
+  exchange: Конвертация
+  admin: Администрация
+  import: Импорт
+  note: Банкнота
+  note:withdraw: Банкнота выпущена
+  note:redeem: Банкнота обналичена
+  interest: Проценты
+  rollback: Откат
+kinds:
+  stored: Валюта сервера
+  item: Предмет
+  experience: Опыт
+  external: Другой плагин
+  unknown: Неизвестно
+exchange-not-allowed: Эту валюту нельзя обменять.
+exchange-no-rate: Нет курса из %from% в %to%.
+exchange-over-ceiling: Это превысит максимум %currency%, который ты можешь иметь.
+at-ceiling: Баланс на максимуме — %amount%.
+permission-denied: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}У тебя нет прав на это.'
+economy-off: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Экономика не работает.'
+rewards-delivered: '[sound:ENTITY_PLAYER_LEVELUP|1.0|1.4]%prefix% {success}Доставлено ожидавших тебя выплат: {highlight}%amount%{success}.'
+over-ceiling: Это превысит максимальный баланс — %amount%.
+refused: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}%reason%'
+import-running: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {warning}Этот импорт уже идёт.'
+import-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Импорт в {highlight}%currency% {error}остановился на полпути. Запусти снова с {highlight}again{error}: никто не получит дважды.'
+currency-networked-locked: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}У {highlight}%id% {error}уже есть балансы: её нельзя переключить между общей по сети и отдельной на сервер, иначе они потеряются.'
+paid-taxed: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Ты заплатил {highlight}%amount% {success}игроку {highlight}%player%{success}. {letters_black}Комиссия: {info}%tax%'
+pay-refused: Перевод отклонён.
+top-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}У {highlight}%currency% {error}нет рейтинга.'
+player-required: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Укажи игрока{letters_black}: {highlight}/%command% <player>'
+currency-write-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Не удалось сохранить {highlight}%id% {error}в базу данных. Проверь консоль и попробуй снова.'
+pay-cancelled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Перевод отменён.'
+exchange-cancelled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Обмен отменён.'
+pay-disabled-target: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {highlight}%player% {error}сейчас не принимает переводы.'
+pay-toggle-off: '[sound:BLOCK_NOTE_BLOCK_BASS|1.0|0.8]%prefix% {warning}Ты больше не принимаешь переводы. {letters_black}/paytoggle включит их снова.'
+pay-toggle-on: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Ты снова принимаешь переводы.'
+pay-toggle-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Сейчас не удалось проверить. Попробуй через секунду.'
+pay-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Отправить {highlight}%amount% {warning}игроку {highlight}%player%{warning}? <click:run_command:''%command%''><hover:show_text:''{letters}Нажми, чтобы отправить перевод''>{success}&l[✔ ПОДТВЕРДИТЬ]</hover></click> {letters_black}30s ⌚'
+confirm-expired: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Нечего подтверждать: запрос истёк или изменился. Введи команду снова.'
+offline-pay-single: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {letters}Пока тебя не было, {highlight}%player% {letters}заплатил тебе {success}%amount%{letters}.'
+offline-pay-many: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {letters}Пока тебя не было, ты получил {success}%amount% {letters}от {highlight}%count% {letters}игроков.'
+top-total: ' {letters_black}▎ {letters}В обороте {letters_black}» {info}%total%'
+give-all-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Выдать {highlight}%amount% {warning}каждому из {highlight}%count% {warning}игроков онлайн? <click:run_command:''%command%''><hover:show_text:''{letters}Нажми, чтобы выдать всем''>{success}&l[✔ ПОДТВЕРДИТЬ]</hover></click> {letters_black}30s ⌚'
+give-all-done: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Ты выдал {highlight}%amount% {success}игрокам: {highlight}%count%{success}. {letters_black}Пропущено: %skipped%'
+give-all-nobody: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Никого нет в сети.'
+note-withdrawn: '[sound:ITEM_BOOK_PAGE_TURN|1.0|1.2]%prefix% {success}Ты снял банкноту на {highlight}%amount%{success}.'
+note-redeemed: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}Ты обналичил банкноту на {highlight}%amount%{success}.'
+note-invalid: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Эта банкнота уже обналичена или недействительна.'
+note-not-held: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Возьми банкноту в руку, чтобы внести её.'
+note-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}нельзя снять банкнотой.'
+note-inventory-full: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Сначала освободи место в инвентаре.'
+note-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Сейчас не удалось обработать банкноту. Попробуй через секунду.'
+note-wrong-server: Эту банкноту можно обналичить только на сервере, где её выпустили.
+log-header: '{primary}&lЖУРНАЛ {highlight}%currency% {letters_black}· {letters}%player% {muted}стр. %page%'
+log-line: ' {letters_black}#%id% {muted}%date% %delta% {letters_black}» {info}%reason% {letters_black}(%balance%)'
+export-started: '%prefix% {letters}Экспорт журнала…'
+export-done: '[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}Экспортировано строк: {highlight}%count% {success}в {highlight}exports/%file%{success}.'
+ledger-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Не удалось прочитать или записать журнал. Проверь консоль.'
+rollback-confirm: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.2]%prefix% {warning}Откатить {highlight}%count% {warning}операций игрока {highlight}%player%{warning}? {letters_black}Итого: %net% {letters_black}· Переводы исключены: %excluded% <click:run_command:''%command%''><hover:show_text:''{letters}Нажми, чтобы откатить их''>{success}&l[✔ ПОДТВЕРДИТЬ]</hover></click> {letters_black}30s ⌚'
+rollback-nothing: '%prefix% {letters}У {highlight}%player% {letters}за этот период нечего откатывать. {letters_black}Переводы исключены: %excluded%'
+rollback-done: '[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}Откачено операций: {highlight}%count% {success}игрока {highlight}%player%{success}. {letters_black}Итого: %net% {letters_black}· Отклонено: %failed% · Уже сделано: %skipped%'
+invalid-window: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Это не период. Попробуй {highlight}1h{error}, {highlight}2d {error}или запись вроде {highlight}#42{error}.'
+interest-paid: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.6]%prefix% {success}Проценты {highlight}+%amount% {letters_black}· следующие через {info}%next% ⌚'
+banknote:
+  material: PAPER
+  name: '{primary}&lБАНКНОТА &8[{success}%amount%&8]'
+  lore:
+  - ''
+  - '{secondary}Информация:'
+  - ' {letters_black}▎ {letters}Валюта {letters_black}» {highlight}%currency%'
+  - ' {letters_black}▎ {letters}Подписал {letters_black}» {highlight}%issuer%'
+  - ' {letters_black}▎ {letters}Выпущена {letters_black}» {info}%date%'
+  - ''
+  - '{warning}➥ ПКМ, чтобы обналичить'
+  - ''
+admin:
+  icon-prompt: '{warning}Выбери иконку'
+  id-prompt: '{primary}Введи ID валюты, например {highlight}gems{primary}:'
+  kind-prompt: '{primary}Какого типа валюта {highlight}%id%{primary}?'
+  item-prompt: '{warning}Положи точный предмет, который представляет эту валюту'
+  delete-prompt: '{error}Удалить валюту {highlight}%id%{error}?'
+  delete-stored-warning: ' {letters}Балансы останутся в базе данных, но никто не сможет ими пользоваться, пока снова не появится валюта с этим ID.'
+  appearance-title: '{primary}&lВНЕШНОСТЬ {letters_black}» {highlight}%id%'
+  rules-title: '{primary}&lПРАВИЛА {letters_black}» {highlight}%id%'
+  rates-title: '{primary}&lКУРСЫ ОБМЕНА {letters_black}» {highlight}%id%'
+  commands-title: '{primary}&lКОМАНДЫ {letters_black}» {highlight}%id%'
+  sort-title: '{primary}&lПОРЯДОК {letters_black}» {highlight}%id%'
+  name: Название
+  name-hint: Одна единица. Цветовые метки поддерживаются.
+  plural: Множественное число
+  symbol: Символ
+  symbol-hint: Пусто — без символа.
+  decimals: Знаки после запятой
+  decimals-hint: 0 — целые числа, максимум 8.
+  decimals-provider-hint: От 0 до 8, или -1 — как у провайдера.
+  format: Формат
+  format-hint: '%amount% %symbol% %name%'
+  compact-format: Компактный формат
+  compact-format-hint: То же для скорбордов, где %amount% показывается как 1.2k.
+  start: Стартовый баланс
+  max: Максимальный баланс
+  max-hint: -1 — без максимума.
+  permission: Право
+  permission-hint: 'Нужно для её команд. Пусто — не нужно никому.'
+  minimum-transfer: Минимальная сумма перевода
+  tax: Комиссия перевода, в процентах
+  tax-hint: Берётся с каждого перевода. 0 — без комиссии.
+  rates: Курсы
+  rates-hint: другой_id=курс, через запятую. shards=0.01 значит, что 1 этой валюты стоит 0.01 shards.
+  aliases: Названия команды
+  aliases-hint: Через запятую, без слэша. Первое — сама команда, остальные — её алиасы.
+  sort-order: Порядок
+  sort-order-hint: Меньшее значение показывается первым в кошельках и списках.
+  none: '{letters_black}Нет'
+  provider-decimals: '{letters_black}Как у провайдера'
+  item-set: '{success}Задано'
+  item-not-set: '{error}Не задано'
+  'on': '{success}✔ Включено'
+  'off': '{error}✘ Выключено'
+  ledger-forever: Навсегда
+  ledger-days: '%days% дн. ⌚'
+  kind-stored: Хранимая
+  kind-item: Предмет
+  kind-display: Только отображение
+  pay-confirm-title: '{primary}&lПОДТВЕРЖДЕНИЕ ПЕРЕВОДА {letters_black}» {highlight}%id%'
+  pay-confirm-above: Спрашивать подтверждение свыше
+  pay-confirm-above-hint: /pay свыше этой суммы требует подтверждения. 0 — никогда не спрашивать.
+  interest-title: '{primary}&lПРОЦЕНТЫ {letters_black}» {highlight}%id%'
+  interest-rate: Ставка, проценты
+  interest-rate-hint: От баланса, выплачивается каждый интервал. 0 выключает проценты.
+  interest-interval: Интервал
+  interest-interval-hint: Как часто выплачивать, например 30m, 1h или 1d. Минимум 1m.
+  interest-max: Максимум за выплату
+  interest-max-hint: Потолок одной выплаты. 0 — без потолка.
+  language-default: Язык сервера

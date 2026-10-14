@@ -75,7 +75,7 @@ class LegacyConfigTest {
         assertFalse(back.offlinePayNotice());
         assertFalse(back.fresh());
         assertEquals("pt", back.withNextLanguage().language());
-        assertEquals("default", back.withNextLanguage().withNextLanguage().withNextLanguage().language());
+        assertEquals("default", back.withNextLanguage().withNextLanguage().withNextLanguage().withNextLanguage().language());
     }
 
     @Test

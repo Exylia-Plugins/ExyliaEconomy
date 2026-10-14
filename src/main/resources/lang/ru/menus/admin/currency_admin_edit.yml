@@ -1,0 +1,319 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# One currency: an overview that opens each section of it. A stored
+# currency has every section; an item currency its item, commands and
+# pay confirmation; a display-only one its look and pay confirmation.
+
+title: "{primary}&lВАЛЮТА {letters_black}» {highlight}%currency_id%"
+size: 45
+type: SIMPLE
+refresh:
+  mode: ON_CLICK
+  click_delay: 4
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  summary:
+    slot: 4
+    material: "%currency_icon%"
+    name: "{primary}&l%currency_plural%"
+    lore:
+      - ""
+      - "{secondary}Информация:"
+      - " {letters_black}▎ {letters}ID {letters_black}» {info}%currency_id%"
+      - " {letters_black}▎ {letters}Тип {letters_black}» {info}%currency_kind_label%"
+      - ""
+      - "{secondary}Предпросмотр:"
+      - " {letters_black}▎ {letters}Полный {letters_black}» {letters}%currency_preview%"
+      - " {letters_black}▎ {letters}Компактный {letters_black}» {letters}%currency_preview_compact%"
+      - ""
+
+  general:
+    slot: 19
+    material: "NAME_TAG"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lОСНОВНОЕ"
+    lore:
+      - ""
+      - "{secondary}Информация:"
+      - " {letters_black}▎ {letters}Названия, суммы, иконка и порядок."
+      - ""
+      - "{secondary}Статус:"
+      - " {letters_black}▎ {letters}Название {letters_black}» {info}%currency_name%"
+      - " {letters_black}▎ {letters}Выглядит так {letters_black}» {letters}%currency_preview%"
+      - ""
+      - "{warning}➥ Нажми, чтобы открыть"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% general"
+
+  commands:
+    slot: 20
+    material: "COMMAND_BLOCK"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lКОМАНДЫ"
+    lore:
+      - ""
+      - "{secondary}Информация:"
+      - " {letters_black}▎ {letters}Что вводят игроки, чтобы её использовать."
+      - ""
+      - "{secondary}Статус:"
+      - " {letters_black}▎ {letters}Названия {letters_black}» {info}%currency_aliases%"
+      - " {letters_black}▎ {letters}Включены {letters_black}» %commands_status%"
+      - ""
+      - "{warning}➥ Нажми, чтобы открыть"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% commands"
+
+  rules:
+    slot: 21
+    material: "BOOK"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lПРАВИЛА"
+    lore:
+      - ""
+      - "{secondary}Балансы:"
+      - " {letters_black}▎ {letters}Старт {letters_black}» {info}%currency_start%"
+      - " {letters_black}▎ {letters}Потолок {letters_black}» {info}%currency_max%"
+      - " {letters_black}▎ {letters}Право {letters_black}» {info}%currency_permission%"
+      - ""
+      - "{secondary}Переводы:"
+      - " {letters_black}▎ {letters}Минимум {letters_black}» {info}%currency_minimum_transfer%"
+      - " {letters_black}▎ {letters}Комиссия {letters_black}» {info}%currency_tax%"
+      - ""
+      - "{warning}➥ Нажми, чтобы изменить"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_rules %currency_id%"
+
+  payments:
+    slot: 22
+    material: "GOLD_NUGGET"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lПЛАТЕЖИ"
+    lore:
+      - ""
+      - "{secondary}Информация:"
+      - " {letters_black}▎ {letters}Переводы, подтверждения и банкноты."
+      - ""
+      - "{secondary}Статус:"
+      - " {letters_black}▎ {letters}Переводы {letters_black}» %transferable_status%"
+      - " {letters_black}▎ {letters}Спрашивать свыше {letters_black}» {info}%currency_pay_confirm%"
+      - " {letters_black}▎ {letters}Банкноты {letters_black}» %banknotes_status%"
+      - ""
+      - "{warning}➥ Нажми, чтобы открыть"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% payments"
+
+  exchange:
+    slot: 23
+    material: "SUNFLOWER"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lОБМЕН"
+    lore:
+      - ""
+      - "{secondary}Информация:"
+      - " {letters_black}▎ {letters}Обмен на другие валюты."
+      - ""
+      - "{secondary}Статус:"
+      - " {letters_black}▎ {letters}Обмен {letters_black}» %exchangeable_status%"
+      - " {letters_black}▎ {letters}Курсы {letters_black}» {info}%currency_rates%"
+      - ""
+      - "{warning}➥ Нажми, чтобы открыть"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% exchange"
+
+  interest:
+    slot: 24
+    material: "EXPERIENCE_BOTTLE"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lПРОЦЕНТЫ"
+    lore:
+      - ""
+      - "{secondary}Информация:"
+      - " {letters_black}▎ {letters}Сколько она платит держателям со временем."
+      - ""
+      - "{secondary}Статус:"
+      - " {letters_black}▎ {letters}Ставка {letters_black}» {info}%currency_interest_rate%"
+      - " {letters_black}▎ {letters}Каждые {letters_black}» {info}%currency_interest_interval% ⌚"
+      - " {letters_black}▎ {letters}Офлайн {letters_black}» %interest_offline_status%"
+      - ""
+      - "{warning}➥ Нажми, чтобы открыть"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% interest"
+
+  integrations:
+    slot: 25
+    material: "ENDER_EYE"
+    condition: "%currency_kind% == STORED"
+    name: "{primary}&lИНТЕГРАЦИИ"
+    lore:
+      - ""
+      - "{secondary}Информация:"
+      - " {letters_black}▎ {letters}Рейтинг, Vault и сеть серверов."
+      - ""
+      - "{secondary}Статус:"
+      - " {letters_black}▎ {letters}Рейтинг {letters_black}» %leaderboard_status%"
+      - " {letters_black}▎ {letters}Сеть {letters_black}» %networked_status%"
+      - " {letters_black}▎ {letters}Vault {letters_black}» %vault_status%"
+      - ""
+      - "{warning}➥ Нажми, чтобы открыть"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% integrations"
+
+  general-item:
+    slot: 20
+    material: "NAME_TAG"
+    condition: "%currency_kind% == ITEM"
+    name: "{primary}&lОСНОВНОЕ"
+    lore:
+      - ""
+      - "{secondary}Информация:"
+      - " {letters_black}▎ {letters}Названия, суммы, иконка и порядок."
+      - ""
+      - "{secondary}Статус:"
+      - " {letters_black}▎ {letters}Название {letters_black}» {info}%currency_name%"
+      - " {letters_black}▎ {letters}Выглядит так {letters_black}» {letters}%currency_preview%"
+      - ""
+      - "{warning}➥ Нажми, чтобы открыть"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% general"
+
+  commands-item:
+    slot: 21
+    material: "COMMAND_BLOCK"
+    condition: "%currency_kind% == ITEM"
+    name: "{primary}&lКОМАНДЫ"
+    lore:
+      - ""
+      - "{secondary}Информация:"
+      - " {letters_black}▎ {letters}Первое — сама команда,"
+      - " {letters_black}▎ {letters}остальные — её алиасы."
+      - ""
+      - "{secondary}Статус:"
+      - " {letters_black}▎ {letters}Названия {letters_black}» {info}%currency_aliases%"
+      - ""
+      - "{warning}➥ Нажми, чтобы изменить"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_aliases %currency_id%"
+
+  item:
+    slot: 23
+    material: "%currency_item_icon%"
+    condition: "%currency_kind% == ITEM"
+    name: "{primary}&lПРЕДМЕТ"
+    lore:
+      - ""
+      - "{secondary}Информация:"
+      - " {letters_black}▎ {letters}Считаются только точно такие стаки:"
+      - " {letters_black}▎ {letters}с тем же именем, описанием и моделью."
+      - ""
+      - "{secondary}Статус:"
+      - " {letters_black}▎ {letters}Предмет {letters_black}» %currency_item_state%"
+      - ""
+      - "{warning}➥ Нажми, чтобы положить новый"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_item %currency_id%"
+
+  pay-confirm-item:
+    slot: 24
+    material: "PAPER"
+    condition: "%currency_kind% == ITEM"
+    name: "{primary}&lПОДТВЕРЖДЕНИЕ ПЕРЕВОДА"
+    lore:
+      - ""
+      - "{secondary}Информация:"
+      - " {letters_black}▎ {letters}/pay свыше суммы требует подтверждения."
+      - ""
+      - "{secondary}Статус:"
+      - " {letters_black}▎ {letters}Спрашивать свыше {letters_black}» {info}%currency_pay_confirm%"
+      - ""
+      - "{warning}➥ Нажми, чтобы изменить"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_pay_confirm %currency_id%"
+
+  general-display:
+    slot: 21
+    material: "NAME_TAG"
+    condition: "%currency_kind% == DISPLAY"
+    name: "{primary}&lОСНОВНОЕ"
+    lore:
+      - ""
+      - "{secondary}Информация:"
+      - " {letters_black}▎ {letters}Названия, суммы, иконка и порядок."
+      - ""
+      - "{secondary}Статус:"
+      - " {letters_black}▎ {letters}Название {letters_black}» {info}%currency_name%"
+      - " {letters_black}▎ {letters}Выглядит так {letters_black}» {letters}%currency_preview%"
+      - ""
+      - "{warning}➥ Нажми, чтобы открыть"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% general"
+
+  pay-confirm-display:
+    slot: 23
+    material: "PAPER"
+    condition: "%currency_kind% == DISPLAY"
+    name: "{primary}&lПОДТВЕРЖДЕНИЕ ПЕРЕВОДА"
+    lore:
+      - ""
+      - "{secondary}Информация:"
+      - " {letters_black}▎ {letters}/pay свыше суммы требует подтверждения."
+      - ""
+      - "{secondary}Статус:"
+      - " {letters_black}▎ {letters}Спрашивать свыше {letters_black}» {info}%currency_pay_confirm%"
+      - ""
+      - "{warning}➥ Нажми, чтобы изменить"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_pay_confirm %currency_id%"
+
+  back:
+    slot: 40
+    sound: "minecraft:item.bundle.remove_one|1.0|0.5"
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{error}&lНАЗАД"
+    lore:
+      - ""
+      - " {letters_black}▎ {letters}Возврат к списку валют."
+      - ""
+      - "{warning}➥ Нажми, чтобы вернуться"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_open_list"
+
+  delete:
+    slot: 44
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUwZmQxMDE5OWU4ZTRmY2RhYmNhZTRmODVjODU5MTgxMjdhN2M1NTUzYWQyMzVmMDFjNTZkMThiYjk0NzBkMyJ9fX0="
+    name: "{error}&lУДАЛИТЬ ВАЛЮТУ"
+    lore:
+      - ""
+      - " {letters_black}▎ {letters}Удаляет валюту. Сохранённые балансы"
+      - " {letters_black}▎ {letters}остаются в базе, без использования."
+      - " {letters_black}▎ {letters_black}Потребуется подтверждение."
+      - ""
+      - "{error}➥ Нажми, чтобы удалить"
+      - ""
+    actions:
+      - "exyliaeconomy:currency_admin_delete %currency_id%"
