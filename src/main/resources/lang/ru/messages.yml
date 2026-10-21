@@ -204,3 +204,8 @@ admin:
   interest-max: Максимум за выплату
   interest-max-hint: Потолок одной выплаты. 0 — без потолка.
   language-default: Язык сервера
+demo:
+  seed-done: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Создано {highlight}%players% {success}демо-игроков в {highlight}%currencies% {success}валютах. {letters_black}Новых валют: {info}%created% {letters_black}· Выдано вам: {info}%granted%'
+  seed-warning: '%prefix% {warning}Демо-данные только для тестовых серверов. {letters_black}Удалите их командой {highlight}/economyadmin demo clear{letters_black}.'
+  clear-done: '[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}Удалено {highlight}%balances% {success}демо-балансов и {highlight}%currencies% {success}демо-валют. {letters_black}Выдач отменено: {info}%reversed% {letters_black}· Оставлено: {info}%kept%'
+  failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Не удалось записать демо-данные. Проверьте консоль.'

@@ -1717,6 +1717,81 @@ public final class StoredEconomy implements Listener {
                         "importedAt", 0L));
     }
 
+    // -------------------------------------------------------------- demo data
+
+    /** A demo player's balance for {@link #seedUnheld}, with the ledger lines that led to it, oldest first. */
+    public record Seed(@NotNull UUID player, @NotNull String name, @NotNull BigDecimal amount,
+                       @NotNull List<SeedLine> lines) { }
+
+    /** One ledger line of a {@link Seed}: what moved, what the balance read after, why and when. */
+    public record SeedLine(@NotNull BigDecimal delta, @NotNull BigDecimal after, @NotNull String reason, long at) { }
+
+    /**
+     * Writes balances of players no server holds — the made-up players of
+     * {@code /economyadmin demo} — straight into the table, with their ledger lines.
+     *
+     * <p>Nobody owns these rows, so no server is their writer and there is no
+     * chain to go through; anybody held here is skipped. The leaderboard is
+     * read again on its next ask.
+     *
+     * <p>ponytail: only this server's holders are checked; the seeded ids are
+     * never real players, so no other server holds them either.
+     *
+     * @return how many balances were written, completing off the server thread
+     */
+    public static @NotNull CompletableFuture<Integer> seedUnheld(@NotNull String id, @NotNull List<Seed> seeds) {
+        StoredEconomy economy = instance;
+        StoredCurrency currency = economy == null ? null : economy.currency(id);
+        if (currency == null) return CompletableFuture.completedFuture(0);
+        String key = economy.key(currency);
+        List<Seed> free = seeds.stream().filter(seed -> !economy.isHere(seed.player())).toList();
+        List<BalanceRow> rows = free.stream().map(seed -> new BalanceRow(seed.player(), seed.name(), key,
+                currency.clamp(seed.amount()), "", 0L)).toList();
+        boolean ledgered = economy.contents != null && economy.contents.ledger();
+        return economy.balances.saveAll(rows).thenCompose(saved -> {
+            List<CompletableFuture<Void>> lines = new ArrayList<>();
+            for (Seed seed : ledgered ? free : List.<Seed>of()) {
+                CompletableFuture<Void> step = DONE;
+                for (SeedLine line : seed.lines()) {
+                    LedgerRow row = new LedgerRow(0L, seed.player().toString(), key, line.delta(), line.after(),
+                            line.reason(), null, economy.server, line.at(), line.at() / LedgerRow.DAY_MILLIS);
+                    step = step.thenCompose(ignored -> economy.ledger.insert(row).thenApply(written -> null));
+                }
+                lines.add(step);
+            }
+            return CompletableFuture.allOf(lines.toArray(CompletableFuture[]::new));
+        }).thenApply(written -> {
+            free.forEach(seed -> economy.offline.remove(BalanceRow.id(seed.player(), key)));
+            economy.tops.remove(key);
+            return rows.size();
+        });
+    }
+
+    /**
+     * Deletes every balance, ledger line and pending row of players no server
+     * holds: the undo of {@link #seedUnheld}. Anybody held here is skipped.
+     *
+     * @return how many balances were deleted, completing off the server thread
+     */
+    public static @NotNull CompletableFuture<Integer> clearUnheld(@NotNull Collection<UUID> players) {
+        StoredEconomy economy = instance;
+        if (economy == null) return CompletableFuture.completedFuture(0);
+        AtomicInteger deleted = new AtomicInteger();
+        List<CompletableFuture<?>> work = new ArrayList<>();
+        for (UUID player : players) {
+            if (economy.isHere(player)) continue;
+            String id = player.toString();
+            work.add(economy.balances.where("player", id).delete().thenAccept(deleted::addAndGet));
+            work.add(economy.ledger.where("player", id).delete());
+            work.add(economy.pending.where("player", id).delete());
+        }
+        return CompletableFuture.allOf(work.toArray(CompletableFuture[]::new)).thenApply(done -> {
+            economy.offline.keySet().removeIf(row -> players.stream().anyMatch(p -> row.startsWith(p + "|")));
+            economy.tops.clear();
+            return deleted.get();
+        });
+    }
+
     private void safely(String what, Runnable work) {
         try {
             work.run();

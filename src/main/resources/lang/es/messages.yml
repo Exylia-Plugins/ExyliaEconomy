@@ -204,3 +204,8 @@ admin:
   interest-max: Máximo por pago
   interest-max-hint: El tope de un pago. 0 para sin tope.
   language-default: Del servidor
+demo:
+  seed-done: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Se crearon {highlight}%players% {success}jugadores de prueba en {highlight}%currencies% {success}monedas. {letters_black}Monedas nuevas: {info}%created% {letters_black}· Para ti: {info}%granted%'
+  seed-warning: '%prefix% {warning}Los datos de prueba son solo para servidores de pruebas. {letters_black}Quítalos con {highlight}/economyadmin demo clear{letters_black}.'
+  clear-done: '[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}Se eliminaron {highlight}%balances% {success}saldos y {highlight}%currencies% {success}monedas de prueba. {letters_black}Entregas revertidas: {info}%reversed% {letters_black}· Conservadas: {info}%kept%'
+  failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}No se pudieron escribir los datos de prueba. Revisa la consola.'

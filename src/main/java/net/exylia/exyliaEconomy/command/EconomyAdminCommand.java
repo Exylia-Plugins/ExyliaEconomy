@@ -5,6 +5,7 @@ import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.manager.CurrencyStore;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
 import net.exylia.exyliaEconomy.menu.CurrencyAdminMenus;
+import net.exylia.exyliaEconomy.service.DemoData;
 import net.exylia.exyliaEconomy.service.EconomyActions;
 import net.exylia.exyliaEconomy.service.LedgerTools;
 import net.exylia.exyliaEconomy.Permissions;
@@ -45,6 +46,7 @@ public final class EconomyAdminCommand {
 
     private final EconomyActions actions = new EconomyActions();
     private final LedgerTools ledger = new LedgerTools();
+    private final DemoData demo = new DemoData();
 
     /** The currencies, to create, edit and delete in game. */
     @CommandPlaceholder
@@ -159,5 +161,17 @@ public final class EconomyAdminCommand {
     @Subcommand("currencies")
     public void currencies(CommandSender sender) {
         actions.currencies(sender);
+    }
+
+    /** Fills the boards with made-up players for screenshots. Test servers only. */
+    @Subcommand("demo seed")
+    public void demoSeed(CommandSender sender) {
+        demo.seed(sender);
+    }
+
+    /** Removes what {@code demo seed} added, and takes back the sender's grant. */
+    @Subcommand("demo clear")
+    public void demoClear(CommandSender sender) {
+        demo.clear(sender);
     }
 }

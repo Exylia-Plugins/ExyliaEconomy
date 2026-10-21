@@ -164,7 +164,10 @@ public record EconomyMessages(
         Banknote banknote,
         @Comment("")
         @Comment("The currency editor of /economyadmin: its prompts, forms and the words its screens show.")
-        CurrencyAdmin admin) {
+        CurrencyAdmin admin,
+        @Comment("")
+        @Comment("/economyadmin demo seed|clear: made-up players for screenshots, on test servers only.")
+        Demo demo) {
 
     public EconomyMessages() {
         this("{primary}&lECONOMY {letters_black}•<reset>",
@@ -299,7 +302,27 @@ public record EconomyMessages(
                 "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.6]%prefix% {success}Interest {highlight}+%amount%"
                         + " {letters_black}· next in {info}%next% ⌚",
                 new Banknote(),
-                new CurrencyAdmin());
+                new CurrencyAdmin(),
+                new Demo());
+    }
+
+    /**
+     * The {@code demo} section. seed-done placeholders: %players% %currencies% %created% %granted%;
+     * clear-done: %balances% %currencies% %reversed% %kept%.
+     */
+    public record Demo(String seedDone, String seedWarning, String clearDone, String failed) {
+
+        public Demo() {
+            this("[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}Seeded {highlight}%players% {success}demo"
+                            + " players in {highlight}%currencies% {success}currencies. {letters_black}New currencies:"
+                            + " {info}%created% {letters_black}· Granted to you: {info}%granted%",
+                    "%prefix% {warning}Demo data is for test servers only. {letters_black}Remove it with"
+                            + " {highlight}/economyadmin demo clear{letters_black}.",
+                    "[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}Removed {highlight}%balances% {success}demo"
+                            + " balances and {highlight}%currencies% {success}demo currencies. {letters_black}Grants"
+                            + " reversed: {info}%reversed% {letters_black}· Kept: {info}%kept%",
+                    "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}The demo data could not be written. Check the console.");
+        }
     }
 
     /** The {@code banknote} section: the item /withdraw prints. */

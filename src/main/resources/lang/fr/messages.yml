@@ -204,3 +204,8 @@ admin:
   interest-max: Maximum par versement
   interest-max-hint: Le plafond d'un versement. 0 pour aucun plafond.
   language-default: Celle du serveur
+demo:
+  seed-done: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}{highlight}%players% {success}joueurs de démo créés dans {highlight}%currencies% {success}monnaies. {letters_black}Nouvelles monnaies : {info}%created% {letters_black}· Pour vous : {info}%granted%'
+  seed-warning: '%prefix% {warning}Les données de démo sont réservées aux serveurs de test. {letters_black}Retirez-les avec {highlight}/economyadmin demo clear{letters_black}.'
+  clear-done: '[sound:BLOCK_AMETHYST_BLOCK_CHIME|1.0|1.0]%prefix% {success}{highlight}%balances% {success}soldes et {highlight}%currencies% {success}monnaies de démo supprimés. {letters_black}Dons annulés : {info}%reversed% {letters_black}· Conservés : {info}%kept%'
+  failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Les données de démo n''ont pas pu être écrites. Consultez la console.'
