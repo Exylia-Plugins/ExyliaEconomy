@@ -65,9 +65,13 @@ public final class EconomyActions {
 
     /** The currency an argument names, or the default when it names none. */
     public static Optional<String> currency(@Nullable String id) {
-        if (id == null || id.isBlank()) return Optional.of(Economy.defaultId());
-        String clean = Economy.canonical(id.trim().toLowerCase(Locale.ROOT));
-        return Economy.currencies().contains(clean) ? Optional.of(clean) : Optional.empty();
+        boolean typed = id != null && !id.isBlank();
+        String clean = typed ? Economy.canonical(id.trim().toLowerCase(Locale.ROOT)) : Economy.defaultId();
+        if (typed && !Economy.currencies().contains(clean)) return Optional.empty();
+        // 'vault' is a stored currency of ours while one serves Vault: name that one,
+        // so its kind, banknotes, confirm threshold and leaderboard all apply.
+        if (!clean.equals("vault")) return Optional.of(clean);
+        return Optional.of(StoredEconomy.rules(clean).map(CurrencyRules::id).orElse(clean));
     }
 
     // ----------------------------------------------------------- questions
