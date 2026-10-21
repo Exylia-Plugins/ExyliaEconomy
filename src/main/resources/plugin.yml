@@ -14,8 +14,8 @@ exylia-lib: '${exyliaLibVersion}'
 folia-supported: true
 
 softdepend:
-  # Required, but soft so this plugin still starts without it: it then downloads ExyliaLib
-  # and asks for a restart.
+  # Required, but soft so this plugin still starts without it: it then says where to get ExyliaLib
+  # and stays off until it is installed.
   - ExyliaLib
   # Published as the Vault economy when present.
   - Vault

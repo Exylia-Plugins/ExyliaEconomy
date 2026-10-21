@@ -149,7 +149,7 @@ What happened afterwards is ExyliaLib's `BalanceChangeEvent`, one per side of a 
 
 Download `ExyliaEconomy.jar` from the [latest release](https://github.com/Exylia-Plugins/ExyliaEconomy/releases/latest) and put it in `plugins/`.
 
-ExyliaLib is installed automatically on the first start if it is missing: the plugin downloads it and asks for one restart. From then on ExyliaLib keeps itself and ExyliaEconomy up to date, applying new releases on restart. Turn that off with `plugin-updates` in `plugins/ExyliaLib/config.yml`.
+ExyliaEconomy needs [ExyliaLib](https://modrinth.com/plugin/exylialib) ([GitHub releases](https://github.com/DiGround-s/ExyliaLib/releases)); without it the plugin stays off and says where to get it. ExyliaLib announces new ExyliaEconomy releases; nothing is downloaded until you run `/exylialib plugins`, and the update is applied on the next restart.
 
 ## Building
 
