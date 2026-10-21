@@ -401,7 +401,8 @@ public record EconomyMessages(
             String interestIntervalHint,
             String interestMax,
             String interestMaxHint,
-            String languageDefault) {
+            String languageDefault,
+            String rollbackPrompt) {
 
         public CurrencyAdmin() {
             this("{warning}Choose an icon",
@@ -463,7 +464,9 @@ public record EconomyMessages(
                     "How often it is paid, such as 30m, 1h or 1d. At least 1m.",
                     "Most per payout",
                     "The cap on one payout. 0 for no cap.",
-                    "Server default");
+                    "Server default",
+                    "{error}Roll back {highlight}%count% {error}movements of {highlight}%player%{error}?"
+                            + " {letters}Net: %net% {letters_black}· Transfers left out: %excluded%");
         }
     }
 

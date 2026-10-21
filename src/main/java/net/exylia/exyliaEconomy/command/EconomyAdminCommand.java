@@ -160,6 +160,10 @@ public final class EconomyAdminCommand {
     /** Every currency the server runs, with its id and what keeps it. */
     @Subcommand("currencies")
     public void currencies(CommandSender sender) {
+        if (sender instanceof Player player) {
+            open(player);
+            return;
+        }
         actions.currencies(sender);
     }
 

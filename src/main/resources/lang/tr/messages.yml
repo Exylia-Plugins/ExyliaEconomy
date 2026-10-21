@@ -204,6 +204,7 @@ admin:
   interest-max: Ödeme başına en fazla
   interest-max-hint: Tek bir ödemenin üst sınırı. Sınır yoksa 0.
   language-default: Sunucu varsayılanı
+  rollback-prompt: '{error}{highlight}%player% {error}oyuncusunun {highlight}%count% {error}hareketi geri alınsın mı? {letters}Net: %net% {letters_black}· Hariç tutulan transferler: %excluded%'
 demo:
   seed-done: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}{highlight}%currencies% {success}para biriminde {highlight}%players% {success}demo oyuncu oluşturuldu. {letters_black}Yeni para birimleri: {info}%created% {letters_black}· Sana verilen: {info}%granted%'
   seed-warning: '%prefix% {warning}Demo verileri yalnızca test sunucuları içindir. {letters_black}{highlight}/economyadmin demo clear {letters_black}ile kaldır.'

@@ -6,6 +6,7 @@ import net.exylia.exyliaEconomy.config.EconomyMessages;
 import net.exylia.exyliaEconomy.database.LedgerRow;
 import net.exylia.exyliaEconomy.manager.Claims;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
+import net.exylia.exyliaEconomy.menu.LedgerAdminMenus;
 import net.exylia.lib.database.Databases;
 import net.exylia.lib.database.Repository;
 import net.exylia.lib.economy.CurrencyInfo;
@@ -17,6 +18,7 @@ import net.exylia.lib.input.InputParser;
 import net.exylia.lib.player.ExyliaPlayer;
 import net.exylia.lib.player.ExyliaPlayers;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,6 +58,8 @@ public final class LedgerTools {
 
     private static final int LOG_PAGE = 10;
     private static final int MAX_LOG_PAGE = 100_000;
+    /** The most lines the ledger screen lists, newest first. */
+    private static final int MENU_DEPTH = 500;
     /** The most lines one rollback looks at, newest first. */
     // ponytail: a window holding more movements than this reverts the newest ones only; page further if that matters.
     private static final int ROLLBACK_DEPTH = 500;
@@ -106,6 +110,18 @@ public final class LedgerTools {
         CurrencyInfo info = Economy.info(currency);
         // Clamped, so the offset never overflows an int.
         int shown = Math.min(Math.max(1, page), MAX_LOG_PAGE);
+        if (sender instanceof Player viewer) {
+            ExyliaPlayers.then(sender, targetName, found -> ledger().where("player", found.id().toString())
+                    .where("currency", key).orderByDescending("id").limit(MENU_DEPTH).find()
+                    .whenComplete((rows, failure) -> {
+                        if (failure != null) {
+                            failed(sender, "read the ledger of " + found.name(), failure);
+                            return;
+                        }
+                        LedgerAdminMenus.openList(viewer, found, currency, rows);
+                    }));
+            return;
+        }
         ExyliaPlayers.then(sender, targetName, found -> ledger().where("player", found.id().toString())
                 .where("currency", key).orderByDescending("id").skip((shown - 1) * LOG_PAGE).limit(LOG_PAGE).find()
                 .whenComplete((rows, failure) -> {
@@ -125,6 +141,20 @@ public final class LedgerTools {
                         }
                     });
                 }));
+    }
+
+    /** Opens one ledger line of a currency on its own screen. */
+    public void entry(Player viewer, long id, String currency) {
+        String key = key(viewer, currency);
+        if (key == null) return;
+        ledger().find(id).whenComplete((found, failure) -> {
+            LedgerRow row = found == null ? null : found.filter(line -> key.equals(line.currency())).orElse(null);
+            if (failure != null || row == null) {
+                failed(viewer, "read the ledger line #" + id, failure);
+                return;
+            }
+            LedgerAdminMenus.openEntry(viewer, row, currency);
+        });
     }
 
     private static String signed(CurrencyInfo info, BigDecimal delta) {
@@ -235,6 +265,15 @@ public final class LedgerTools {
      */
     public void rollback(CommandSender sender, String targetName, String window, @Nullable String currencyId,
                          boolean confirmed) {
+        rollback(sender, targetName, window, currencyId, confirmed, null);
+    }
+
+    /**
+     * The same, coming back to {@code back} once a player answered. A player is asked in a
+     * dialog; the console confirms by typing {@code confirm}.
+     */
+    public void rollback(CommandSender sender, String targetName, String window, @Nullable String currencyId,
+                         boolean confirmed, @Nullable Runnable back) {
         String currency = EconomyActions.resolved(sender, currencyId);
         if (currency == null) return;
         Long entry = window.startsWith("#") ? parseId(window.substring(1)) : null;
@@ -276,6 +315,10 @@ public final class LedgerTools {
                                 .put("excluded", excluded));
                         return;
                     }
+                    if (sender instanceof Player admin) {
+                        ask(admin, found, currency, rows, excluded, initiator, back);
+                        return;
+                    }
                     PENDING.put(who, rows);
                     Confirmations.ask(who, what, System.currentTimeMillis());
                     ExyliaEconomy.getInstance().getMessages().send(sender, text().rollbackConfirm(), Values.of().put("player", found.name())
@@ -283,6 +326,22 @@ public final class LedgerTools {
                             .put("command", "/economyadmin rollback " + found.name() + " " + window + " " + currency + " confirm"));
                 });
             });
+        });
+    }
+
+    private static void ask(Player admin, ExyliaPlayer found, String currency, List<LedgerRow> rows, int excluded,
+                            @Nullable UUID initiator, @Nullable Runnable back) {
+        ExyliaEconomy plugin = ExyliaEconomy.getInstance();
+        String prompt = Values.of().put("player", found.name()).put("count", rows.size())
+                .put("net", signed(Economy.info(currency), reversal(rows))).put("excluded", excluded)
+                .apply(text().admin().rollbackPrompt());
+        plugin.getTasks().runAtEntity(admin, () -> {
+            admin.closeInventory();
+            plugin.getInputs().answered(admin, plugin.getInputs().confirm(admin, prompt).dangerous().open(),
+                    accepted -> {
+                        if (accepted) apply(admin, found, currency, rows, initiator);
+                        if (back != null) back.run();
+                    }, back);
         });
     }
 

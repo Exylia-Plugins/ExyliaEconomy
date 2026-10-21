@@ -1,7 +1,9 @@
 package net.exylia.exyliaEconomy.command;
 
+import net.exylia.exyliaEconomy.menu.WalletMenu;
 import net.exylia.exyliaEconomy.service.EconomyActions;
 import net.exylia.exyliaEconomy.Permissions;
+import net.exylia.lib.player.ExyliaPlayers;
 import net.exylia.lib.player.PlayerTarget;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -64,6 +66,10 @@ public final class EconomyCommand {
 
     @Subcommand("currencies")
     public void currencies(CommandSender sender) {
+        if (sender instanceof Player player) {
+            WalletMenu.open(player, ExyliaPlayers.of(player));
+            return;
+        }
         actions.currencies(sender);
     }
 

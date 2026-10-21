@@ -37,6 +37,8 @@ public final class EconomyMenus {
                     CurrencyAdminMenus.LIST,
                     CurrencyAdminMenus.EDIT,
                     CurrencyAdminMenus.SETTINGS,
+                    LedgerAdminMenus.LIST,
+                    LedgerAdminMenus.ENTRY,
                     WalletMenu.ID,
                     TopMenu.ID,
                     HistoryMenu.ID),

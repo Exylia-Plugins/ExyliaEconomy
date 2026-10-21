@@ -8,6 +8,7 @@ import net.exylia.exyliaEconomy.database.EconomySettingsRow;
 import net.exylia.exyliaEconomy.manager.CurrencyStore;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
 import net.exylia.exyliaEconomy.menu.CurrencyAdminMenus;
+import net.exylia.exyliaEconomy.service.LedgerTools;
 import net.exylia.exyliaEconomy.Permissions;
 import net.exylia.lib.action.ActionArguments;
 import net.exylia.lib.action.ActionResult;
@@ -103,6 +104,19 @@ public final class CurrencyAdminActions {
         withRow("currency_admin_item", (player, store, row) -> askItem(player, store, row, false));
         button("currency_admin_toggle", this::toggle);
         button("currency_admin_settings_toggle", this::toggleSetting);
+        // ledger_admin_list <player> <currency>, ledger_admin_entry <id> <currency>,
+        // ledger_admin_rollback <player> <id> <currency>: the ledger /economyadmin log opens.
+        LedgerTools ledger = new LedgerTools();
+        button("ledger_admin_list", (player, args, store) ->
+                ledger.log(player, args.string(0, ""), args.string(1, ""), 1));
+        button("ledger_admin_entry", (player, args, store) ->
+                ledger.entry(player, args.integer(0, 0), args.string(1, "")));
+        button("ledger_admin_rollback", (player, args, store) -> {
+            long id = args.integer(1, 0);
+            String currency = args.string(2, "");
+            ledger.rollback(player, args.string(0, ""), "#" + id, currency, false,
+                    () -> ledger.entry(player, id, currency));
+        });
     }
 
     // --------------------------------------------------------------- lifecycle

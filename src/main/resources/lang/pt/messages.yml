@@ -204,6 +204,7 @@ admin:
   interest-max: Máximo por pagamento
   interest-max-hint: O limite de um pagamento. 0 para sem limite.
   language-default: Padrão do servidor
+  rollback-prompt: '{error}Reverter {highlight}%count% {error}movimentos de {highlight}%player%{error}? {letters}Líquido: %net% {letters_black}· Transferências excluídas: %excluded%'
 demo:
   seed-done: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}{highlight}%players% {success}jogadores de demonstração criados em {highlight}%currencies% {success}moedas. {letters_black}Moedas novas: {info}%created% {letters_black}· Para você: {info}%granted%'
   seed-warning: '%prefix% {warning}Os dados de demonstração são só para servidores de teste. {letters_black}Remova-os com {highlight}/economyadmin demo clear{letters_black}.'
