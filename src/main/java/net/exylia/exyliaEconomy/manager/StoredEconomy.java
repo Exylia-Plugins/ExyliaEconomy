@@ -658,8 +658,14 @@ public final class StoredEconomy implements Listener {
         return contents;
     }
 
+    /**
+     * A stored currency by id. {@code vault}, ExyliaLib's default, is the one of
+     * ours that serves Vault, so {@code /eco top} ranks what {@code /eco top dollars} does.
+     */
     public @Nullable StoredCurrency currency(@NotNull String id) {
-        return stored.get(id.toLowerCase(Locale.ROOT));
+        String key = id.toLowerCase(Locale.ROOT);
+        StoredCurrency found = stored.get(key);
+        return found == null && key.equals("vault") ? vault.serving() : found;
     }
 
     // --------------------------------------------------------------- players
