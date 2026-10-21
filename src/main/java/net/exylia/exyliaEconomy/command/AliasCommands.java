@@ -6,16 +6,14 @@ import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.model.CurrencyRules;
 import net.exylia.exyliaEconomy.service.EconomyActions;
 import net.exylia.exyliaEconomy.Permissions;
+import net.exylia.lib.command.RuntimeCommand;
+import net.exylia.lib.command.RuntimeCommands;
 import net.exylia.lib.command.lamp.Suggestions;
-import net.exylia.lib.debug.Debug;
 import net.exylia.lib.economy.Economy;
 import net.exylia.lib.player.ExyliaPlayers;
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,77 +23,53 @@ import java.util.Locale;
  * {@code /coins}, {@code /gems}: a command per currency, named by
  * {@code /economyadmin}.
  *
- * <p>Registered straight into the server's command map, because the names
+ * <p>Installed through ExyliaLib's {@link RuntimeCommands}, because the names
  * are not known until the file is read and a Lamp command is declared by
  * annotation. Each one is {@code /economy} with the currency filled in, so
  * there is exactly one implementation of what "pay" means.
  */
 public final class AliasCommands {
 
-    private static final List<Command> REGISTERED = new ArrayList<>();
-    /** The ids and names installed last, so a change that touches neither sends no command tree to anybody. */
-    private static List<List<String>> installed;
-
     private AliasCommands() {
     }
 
     /** Replaces every alias command with the ones the currencies name now. */
     public static void install(Plugin plugin, EconomyActions actions) {
-        List<CurrencyRules> wanted = EconomyActions.withCommands();
-        List<List<String>> names = wanted.stream()
-                .map(rules -> { List<String> key = new ArrayList<>(rules.aliases()); key.add(0, rules.id()); return key; })
-                .toList();
-        if (names.equals(installed)) return;
-        installed = names;
-        for (Command old : REGISTERED) {
-            old.unregister(Bukkit.getCommandMap());
-            Bukkit.getCommandMap().getKnownCommands().values().removeIf(known -> known == old);
-        }
-        REGISTERED.clear();
-
-        String prefix = plugin.getName().toLowerCase(Locale.ROOT);
-        for (CurrencyRules rules : wanted) {
+        List<RuntimeCommand> commands = new ArrayList<>();
+        for (CurrencyRules rules : EconomyActions.withCommands()) {
             List<String> aliases = rules.aliases();
-            Alias command = new Alias(aliases.get(0), aliases.subList(1, aliases.size()), rules.id(), actions);
-            if (!Bukkit.getCommandMap().register(prefix, command)) {
-                Debug.of(plugin).warn("The command /" + aliases.get(0) + " for '" + rules.id()
-                        + "' is taken by another plugin; it answers as /" + prefix + ":" + aliases.get(0) + ".");
-            }
-            REGISTERED.add(command);
+            Alias alias = new Alias(aliases.get(0), rules.id(), actions);
+            commands.add(RuntimeCommand.of(aliases.get(0), alias::execute)
+                    .withAliases(aliases.subList(1, aliases.size()))
+                    .withPermission(Permissions.USE)
+                    .withDescription("Your " + rules.id() + " balance")
+                    .withCompleter(alias::tabComplete));
         }
-        for (Player online : Bukkit.getOnlinePlayers()) online.updateCommands();
+        RuntimeCommands.of(plugin).install(commands);
     }
 
     /** Takes every alias command down, for the plugin going away. */
     public static void uninstall() {
-        installed = null;
-        for (Command old : REGISTERED) {
-            old.unregister(Bukkit.getCommandMap());
-            Bukkit.getCommandMap().getKnownCommands().values().removeIf(known -> known == old);
-        }
-        REGISTERED.clear();
+        RuntimeCommands.of(ExyliaEconomy.getInstance().getPlugin()).uninstall();
     }
 
     /** One currency's command. */
-    private static final class Alias extends Command {
+    private static final class Alias {
 
+        private final String label;
         private final String currency;
         private final EconomyActions actions;
 
-        Alias(String name, List<String> aliases, String currency, EconomyActions actions) {
-            super(name, "Your " + currency + " balance",
-                    "/" + name + " [pay <player> <amount>|top|history|exchange <amount> <to>]", aliases);
+        Alias(String label, String currency, EconomyActions actions) {
+            this.label = label;
             this.currency = currency;
             this.actions = actions;
-            setPermission(Permissions.USE);
         }
 
-        @Override
-        public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
-            if (!testPermission(sender)) return true;
+        void execute(CommandSender sender, String[] args) {
             if (args.length == 0) {
                 actions.balance(sender, currency, null);
-                return true;
+                return;
             }
             String sub = args[0].toLowerCase(Locale.ROOT);
             switch (sub) {
@@ -120,11 +94,11 @@ public final class AliasCommands {
                 case "give", "take", "set", "reset" -> {
                     if (!sender.hasPermission(Permissions.ADMIN)) {
                         denied(sender);
-                        return true;
+                        return;
                     }
                     if (args.length < 2 || (!sub.equals("reset") && args.length < 3)) {
                         usage(sender, label);
-                        return true;
+                        return;
                     }
                     switch (sub) {
                         case "give" -> actions.give(sender, currency, args[1], args[2]);
@@ -136,7 +110,6 @@ public final class AliasCommands {
                 }
                 default -> actions.balance(sender, currency, args[0]);
             }
-            return true;
         }
 
         /**
@@ -147,9 +120,7 @@ public final class AliasCommands {
          * not. {@link ExyliaPlayers#names()} is this server's players and the
          * network's, from memory.
          */
-        @Override
-        public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias,
-                                                 @NotNull String[] args) {
+        List<String> tabComplete(CommandSender sender, String[] args) {
             if (args.length == 1) {
                 List<String> options = new ArrayList<>(List.of("top", "history", "exchange"));
                 if (sender.hasPermission(Permissions.PAY)) options.add(0, "pay");
