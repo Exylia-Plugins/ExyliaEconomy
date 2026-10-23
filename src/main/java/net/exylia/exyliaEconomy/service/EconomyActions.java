@@ -44,6 +44,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * What the economy commands do, whichever spelling reached them.
@@ -441,28 +442,29 @@ public final class EconomyActions {
     public void take(CommandSender sender, @Nullable String currencyId, String targetName, String typedAmount) {
         adminOp(sender, currencyId, targetName, typedAmount, (currency, found, amount) -> {
             CurrencyInfo info = Economy.info(currency);
-            EconomyResponse response = Economy.of(currency)
-                    .withdraw(found.id(), amount, Transaction.of("admin:take").by(initiator(sender)));
-            if (!response.isSuccess()) {
-                if (response.type() == EconomyResponse.Type.INSUFFICIENT_FUNDS) {
-                    ExyliaEconomy.getInstance().getMessages().send(sender, text().notEnough(), Values.of().put("currency", info.namePlural())
-                            .put("amount", info.format(response.shortfall())));
-                } else if (StoredEconomy.loading(found.id(), currency)) {
-                    ExyliaEconomy.getInstance().getMessages().send(sender, text().stillLoading());
-                } else {
-                    refused(sender, response, info);
+            onOwner(sender, currency, found, () -> Economy.of(currency)
+                    .withdraw(found.id(), amount, Transaction.of("admin:take").by(initiator(sender))), response -> {
+                if (!response.isSuccess()) {
+                    if (response.type() == EconomyResponse.Type.INSUFFICIENT_FUNDS) {
+                        ExyliaEconomy.getInstance().getMessages().send(sender, text().notEnough(), Values.of().put("currency", info.namePlural())
+                                .put("amount", info.format(response.shortfall())));
+                    } else if (StoredEconomy.loading(found.id(), currency)) {
+                        ExyliaEconomy.getInstance().getMessages().send(sender, text().stillLoading());
+                    } else {
+                        refused(sender, response, info);
+                    }
+                    return;
                 }
-                return;
-            }
-            log("take", sender, found, "-" + Logs.money(currency, amount));
-            if (queues(found, currency)) {
-                queued(sender, found, "{error}-" + info.format(amount));
-                return;
-            }
-            ExyliaEconomy.getInstance().getMessages().send(sender, text().taken(), Values.of().put("player", found.name())
-                    .put("amount", info.format(amount)).put("balance", info.format(response.balance())));
-            Player target = found.here();
-            if (target != null) ExyliaEconomy.getInstance().getMessages().send(target, text().takenNotify(), Values.of().put("amount", info.format(amount)));
+                log("take", sender, found, "-" + Logs.money(currency, amount));
+                if (queues(found, currency)) {
+                    queued(sender, found, "{error}-" + info.format(amount));
+                    return;
+                }
+                ExyliaEconomy.getInstance().getMessages().send(sender, text().taken(), Values.of().put("player", found.name())
+                        .put("amount", info.format(amount)).put("balance", info.format(response.balance())));
+                Player target = found.here();
+                if (target != null) ExyliaEconomy.getInstance().getMessages().send(target, text().takenNotify(), Values.of().put("amount", info.format(amount)));
+            });
         });
     }
 
@@ -526,19 +528,20 @@ public final class EconomyActions {
         }
         ExyliaPlayers.then(sender, targetName, found -> {
             CurrencyInfo info = Economy.info(currency);
-            EconomyResponse response = Economy.of(currency)
-                    .set(found.id(), amount, Transaction.of("admin:set").by(initiator(sender)));
-            if (!response.isSuccess()) {
-                refused(sender, response, info);
-                return;
-            }
-            log("set", sender, found, "= " + Logs.money(currency, amount));
-            if (queues(found, currency)) {
-                queued(sender, found, "{highlight}= " + info.format(amount));
-                return;
-            }
-            ExyliaEconomy.getInstance().getMessages().send(sender, text().set(), Values.of().put("player", found.name())
-                    .put("currency", info.namePlural()).put("amount", info.format(response.balance())));
+            onOwner(sender, currency, found, () -> Economy.of(currency)
+                    .set(found.id(), amount, Transaction.of("admin:set").by(initiator(sender))), response -> {
+                if (!response.isSuccess()) {
+                    refused(sender, response, info);
+                    return;
+                }
+                log("set", sender, found, "= " + Logs.money(currency, amount));
+                if (queues(found, currency)) {
+                    queued(sender, found, "{highlight}= " + info.format(amount));
+                    return;
+                }
+                ExyliaEconomy.getInstance().getMessages().send(sender, text().set(), Values.of().put("player", found.name())
+                        .put("currency", info.namePlural()).put("amount", info.format(response.balance())));
+            });
         });
     }
 
@@ -562,19 +565,20 @@ public final class EconomyActions {
                 ExyliaEconomy.getInstance().getMessages().send(sender, text().confirmExpired());
                 return;
             }
-            EconomyResponse response = Economy.of(currency)
-                    .set(found.id(), start, Transaction.of("admin:reset").by(initiator(sender)));
-            if (!response.isSuccess()) {
-                refused(sender, response, info);
-                return;
-            }
-            log("reset", sender, found, "= " + Logs.money(currency, start));
-            if (queues(found, currency)) {
-                queued(sender, found, "{highlight}= " + info.format(start));
-                return;
-            }
-            ExyliaEconomy.getInstance().getMessages().send(sender, text().reset(), Values.of().put("player", found.name())
-                    .put("currency", info.namePlural()));
+            onOwner(sender, currency, found, () -> Economy.of(currency)
+                    .set(found.id(), start, Transaction.of("admin:reset").by(initiator(sender))), response -> {
+                if (!response.isSuccess()) {
+                    refused(sender, response, info);
+                    return;
+                }
+                log("reset", sender, found, "= " + Logs.money(currency, start));
+                if (queues(found, currency)) {
+                    queued(sender, found, "{highlight}= " + info.format(start));
+                    return;
+                }
+                ExyliaEconomy.getInstance().getMessages().send(sender, text().reset(), Values.of().put("player", found.name())
+                        .put("currency", info.namePlural()));
+            });
         });
     }
 
@@ -636,6 +640,34 @@ public final class EconomyActions {
     }
 
     // -------------------------------------------------------------- inside
+
+    /**
+     * Makes a change to somebody else's balance where the currency allows it.
+     *
+     * <p>An item or experience balance is the target's inventory, which only their own thread may
+     * take from or count: run from the admin's thread the change is refused (or reads a stale
+     * count), so it hops there first and answers back on the sender's. Every other currency, and a
+     * target not on this server (whom the currency refuses itself), changes where it was asked.
+     */
+    private static void onOwner(CommandSender sender, String currency, ExyliaPlayer found,
+                                Supplier<EconomyResponse> change, Consumer<EconomyResponse> then) {
+        CurrencyKind kind = Economy.kind(currency);
+        Player target = found.here();
+        var tasks = ExyliaEconomy.getInstance().getTasks();
+        if ((kind != CurrencyKind.ITEM && kind != CurrencyKind.EXPERIENCE) || target == null || tasks.isOwnedBy(target)) {
+            then.accept(change.get());
+            return;
+        }
+        tasks.runAtEntity(target, () -> {
+            EconomyResponse response = change.get();
+            if (sender instanceof Player player) tasks.runAtEntity(player, () -> then.accept(response));
+            else tasks.run(() -> then.accept(response));
+        }, () -> {
+            EconomyResponse gone = EconomyResponse.notAvailable();
+            if (sender instanceof Player player) tasks.runAtEntity(player, () -> then.accept(gone));
+            else tasks.run(() -> then.accept(gone));
+        });
+    }
 
     private interface AdminOp {
         void run(String currency, ExyliaPlayer found, BigDecimal amount);
