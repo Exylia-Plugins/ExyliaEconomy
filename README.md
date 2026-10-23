@@ -15,7 +15,7 @@ Server currencies for Paper and Folia, kept in the database, shared across a net
 
 ## Requirements
 
-- Paper or Folia 1.21+, Java 21
+- Paper or Folia 1.21.4 or newer, Java 21
 - [ExyliaLib](https://github.com/DiGround-s/ExyliaLib/releases), the version in `gradle.properties` or newer
 
 Optional: Vault, PlaceholderAPI, ExyliaAnalytics.
