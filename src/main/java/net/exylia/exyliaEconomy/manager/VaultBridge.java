@@ -157,6 +157,11 @@ final class VaultBridge {
         return serving;
     }
 
+    /** What Vault was handed for this currency, whether or not another plugin wraps it; {@code null} if not published. */
+    @Nullable Object service(StoredCurrency currency) {
+        return current == currency ? proxy : null;
+    }
+
     /** Works out again who Vault hands out: on a publish, and whenever any plugin's service comes or goes. */
     void refresh() {
         StoredCurrency currency = current;

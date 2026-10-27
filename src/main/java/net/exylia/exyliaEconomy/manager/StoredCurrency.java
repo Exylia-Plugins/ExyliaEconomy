@@ -136,6 +136,12 @@ public final class StoredCurrency implements CurrencyProvider {
         return economy.vault().serving() == this;
     }
 
+    /** Held while another plugin wraps it, so that plugin can see it is already announced. */
+    @Override
+    public @Nullable Object vaultService() {
+        return economy.vault().service(this);
+    }
+
     /**
      * A change asked for here may be queued for the server holding the player,
      * so {@link StoredEconomy} announces each one once it is written, wherever
