@@ -39,3 +39,13 @@ jobs:
       loaders: '["folia","paper","purpur"]'
       dependencies: '[{"project_id":"G0BDxMIG","dependency_type":"required"},{"project_id":"lKEzGugV","dependency_type":"optional"}]'
     secrets: inherit
+
+  # Mirrors the release above to BuiltByBit; skipped while BUILTBYBIT_TOKEN or the resource id is unset.
+  builtbybit:
+    needs: release
+    uses: Exylia-Plugins/.github/.github/workflows/builtbybit.yml@main
+    with:
+      version: ${{ github.ref_name }}
+      name: ExyliaEconomy
+      resource-id: ${{ vars.BBB_RESOURCE_ID }}
+    secrets: inherit
