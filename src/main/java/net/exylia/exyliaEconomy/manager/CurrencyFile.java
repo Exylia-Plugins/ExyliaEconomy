@@ -267,6 +267,8 @@ public final class CurrencyFile {
                 transfer:
                   enabled: true
                   minimum: 1
+                  # Kept back from every payment. A rank lowers it with exyliaeconomy.tax.<n>
+                  # (n whole percent, the lowest held wins, never above this value).
                   tax-percent: 0
                 exchange:
                   enabled: false

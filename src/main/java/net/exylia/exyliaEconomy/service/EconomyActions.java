@@ -158,6 +158,7 @@ public final class EconomyActions {
     }
 
     public void top(CommandSender sender, @Nullable String currencyId, int page) {
+        if (!allowed(sender, Permissions.TOP)) return;
         String currency = resolved(sender, currencyId);
         if (currency == null) return;
         CurrencyInfo info = Economy.info(currency);
@@ -189,6 +190,7 @@ public final class EconomyActions {
     }
 
     public void history(CommandSender sender, @Nullable String currencyId, @Nullable String targetName) {
+        if (!allowed(sender, Permissions.HISTORY)) return;
         String currency = resolved(sender, currencyId);
         if (currency == null) return;
         CurrencyInfo info = Economy.info(currency);
@@ -281,7 +283,8 @@ public final class EconomyActions {
 
     private void transfer(Player sender, String currency, CurrencyInfo info, @Nullable CurrencyRules rules,
                           ExyliaPlayer found, BigDecimal amount, boolean confirmed) {
-        BigDecimal tax = rules == null ? BigDecimal.ZERO : rules.tax(amount);
+        BigDecimal tax = rules == null ? BigDecimal.ZERO
+                : rules.tax(amount, Permissions.transferTaxPercent(sender, rules.transferTaxPercent()));
         Economy.CurrencyView view = Economy.of(currency);
         BigDecimal above = StoredEconomy.row(currency).map(CurrencyRow::confirmAbove).orElse(null);
         if (above != null && amount.compareTo(above) > 0) {
@@ -356,6 +359,13 @@ public final class EconomyActions {
         }
     }
 
+    /** Whether the sender holds a feature's node, telling them when they do not. */
+    public static boolean allowed(CommandSender sender, String node) {
+        if (sender.hasPermission(node)) return true;
+        ExyliaEconomy.getInstance().getMessages().send(sender, EconomyMessages.get().permissionDenied());
+        return false;
+    }
+
     static void notEnough(CommandSender sender, CurrencyInfo info, BigDecimal missing) {
         ExyliaEconomy.getInstance().getMessages().send(sender, text().notEnough(), Values.of().put("currency", info.namePlural())
                 .put("amount", info.format(missing)));
@@ -378,6 +388,7 @@ public final class EconomyActions {
     }
 
     public void exchange(Player sender, @Nullable String fromId, String toId, String typedAmount) {
+        if (!allowed(sender, Permissions.EXCHANGE)) return;
         String from = resolved(sender, fromId);
         if (from == null) return;
         BigDecimal amount = amount(typedAmount);

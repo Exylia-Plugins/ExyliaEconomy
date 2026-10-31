@@ -57,6 +57,22 @@ permissions:
   exyliaeconomy.top.exempt:
     description: Left off the leaderboards, from the player's next join. Not given to operators.
     default: false
+  exyliaeconomy.exchange:
+    description: Swap one currency for another with /economy exchange.
+    default: true
+  exyliaeconomy.history:
+    description: Read your own ledger with /economy history and the wallet's history buttons.
+    default: true
+  exyliaeconomy.top:
+    description: Open the leaderboards with /baltop, /economy top and the wallet's buttons.
+    default: true
+  # Player features (use, pay, paytoggle, withdraw, interest, exchange, history, top) are held
+  # by everybody, so a server makes one a rank perk by denying it to the default group:
+  # 'exyliaeconomy.exchange: false' there, 'true' for VIP. Redeeming a banknote never needs one.
+  # Numbers:
+  #   exyliaeconomy.tax.<n>   transfer tax of n whole percent (tax.3 = 3%). The lowest one held
+  #                           wins, and it only ever lowers a currency's own transfer tax: a
+  #                           currency taxed 2.5% charges a tax.1 holder 1% and a tax.5 holder 2.5%.
   exyliaeconomy.others:
     description: Read another player's balance, wallet or history.
     default: op
@@ -69,6 +85,9 @@ permissions:
       exyliaeconomy.paytoggle: true
       exyliaeconomy.paytoggle.bypass: true
       exyliaeconomy.withdraw: true
+      exyliaeconomy.exchange: true
+      exyliaeconomy.history: true
+      exyliaeconomy.top: true
       exyliaeconomy.others: true
   exyliaeconomy.*:
     description: Every ExyliaEconomy permission.

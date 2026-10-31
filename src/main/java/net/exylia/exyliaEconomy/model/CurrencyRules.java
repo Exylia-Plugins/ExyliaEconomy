@@ -44,8 +44,13 @@ public record CurrencyRules(
 
     /** What the transfer tax keeps back from an amount, rounded in the sender's favour. */
     public @NotNull BigDecimal tax(@NotNull BigDecimal amount) {
-        if (transferTaxPercent.signum() <= 0) return BigDecimal.ZERO;
-        return Economy.info(id).scale(amount.multiply(transferTaxPercent).movePointLeft(2)
+        return tax(amount, transferTaxPercent);
+    }
+
+    /** What a tax of {@code percent} keeps back from an amount, for a sender whose rank lowers the rate. */
+    public @NotNull BigDecimal tax(@NotNull BigDecimal amount, @NotNull BigDecimal percent) {
+        if (percent.signum() <= 0) return BigDecimal.ZERO;
+        return Economy.info(id).scale(amount.multiply(percent).movePointLeft(2)
                 .setScale(8, RoundingMode.DOWN));
     }
 }

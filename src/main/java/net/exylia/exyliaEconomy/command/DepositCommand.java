@@ -1,15 +1,15 @@
 package net.exylia.exyliaEconomy.command;
 
 import net.exylia.exyliaEconomy.ExyliaEconomy;
-import net.exylia.exyliaEconomy.Permissions;
 import org.bukkit.entity.Player;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.CommandPlaceholder;
-import revxrsal.commands.bukkit.annotation.CommandPermission;
 
-/** {@code /deposit}: redeem the banknote in hand, the same as right-clicking it. */
+/**
+ * {@code /deposit}: redeem the banknote in hand, the same as right-clicking it. Needs no
+ * permission, like the right-click: money a player already holds is always theirs to take back.
+ */
 @Command("deposit")
-@CommandPermission(Permissions.USE)
 public final class DepositCommand {
 
     @CommandPlaceholder

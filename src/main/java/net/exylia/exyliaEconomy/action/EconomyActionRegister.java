@@ -2,6 +2,7 @@ package net.exylia.exyliaEconomy.action;
 
 import net.exylia.lib.economy.Economy;
 import net.exylia.exyliaEconomy.ExyliaEconomy;
+import net.exylia.exyliaEconomy.Permissions;
 import net.exylia.exyliaEconomy.menu.HistoryMenu;
 import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.config.EconomyMessages;
@@ -32,7 +33,7 @@ public final class EconomyActionRegister {
 
         actions.registerSync("economy_wallet", (ctx, args) -> {
             Player player = ctx.player();
-            if (player != null) WalletMenu.open(player, owner(player, args.string(0, "")));
+            if (player != null && EconomyActions.allowed(player, Permissions.USE)) WalletMenu.open(player, owner(player, args.string(0, "")));
             return ActionResult.success();
         });
 
@@ -41,7 +42,7 @@ public final class EconomyActionRegister {
             String currency = args.string(0, "");
             // A currency the viewer may not use is not shown to them and not
             // opened for them either: the click is where that is checked.
-            if (player != null && usable(player, currency)) {
+            if (player != null && EconomyActions.allowed(player, Permissions.HISTORY) && usable(player, currency)) {
                 HistoryMenu.open(player, EconomyActions.currency(currency).orElseThrow(),
                         owner(player, args.string(1, "")));
             }
