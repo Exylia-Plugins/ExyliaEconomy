@@ -119,8 +119,7 @@ note-redeemed: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}Т
 note-invalid: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Эта банкнота уже обналичена или недействительна.'
 note-not-held: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Возьми банкноту в руку, чтобы внести её.'
 note-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}нельзя снять банкнотой.'
-note-inventory-full: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Сначала освободи место в инвентаре.'
-note-drop-prompt: '{warning}Инвентарь полон. Напечатать банкноту на {highlight}%amount% {warning}и бросить её под ноги? {letters}Её может подобрать любой рядом.'
+note-queued: '[sound:ITEM_BOOK_PAGE_TURN|1.0|1.2]%prefix% {success}Ты снял банкноту на {highlight}%amount%{success}. {letters}Инвентарь полон: она подождёт и придёт, как только освободится место, или при следующем входе.'
 note-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Сейчас не удалось обработать банкноту. Попробуй через секунду.'
 note-wrong-server: Эту банкноту можно обналичить только на сервере, где её выпустили.
 log-header: '{primary}&lЖУРНАЛ {highlight}%currency% {letters_black}· {letters}%player% {muted}стр. %page%'

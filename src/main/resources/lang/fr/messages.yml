@@ -119,8 +119,7 @@ note-redeemed: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}Tu
 note-invalid: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Ce billet a déjà été encaissé ou n''est pas valide.'
 note-not-held: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Tiens un billet en main pour le déposer.'
 note-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}ne peut pas être retiré sous forme de billet.'
-note-inventory-full: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Libère d''abord une place dans ton inventaire.'
-note-drop-prompt: '{warning}Ton inventaire est plein. Imprimer le billet de {highlight}%amount% {warning}et le lâcher à tes pieds ? {letters}N''importe qui à proximité peut le ramasser.'
+note-queued: '[sound:ITEM_BOOK_PAGE_TURN|1.0|1.2]%prefix% {success}Tu as retiré un billet de {highlight}%amount%{success}. {letters}Ton inventaire est plein : il t''attend et arrivera dès qu''une place se libère, ou à ta prochaine connexion.'
 note-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Impossible de traiter le billet pour le moment. Réessaie dans un instant.'
 note-wrong-server: Ce billet ne peut être encaissé que sur le serveur qui l'a émis.
 log-header: '{primary}&lJOURNAL {highlight}%currency% {letters_black}· {letters}%player% {muted}page %page%'

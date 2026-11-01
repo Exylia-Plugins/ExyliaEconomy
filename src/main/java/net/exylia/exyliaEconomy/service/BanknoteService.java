@@ -13,11 +13,13 @@ import net.exylia.lib.economy.Economy;
 import net.exylia.lib.economy.EconomyResponse;
 import net.exylia.lib.economy.Transaction;
 import net.exylia.lib.format.Dates;
-import net.exylia.lib.input.PluginInputs;
 import net.exylia.lib.item.ItemValues;
 import net.exylia.lib.item.Items;
 import net.exylia.lib.item.PluginItems;
 import net.exylia.lib.util.Cooldowns;
+import net.exylia.lib.util.reward.RewardEntry;
+import net.exylia.lib.util.reward.RewardOutcome;
+import net.exylia.lib.util.reward.Rewards;
 import io.papermc.paper.event.player.PlayerPurchaseEvent;
 import org.bukkit.block.Crafter;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -77,11 +79,6 @@ public final class BanknoteService implements Listener {
     // ------------------------------------------------------------ withdraw
 
     public void withdraw(Player player, String typedAmount, @Nullable String currencyId) {
-        withdraw(player, typedAmount, currencyId, false);
-    }
-
-    /** @param drop the player agreed to have the note dropped at their feet if no slot is free */
-    private void withdraw(Player player, String typedAmount, @Nullable String currencyId, boolean drop) {
         String currency = EconomyActions.resolved(player, currencyId);
         if (currency == null) return;
         CurrencyInfo info = Economy.info(currency);
@@ -104,15 +101,6 @@ public final class BanknoteService implements Listener {
             EconomyActions.notEnough(player, info, amount.subtract(view.balance(player.getUniqueId())));
             return;
         }
-        if (!drop && player.getInventory().firstEmpty() < 0) {
-            // A dropped note is safe to offer: its worth is its database row, redeemed once whoever holds it.
-            String prompt = Values.of("amount", info.format(amount)).apply(text().noteDropPrompt());
-            PluginInputs inputs = ExyliaEconomy.getInstance().getInputs();
-            inputs.answered(player, inputs.confirm(player, prompt).dangerous().open(), yes -> {
-                if (yes) withdraw(player, typedAmount, currencyId, true);
-            }, null);
-            return;
-        }
         if (!Cooldowns.tryStart(player, "exyliaeconomy:withdraw", COOLDOWN)) return;
         long now = System.currentTimeMillis();
         String scope = StoredEconomy.storageKey(currency);
@@ -130,18 +118,16 @@ public final class BanknoteService implements Listener {
                 ExyliaEconomy.getInstance().getMessages().send(player, text().noteFailed());
                 return;
             }
-            print(player, row, info, drop);
+            print(player, row, info);
         }, () -> discard(row)));
     }
 
-    /** Takes the money and hands the note over, in one tick: nothing can fill the free slot between, and a
-     *  note that does not fit falls at the player's feet only when they agreed to it. */
-    private void print(Player player, BanknoteRow row, CurrencyInfo info, boolean drop) {
-        if (!drop && player.getInventory().firstEmpty() < 0) {
-            discard(row);
-            ExyliaEconomy.getInstance().getMessages().send(player, text().noteInventoryFull());
-            return;
-        }
+    /**
+     * Takes the money and hands the note over, in one tick. A note that does not fit waits in the
+     * plugin's pending rewards and is handed over once a slot frees up or on the next join; a copy
+     * of it is worth nothing anyway, since its row redeems once.
+     */
+    private void print(Player player, BanknoteRow row, CurrencyInfo info) {
         UUID id = player.getUniqueId();
         EconomyResponse taken = Economy.of(row.currency()).withdraw(id, row.amount(), Transaction.of("note:withdraw").by(id));
         if (!taken.isSuccess()) {
@@ -153,8 +139,11 @@ public final class BanknoteService implements Listener {
             }
             return;
         }
-        give(player, item(player, row, info));
-        ExyliaEconomy.getInstance().getMessages().send(player, text().noteWithdrawn(), Values.of().put("amount", info.format(row.amount())));
+        boolean queued = ExyliaEconomy.getInstance().getRewards().give(player,
+                RewardEntry.item(Rewards.snapshot(item(player, row, info))).fixedAmount(1).build())
+                .outcome() == RewardOutcome.QUEUED;
+        ExyliaEconomy.getInstance().getMessages().send(player, queued ? text().noteQueued() : text().noteWithdrawn(),
+                Values.of().put("amount", info.format(row.amount())));
     }
 
     private void discard(BanknoteRow row) {
