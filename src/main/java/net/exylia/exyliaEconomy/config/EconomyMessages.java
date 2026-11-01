@@ -134,6 +134,8 @@ public record EconomyMessages(
         String noteDisabled,
         @Comment("/withdraw with no free inventory slot.")
         String noteInventoryFull,
+        @Comment("/withdraw with a full inventory asking to drop the banknote at the player's feet. Placeholder: %amount%.")
+        String noteDropPrompt,
         @Comment("A banknote could not be printed or redeemed because the database did not answer.")
         String noteFailed,
         @Comment("Why a banknote of a per-server currency is refused on another server.")
@@ -280,6 +282,8 @@ public record EconomyMessages(
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Hold a banknote in your hand to deposit it.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}cannot be withdrawn as a banknote.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Free a slot in your inventory first.",
+                "{warning}Your inventory is full. Print the banknote of {highlight}%amount% {warning}and drop it at your"
+                        + " feet? {letters}Anyone nearby can pick it up.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}The banknote could not be processed right now. Try again in a moment.",
                 "This banknote can only be redeemed on the server that printed it.",
                 "{primary}&lLEDGER {highlight}%currency% {letters_black}· {letters}%player% {muted}page %page%",

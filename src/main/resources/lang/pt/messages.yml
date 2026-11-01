@@ -120,6 +120,7 @@ note-invalid: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Esta nota já f
 note-not-held: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Segure uma nota na mão para depositá-la.'
 note-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}não pode ser sacado como nota.'
 note-inventory-full: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Libere um espaço no seu inventário primeiro.'
+note-drop-prompt: '{warning}Seu inventário está cheio. Imprimir a nota de {highlight}%amount% {warning}e soltá-la aos seus pés? {letters}Qualquer pessoa por perto pode pegá-la.'
 note-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Não foi possível processar a nota agora. Tente novamente em instantes.'
 note-wrong-server: Esta nota só pode ser resgatada no servidor que a emitiu.
 log-header: '{primary}&lREGISTRO {highlight}%currency% {letters_black}· {letters}%player% {muted}página %page%'

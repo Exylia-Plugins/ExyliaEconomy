@@ -120,6 +120,7 @@ note-invalid: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Bu banknot zate
 note-not-held: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Yatırmak için elinde bir banknot tut.'
 note-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}banknot olarak çekilemez.'
 note-inventory-full: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Önce envanterinde bir yer aç.'
+note-drop-prompt: '{warning}Envanterin dolu. {highlight}%amount% {warning}değerindeki banknot basılıp ayaklarının dibine bırakılsın mı? {letters}Yakındaki herkes onu alabilir.'
 note-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Banknot şu anda işlenemedi. Birazdan tekrar dene.'
 note-wrong-server: Bu banknot yalnızca onu basan sunucuda bozdurulabilir.
 log-header: '{primary}&lKAYIT {highlight}%currency% {letters_black}· {letters}%player% {muted}sayfa %page%'

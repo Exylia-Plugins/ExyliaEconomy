@@ -120,6 +120,7 @@ note-invalid: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Эта банк
 note-not-held: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Возьми банкноту в руку, чтобы внести её.'
 note-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}нельзя снять банкнотой.'
 note-inventory-full: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Сначала освободи место в инвентаре.'
+note-drop-prompt: '{warning}Инвентарь полон. Напечатать банкноту на {highlight}%amount% {warning}и бросить её под ноги? {letters}Её может подобрать любой рядом.'
 note-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Сейчас не удалось обработать банкноту. Попробуй через секунду.'
 note-wrong-server: Эту банкноту можно обналичить только на сервере, где её выпустили.
 log-header: '{primary}&lЖУРНАЛ {highlight}%currency% {letters_black}· {letters}%player% {muted}стр. %page%'

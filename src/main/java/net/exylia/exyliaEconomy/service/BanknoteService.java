@@ -13,6 +13,7 @@ import net.exylia.lib.economy.Economy;
 import net.exylia.lib.economy.EconomyResponse;
 import net.exylia.lib.economy.Transaction;
 import net.exylia.lib.format.Dates;
+import net.exylia.lib.input.PluginInputs;
 import net.exylia.lib.item.ItemValues;
 import net.exylia.lib.item.Items;
 import net.exylia.lib.item.PluginItems;
@@ -76,6 +77,11 @@ public final class BanknoteService implements Listener {
     // ------------------------------------------------------------ withdraw
 
     public void withdraw(Player player, String typedAmount, @Nullable String currencyId) {
+        withdraw(player, typedAmount, currencyId, false);
+    }
+
+    /** @param drop the player agreed to have the note dropped at their feet if no slot is free */
+    private void withdraw(Player player, String typedAmount, @Nullable String currencyId, boolean drop) {
         String currency = EconomyActions.resolved(player, currencyId);
         if (currency == null) return;
         CurrencyInfo info = Economy.info(currency);
@@ -98,8 +104,13 @@ public final class BanknoteService implements Listener {
             EconomyActions.notEnough(player, info, amount.subtract(view.balance(player.getUniqueId())));
             return;
         }
-        if (player.getInventory().firstEmpty() < 0) {
-            ExyliaEconomy.getInstance().getMessages().send(player, text().noteInventoryFull());
+        if (!drop && player.getInventory().firstEmpty() < 0) {
+            // A dropped note is safe to offer: its worth is its database row, redeemed once whoever holds it.
+            String prompt = Values.of("amount", info.format(amount)).apply(text().noteDropPrompt());
+            PluginInputs inputs = ExyliaEconomy.getInstance().getInputs();
+            inputs.answered(player, inputs.confirm(player, prompt).dangerous().open(), yes -> {
+                if (yes) withdraw(player, typedAmount, currencyId, true);
+            }, null);
             return;
         }
         if (!Cooldowns.tryStart(player, "exyliaeconomy:withdraw", COOLDOWN)) return;
@@ -119,13 +130,14 @@ public final class BanknoteService implements Listener {
                 ExyliaEconomy.getInstance().getMessages().send(player, text().noteFailed());
                 return;
             }
-            print(player, row, info);
+            print(player, row, info, drop);
         }, () -> discard(row)));
     }
 
-    /** Takes the money and hands the note over, in one tick: nothing can fill the free slot between. */
-    private void print(Player player, BanknoteRow row, CurrencyInfo info) {
-        if (player.getInventory().firstEmpty() < 0) {
+    /** Takes the money and hands the note over, in one tick: nothing can fill the free slot between, and a
+     *  note that does not fit falls at the player's feet only when they agreed to it. */
+    private void print(Player player, BanknoteRow row, CurrencyInfo info, boolean drop) {
+        if (!drop && player.getInventory().firstEmpty() < 0) {
             discard(row);
             ExyliaEconomy.getInstance().getMessages().send(player, text().noteInventoryFull());
             return;

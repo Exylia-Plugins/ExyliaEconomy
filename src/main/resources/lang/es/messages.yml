@@ -120,6 +120,7 @@ note-invalid: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Este billete ya
 note-not-held: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Sostén un billete en la mano para depositarlo.'
 note-disabled: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}no se puede retirar como billete.'
 note-inventory-full: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}Libera un espacio de tu inventario primero.'
+note-drop-prompt: '{warning}Tu inventario está lleno. ¿Imprimir el billete de {highlight}%amount% {warning}y soltarlo a tus pies? {letters}Cualquiera cerca puede recogerlo.'
 note-failed: '[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}No se pudo procesar el billete ahora mismo. Inténtalo de nuevo en un momento.'
 note-wrong-server: Este billete solo se puede canjear en el servidor que lo emitió.
 log-header: '{primary}&lREGISTRO {highlight}%currency% {letters_black}· {letters}%player% {muted}página %page%'
