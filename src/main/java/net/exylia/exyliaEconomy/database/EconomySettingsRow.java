@@ -1,5 +1,6 @@
 package net.exylia.exyliaEconomy.database;
 
+import net.exylia.lib.database.DataKind;
 import net.exylia.lib.database.Column;
 import net.exylia.lib.database.Id;
 import net.exylia.lib.database.Table;
@@ -28,7 +29,7 @@ import java.util.Locale;
  * @param debug        whether the log explains what the plugin does
  * @param offlinePayNotice whether a player is told on join what they were paid while away
  */
-@Table("exylia_economy_settings")
+@Table(value = "exylia_economy_settings", data = DataKind.SETUP)
 public record EconomySettingsRow(
         @Id(length = 16) String id,
         @Column boolean experienceLevels,

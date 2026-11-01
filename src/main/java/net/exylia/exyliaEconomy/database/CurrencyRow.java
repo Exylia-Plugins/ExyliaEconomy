@@ -1,5 +1,6 @@
 package net.exylia.exyliaEconomy.database;
 
+import net.exylia.lib.database.DataKind;
 import net.exylia.exyliaEconomy.manager.CurrencyFile;
 import net.exylia.lib.database.Column;
 import net.exylia.lib.database.Id;
@@ -33,7 +34,7 @@ import java.util.function.Consumer;
  * the players not online. A column added after a row was written reads as
  * zero or false, which is every one of these turned off.
  */
-@Table("exylia_currencies")
+@Table(value = "exylia_currencies", data = DataKind.SETUP)
 public record CurrencyRow(
         @Id(length = 32) String id,
         @Column(length = 16) Kind kind,

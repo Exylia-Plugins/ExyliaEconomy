@@ -1,5 +1,6 @@
 package net.exylia.exyliaEconomy.database;
 
+import net.exylia.lib.database.DataKind;
 import net.exylia.lib.database.Column;
 import net.exylia.lib.database.Id;
 import net.exylia.lib.database.Table;
@@ -17,7 +18,7 @@ import java.math.BigDecimal;
  * @param redeemedAt when it was redeemed; {@code 0} while it is still worth something
  * @param redeemedBy who redeemed it, or blank
  */
-@Table("exylia_banknotes")
+@Table(value = "exylia_banknotes", data = DataKind.WORLD)
 public record BanknoteRow(
         @Id(length = 36) String id,
         @Column(length = 64) String currency,

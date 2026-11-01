@@ -16,6 +16,7 @@ import net.exylia.exyliaEconomy.model.LedgerEntry;
 import net.exylia.lib.database.Databases;
 import net.exylia.lib.database.Repository;
 import net.exylia.lib.database.internal.Outages;
+import net.exylia.lib.database.wipe.Wipes;
 import net.exylia.lib.debug.Debug;
 import net.exylia.lib.economy.BalanceChangeEvent;
 import net.exylia.lib.economy.CurrencyInfo;
@@ -297,6 +298,14 @@ public final class StoredEconomy implements Listener {
         economy.sweeper = economy.tasks.runAsyncTimer(200L, 1200L, economy::sweep);
         economy.purger = economy.tasks.runAsyncTimer(6000L, 72_000L, economy::purgeLedger);
         economy.supplier = economy.tasks.runAsyncTimer(SUPPLY_DELAY_TICKS, SUPPLY_PERIOD_TICKS, economy::reportSupply);
+        // A player reset through the library: their balances are gone, so no cached read or board keeps them.
+        Wipes.of(plugin).onPlayerReset(economy::forget);
+    }
+
+    private void forget(UUID player) {
+        String prefix = player + "|";
+        offline.keySet().removeIf(row -> row.startsWith(prefix));
+        tops.clear();
     }
 
     /** Whether the economy runs and its currencies are still being read, so "no economy" is not the answer yet. */

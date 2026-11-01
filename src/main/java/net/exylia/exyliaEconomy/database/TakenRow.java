@@ -1,5 +1,6 @@
 package net.exylia.exyliaEconomy.database;
 
+import net.exylia.lib.database.DataKind;
 import net.exylia.lib.database.Column;
 import net.exylia.lib.database.Id;
 import net.exylia.lib.database.Indexed;
@@ -13,7 +14,7 @@ import net.exylia.lib.database.Table;
  *
  * @param takenHour hours since the epoch, by which old marks are deleted
  */
-@Table("exylia_balance_pending_taken")
+@Table(value = "exylia_balance_pending_taken", data = DataKind.CACHE)
 public record TakenRow(
         @Id(length = 36) String token,
         @Indexed @Column("taken_hour") long takenHour) {

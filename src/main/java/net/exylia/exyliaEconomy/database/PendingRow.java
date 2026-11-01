@@ -1,5 +1,7 @@
 package net.exylia.exyliaEconomy.database;
 
+import net.exylia.lib.database.DataKind;
+import net.exylia.lib.database.Owner;
 import net.exylia.lib.database.Column;
 import net.exylia.lib.database.Id;
 import net.exylia.lib.database.Indexed;
@@ -30,10 +32,10 @@ import java.util.UUID;
  * @param token    unique per change, so a retried insert finds its own row;
  *                 {@code null} on rows queued before the column existed
  */
-@Table("exylia_balance_pending")
+@Table(value = "exylia_balance_pending", data = DataKind.PROGRESS)
 public record PendingRow(
         @Id(generated = true) long id,
-        @Indexed @Column(length = 36) String player,
+        @Owner @Indexed @Column(length = 36) String player,
         @Column(length = 100) String currency,
         @Column BigDecimal amount,
         @Column boolean absolute,

@@ -1,5 +1,7 @@
 package net.exylia.exyliaEconomy.database;
 
+import net.exylia.lib.database.DataKind;
+import net.exylia.lib.database.Owner;
 import net.exylia.lib.database.Column;
 import net.exylia.lib.database.Id;
 import net.exylia.lib.database.Index;
@@ -36,11 +38,11 @@ import java.util.UUID;
  * @param owner   the server holding the player, blank when nobody does
  * @param version how many times the row has been written since it was versioned
  */
-@Table("exylia_balances")
+@Table(value = "exylia_balances", data = DataKind.PROGRESS)
 @Index(columns = {"currency", "amount"}, descending = {"amount"})
 public record BalanceRow(
         @Id(length = 160) String id,
-        @Indexed @Column(length = 36) String player,
+        @Owner @Indexed @Column(length = 36) String player,
         @Column(length = 64) String name,
         @Indexed @Column(length = 100) String currency,
         @Column BigDecimal amount,

@@ -1,5 +1,6 @@
 package net.exylia.exyliaEconomy.database;
 
+import net.exylia.lib.database.DataKind;
 import net.exylia.lib.database.Column;
 import net.exylia.lib.database.Id;
 import net.exylia.lib.database.Indexed;
@@ -12,7 +13,7 @@ import net.exylia.lib.database.Table;
  * @param claimedAt   when it was claimed; {@code 0} while nobody holds it
  * @param expiresDay  the day, since the epoch, from which the row may be deleted; {@code 0} keeps it
  */
-@Table("exylia_economy_claims")
+@Table(value = "exylia_economy_claims", data = DataKind.HISTORY)
 public record ClaimRow(
         @Id(length = 160) String id,
         @Column("claimed_at") long claimedAt,

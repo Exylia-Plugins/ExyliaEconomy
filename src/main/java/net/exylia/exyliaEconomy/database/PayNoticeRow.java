@@ -1,5 +1,7 @@
 package net.exylia.exyliaEconomy.database;
 
+import net.exylia.lib.database.DataKind;
+import net.exylia.lib.database.Owner;
 import net.exylia.lib.database.Column;
 import net.exylia.lib.database.Id;
 import net.exylia.lib.database.Indexed;
@@ -17,10 +19,10 @@ import java.util.UUID;
  * @param currency the currency's id
  * @param payer    who paid, by id, so two payments from one player count as one payer
  */
-@Table("exylia_pay_notices")
+@Table(value = "exylia_pay_notices", data = DataKind.CACHE)
 public record PayNoticeRow(
         @Id(generated = true) long id,
-        @Indexed @Column(length = 36) String player,
+        @Owner @Indexed @Column(length = 36) String player,
         @Column(length = 64) String currency,
         @Column BigDecimal amount,
         @Column(length = 36) String payer,

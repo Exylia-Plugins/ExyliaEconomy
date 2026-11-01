@@ -1,5 +1,7 @@
 package net.exylia.exyliaEconomy.database;
 
+import net.exylia.lib.database.DataKind;
+import net.exylia.lib.database.Owner;
 import net.exylia.lib.database.Column;
 import net.exylia.lib.database.Id;
 import net.exylia.lib.database.Indexed;
@@ -17,10 +19,10 @@ import java.util.UUID;
  * @param player the player's id
  * @param flag   which setting, such as {@code pay_off}
  */
-@Table("exylia_economy_flags")
+@Table(value = "exylia_economy_flags", data = DataKind.ACCOUNT)
 public record PlayerFlagRow(
         @Id(length = 80) String id,
-        @Indexed @Column(length = 36) String player,
+        @Owner @Indexed @Column(length = 36) String player,
         @Indexed @Column(length = 32) String flag) {
 
     public PlayerFlagRow(UUID player, String flag) {

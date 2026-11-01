@@ -1,5 +1,7 @@
 package net.exylia.exyliaEconomy.database;
 
+import net.exylia.lib.database.DataKind;
+import net.exylia.lib.database.Owner;
 import net.exylia.lib.database.Column;
 import net.exylia.lib.database.Id;
 import net.exylia.lib.database.Index;
@@ -20,12 +22,12 @@ import java.util.UUID;
  *                   retention sweep deletes by, a day at a time. Zero on lines
  *                   written before the column existed.
  */
-@Table("exylia_ledger")
+@Table(value = "exylia_ledger", data = DataKind.HISTORY)
 @Index(columns = {"player", "currency", "created_at"}, descending = {"created_at"})
 @Index(columns = {"player", "currency", "id"}, descending = {"id"})
 public record LedgerRow(
         @Id(generated = true) long id,
-        @Indexed @Column(length = 36) String player,
+        @Owner @Indexed @Column(length = 36) String player,
         @Column(length = 100) String currency,
         @Column BigDecimal delta,
         @Column("balance_after") BigDecimal balanceAfter,
