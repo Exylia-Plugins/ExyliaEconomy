@@ -51,7 +51,6 @@ items:
       - ""
       - "{secondary}État :"
       - " {letters_black}▎ {letters}Nom {letters_black}» {info}%currency_name%"
-      - " {letters_black}▎ {letters}Rendu {letters_black}» {letters}%currency_preview%"
       - ""
       - "{warning}➥ Clique pour ouvrir"
       - ""

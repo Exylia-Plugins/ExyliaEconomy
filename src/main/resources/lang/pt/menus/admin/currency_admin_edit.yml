@@ -51,7 +51,6 @@ items:
       - ""
       - "{secondary}Estado:"
       - " {letters_black}▎ {letters}Nome {letters_black}» {info}%currency_name%"
-      - " {letters_black}▎ {letters}Fica assim {letters_black}» {letters}%currency_preview%"
       - ""
       - "{warning}➥ Clique para abrir"
       - ""

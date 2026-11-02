@@ -51,7 +51,6 @@ items:
       - ""
       - "{secondary}Статус:"
       - " {letters_black}▎ {letters}Название {letters_black}» {info}%currency_name%"
-      - " {letters_black}▎ {letters}Выглядит так {letters_black}» {letters}%currency_preview%"
       - ""
       - "{warning}➥ Нажми, чтобы открыть"
       - ""
