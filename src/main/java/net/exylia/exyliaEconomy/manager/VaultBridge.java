@@ -170,7 +170,35 @@ final class VaultBridge {
             return;
         }
         RegisteredServiceProvider<?> registration = Bukkit.getServicesManager().getRegistration(economyClass);
-        serving = registration != null && registration.getProvider() == proxy ? currency : null;
+        serving = registration != null && wraps(registration.getProvider(), 3) ? currency : null;
+    }
+
+    /**
+     * Whether a Vault service is ours, or a pass-through in front of it: a
+     * plugin that watches Vault (ExyliaAnalytics) puts a proxy on top that
+     * forwards every call here. Taking that for another economy would split
+     * 'vault' from the currency it really is.
+     *
+     * <p>ponytail: reads the handler's fields, so only reflective proxies
+     * holding the delegate in a field are seen through; a wrapper written as
+     * a class of its own still reads as another economy.
+     */
+    private boolean wraps(@Nullable Object service, int depth) {
+        if (service == proxy) return true;
+        if (service == null || depth == 0 || !Proxy.isProxyClass(service.getClass())) return false;
+        Object handler = Proxy.getInvocationHandler(service);
+        for (Class<?> type = handler.getClass(); type != null && type != Object.class; type = type.getSuperclass()) {
+            for (java.lang.reflect.Field field : type.getDeclaredFields()) {
+                if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) || field.getType().isPrimitive()) continue;
+                try {
+                    field.setAccessible(true);
+                    if (wraps(field.get(handler), depth - 1)) return true;
+                } catch (ReflectiveOperationException | RuntimeException sealed) {
+                    // A field this module may not open: not ours to read.
+                }
+            }
+        }
+        return false;
     }
 
     /** Whether an economy plugin other than this bridge is registered with Vault. */
