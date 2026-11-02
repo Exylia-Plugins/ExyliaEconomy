@@ -152,7 +152,7 @@ public final class CurrencyFile {
                 yaml.getBoolean("experience.levels", true),
                 yaml.getBoolean("experience.points", true),
                 yaml.getString("vault.provide", "") == null ? "" : yaml.getString("vault.provide", "").trim(),
-                yaml.getBoolean("vault.force", false),
+                yaml.getBoolean("vault.force", true),
                 yaml.getBoolean("ledger.enabled", true));
     }
 
@@ -347,13 +347,13 @@ public final class CurrencyFile {
 
             # ---------------------------------------------------------------------
             # vault: publish one stored currency as the server's Vault economy, so
-            # every plugin that only speaks Vault uses it. Blank = never. It sits
-            # beneath any economy plugin (EssentialsX, CMI) and serves only while
-            # none is installed, unless 'force' puts it on top.
+            # every plugin that only speaks Vault uses it. Blank = never. 'force'
+            # puts it above any other economy plugin (EssentialsX, CMI); false
+            # leaves it beneath them, serving only while none is installed.
             # ---------------------------------------------------------------------
             vault:
               provide: dollars
-              force: false
+              force: true
 
             # ---------------------------------------------------------------------
             # ledger: whether every operation on a stored currency is written down,

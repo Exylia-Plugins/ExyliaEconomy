@@ -28,6 +28,7 @@ import java.util.Locale;
  *                     existed, which is what makes the old {@code config.yml} import once
  * @param debug        whether the log explains what the plugin does
  * @param offlinePayNotice whether a player is told on join what they were paid while away
+ * @param vaultForceSet whether an admin ever chose {@code vaultForce}; until then it is on
  */
 @Table(value = "exylia_economy_settings", data = DataKind.SETUP)
 public record EconomySettingsRow(
@@ -42,7 +43,8 @@ public record EconomySettingsRow(
         @Column(length = Column.UNBOUNDED) String imports,
         @Column(length = 32) String language,
         @Column boolean debug,
-        @Column boolean offlinePayNotice) {
+        @Column boolean offlinePayNotice,
+        @Column boolean vaultForceSet) {
 
     public static final String GLOBAL = "global";
     public static final int DEFAULT_LEDGER_DAYS = 90;
@@ -54,15 +56,25 @@ public record EconomySettingsRow(
     /** A row whose language, debug and notice are still to be settled: see {@link #fresh()}. */
     public EconomySettingsRow(boolean experienceLevels, boolean experiencePoints, String vaultProvide,
                               boolean vaultForce, boolean ledger) {
-        this(experienceLevels, experiencePoints, vaultProvide, vaultForce, ledger, 0, "", null, false, true);
+        this(experienceLevels, experiencePoints, vaultProvide, vaultForce, ledger, 0, "", null, false, true, false);
     }
 
     public EconomySettingsRow(boolean experienceLevels, boolean experiencePoints, String vaultProvide,
                               boolean vaultForce, boolean ledger, int ledgerDays, String imports,
-                              String language, boolean debug, boolean offlinePayNotice) {
+                              String language, boolean debug, boolean offlinePayNotice, boolean vaultForceSet) {
         this(GLOBAL, experienceLevels, experiencePoints, vaultProvide == null ? "" : vaultProvide,
                 vaultForce, ledger, System.currentTimeMillis(), ledgerDays, imports == null ? "" : imports,
-                language, debug, offlinePayNotice);
+                language, debug, offlinePayNotice, vaultForceSet);
+    }
+
+    /**
+     * Whether Vault is served above any other economy plugin: on until an admin
+     * turns it off. A row written before {@link #vaultForceSet} existed reads as
+     * never chosen, so it goes on top too.
+     */
+    @Override
+    public boolean vaultForce() {
+        return vaultForce || !vaultForceSet;
     }
 
     /**
@@ -86,17 +98,17 @@ public record EconomySettingsRow(
 
     public EconomySettingsRow withLanguage(String value) {
         return new EconomySettingsRow(experienceLevels, experiencePoints, vaultProvide, vaultForce, ledger,
-                ledgerDays, imports, value, debug, offlinePayNotice);
+                ledgerDays, imports, value, debug, offlinePayNotice, vaultForceSet);
     }
 
     public EconomySettingsRow withDebug(boolean value) {
         return new EconomySettingsRow(experienceLevels, experiencePoints, vaultProvide, vaultForce, ledger,
-                ledgerDays, imports, language, value, offlinePayNotice);
+                ledgerDays, imports, language, value, offlinePayNotice, vaultForceSet);
     }
 
     public EconomySettingsRow withOfflinePayNotice(boolean value) {
         return new EconomySettingsRow(experienceLevels, experiencePoints, vaultProvide, vaultForce, ledger,
-                ledgerDays, imports, language, debug, value);
+                ledgerDays, imports, language, debug, value, vaultForceSet);
     }
 
     /** Days a ledger line is kept, or a non-positive number for forever. */
@@ -115,7 +127,7 @@ public record EconomySettingsRow(
         String mark = (from + ">" + into).toLowerCase(Locale.ROOT);
         String all = imports == null || imports.isBlank() ? mark : imports + ";" + mark;
         return new EconomySettingsRow(experienceLevels, experiencePoints, vaultProvide, vaultForce, ledger,
-                ledgerDays, all, language, debug, offlinePayNotice);
+                ledgerDays, all, language, debug, offlinePayNotice, vaultForceSet);
     }
 
     /** The next retention on the settings screen's cycle. */
@@ -129,31 +141,31 @@ public record EconomySettingsRow(
             }
         }
         return new EconomySettingsRow(experienceLevels, experiencePoints, vaultProvide, vaultForce, ledger,
-                next, imports, language, debug, offlinePayNotice);
+                next, imports, language, debug, offlinePayNotice, vaultForceSet);
     }
 
     public EconomySettingsRow withExperienceLevels(boolean value) {
         return new EconomySettingsRow(value, experiencePoints, vaultProvide, vaultForce, ledger, ledgerDays, imports,
-                language, debug, offlinePayNotice);
+                language, debug, offlinePayNotice, vaultForceSet);
     }
 
     public EconomySettingsRow withExperiencePoints(boolean value) {
         return new EconomySettingsRow(experienceLevels, value, vaultProvide, vaultForce, ledger, ledgerDays, imports,
-                language, debug, offlinePayNotice);
+                language, debug, offlinePayNotice, vaultForceSet);
     }
 
     public EconomySettingsRow withVaultProvide(String value) {
         return new EconomySettingsRow(experienceLevels, experiencePoints, value, vaultForce, ledger, ledgerDays, imports,
-                language, debug, offlinePayNotice);
+                language, debug, offlinePayNotice, vaultForceSet);
     }
 
     public EconomySettingsRow withVaultForce(boolean value) {
         return new EconomySettingsRow(experienceLevels, experiencePoints, vaultProvide, value, ledger, ledgerDays, imports,
-                language, debug, offlinePayNotice);
+                language, debug, offlinePayNotice, true);
     }
 
     public EconomySettingsRow withLedger(boolean value) {
         return new EconomySettingsRow(experienceLevels, experiencePoints, vaultProvide, vaultForce, value, ledgerDays, imports,
-                language, debug, offlinePayNotice);
+                language, debug, offlinePayNotice, vaultForceSet);
     }
 }

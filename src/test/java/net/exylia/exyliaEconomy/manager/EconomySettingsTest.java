@@ -25,6 +25,16 @@ class EconomySettingsTest {
     }
 
     @Test
+    void vaultIsOnTopUntilAnAdminTurnsItOff() {
+        EconomySettingsRow row = new EconomySettingsRow(false, true, "dollars", false, true);
+        assertTrue(row.vaultForce(), "a new row, or one from before the column, is on top");
+        EconomySettingsRow off = row.withVaultForce(!row.vaultForce());
+        assertFalse(off.vaultForce());
+        assertFalse(off.withLedger(false).withNextLanguage().vaultForce(), "other switches keep the choice");
+        assertTrue(off.withVaultForce(true).vaultForce());
+    }
+
+    @Test
     void anImportIsRememberedPerPair() {
         EconomySettingsRow row = new EconomySettingsRow(false, true, "dollars", false, true);
         assertFalse(row.imported("vault", "dollars"));

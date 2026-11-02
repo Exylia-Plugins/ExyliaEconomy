@@ -60,7 +60,7 @@ class CurrencyFileTest {
         assertFalse(read.experienceLevels());
         assertTrue(read.experiencePoints());
         assertEquals("dollars", read.vaultProvide());
-        assertFalse(read.vaultForce());
+        assertTrue(read.vaultForce());
         assertNotNull(read.overlay("vault"));
         assertEquals("$", read.overlay("vault").symbol());
         assertNotNull(read.overlay("points"));

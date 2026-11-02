@@ -35,11 +35,11 @@ import java.util.UUID;
  * <em>reads</em> Vault: nothing here links against it, and a server without
  * Vault pays a caught {@code ClassNotFoundException} and nothing more.
  *
- * <p>Polite by default: {@code vault.provide} names the currency, and it is
- * registered at the lowest priority, so an economy plugin the owner installed —
- * EssentialsX, CMI — sits above it and serves, whichever of the two loaded
- * first. This one serves only while nothing else does. {@code vault.force}
- * registers it at the highest priority instead. Two plugins both certain they
+ * <p>{@code vault.provide} names the currency. By default it is registered at
+ * the highest priority, above any economy plugin the owner also installed —
+ * EssentialsX, CMI — because a server that set a currency up here means it.
+ * With "Vault above" turned off it is registered at the lowest instead, and
+ * serves only while nothing else does. Two plugins both certain they
  * are the server's economy is how balances split in two.
  *
  * <h2>Registered before the currencies are read</h2>
@@ -146,7 +146,7 @@ final class VaultBridge {
         if (other != null && !force) {
             Debug.of(plugin).log("Economy: " + other.getPlugin().getName() + " provides the Vault economy; '"
                     + currency.id() + "' is registered beneath it and serves only without it."
-                    + " Set vault.force to put it on top.");
+                    + " Turn on 'Vault above' in /economyadmin to put it on top.");
         } else {
             Debug.of(plugin).log("Economy: '" + currency.id() + "' is the server's Vault economy.");
         }
