@@ -337,11 +337,14 @@ final class VaultBridge {
         }
 
         /**
+         * The reason an ExyliaLib caller gave, carried through Vault; otherwise
          * {@code vault:<plugin>} for the plugin that called Vault, so the ledger
          * and the analytics say which jobs or shop plugin moved the money;
          * plain {@code vault} when no plugin is found on the stack.
          */
         private Transaction caller() {
+            Transaction relayed = Transaction.relayed();
+            if (relayed != null && relayed != Transaction.NONE) return relayed;
             String name = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames
                     .map(frame -> OWNERS.get(frame.getDeclaringClass()))
                     .filter(owner -> !owner.isEmpty() && !owner.equals(self) && !owner.equals("vault")
