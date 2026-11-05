@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -342,13 +343,15 @@ final class VaultBridge {
          * and the analytics say which jobs or shop plugin moved the money;
          * plain {@code vault} when no plugin is found on the stack.
          */
+        /** Plugins that only hand a Vault call on (the API, its v2 bridge, the library, the analytics agent's watcher): never "who paid". */
+        private static final Set<String> PASS_THROUGH = Set.of("vault", "vaultunlocked", "exylialib", "exyliaanalytics");
+
         private Transaction caller() {
             Transaction relayed = Transaction.relayed();
             if (relayed != null && relayed != Transaction.NONE) return relayed;
             String name = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames
                     .map(frame -> OWNERS.get(frame.getDeclaringClass()))
-                    .filter(owner -> !owner.isEmpty() && !owner.equals(self) && !owner.equals("vault")
-                            && !owner.equals("exylialib"))
+                    .filter(owner -> !owner.isEmpty() && !owner.equals(self) && !PASS_THROUGH.contains(owner))
                     .findFirst()
                     .orElse(""));
             return Transaction.of(name.isEmpty() ? "vault" : "vault:" + name);
