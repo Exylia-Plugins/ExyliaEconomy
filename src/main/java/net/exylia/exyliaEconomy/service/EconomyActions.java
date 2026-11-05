@@ -9,6 +9,7 @@ import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.manager.CurrencyStore;
 import net.exylia.exyliaEconomy.manager.PlayerFlags;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
+import net.exylia.exyliaEconomy.manager.VaultBridge;
 import net.exylia.exyliaEconomy.menu.HistoryMenu;
 import net.exylia.exyliaEconomy.menu.TopMenu;
 import net.exylia.exyliaEconomy.menu.WalletMenu;
@@ -430,10 +431,11 @@ public final class EconomyActions {
     // --------------------------------------------------------------- admin
 
     public void give(CommandSender sender, @Nullable String currencyId, String targetName, String typedAmount) {
+        String reason = commandReason(sender, "admin:give");
         adminOp(sender, currencyId, targetName, typedAmount, (currency, found, amount) -> {
             CurrencyInfo info = Economy.info(currency);
             EconomyResponse response = Economy.of(currency)
-                    .deposit(found.id(), amount, Transaction.of("admin:give").by(initiator(sender)));
+                    .deposit(found.id(), amount, Transaction.of(reason).by(initiator(sender)));
             if (!response.isSuccess()) {
                 refused(sender, response, info);
                 return;
@@ -451,10 +453,11 @@ public final class EconomyActions {
     }
 
     public void take(CommandSender sender, @Nullable String currencyId, String targetName, String typedAmount) {
+        String reason = commandReason(sender, "admin:take");
         adminOp(sender, currencyId, targetName, typedAmount, (currency, found, amount) -> {
             CurrencyInfo info = Economy.info(currency);
             onOwner(sender, currency, found, () -> Economy.of(currency)
-                    .withdraw(found.id(), amount, Transaction.of("admin:take").by(initiator(sender))), response -> {
+                    .withdraw(found.id(), amount, Transaction.of(reason).by(initiator(sender))), response -> {
                 if (!response.isSuccess()) {
                     if (response.type() == EconomyResponse.Type.INSUFFICIENT_FUNDS) {
                         ExyliaEconomy.getInstance().getMessages().send(sender, text().notEnough(), Values.of().put("currency", info.namePlural())
@@ -783,6 +786,17 @@ public final class EconomyActions {
             return "block:" + at.getWorld().getName() + ":" + at.getBlockX() + ":" + at.getBlockY() + ":" + at.getBlockZ();
         }
         return sender.getClass().getSimpleName() + ":" + sender.getName();
+    }
+
+    /**
+     * {@code command:<plugin>} when another plugin ran the command from the console (a quest,
+     * reward or crate paying with {@code eco give}), so the money is filed under that plugin;
+     * {@code admin} otherwise. Read here, on the command's own thread, before any lookup hops off it.
+     */
+    static String commandReason(CommandSender sender, String admin) {
+        if (sender instanceof Player) return admin;
+        String plugin = VaultBridge.callingPlugin("exyliaeconomy");
+        return plugin.isEmpty() ? admin : "command:" + plugin;
     }
 
     static @Nullable UUID initiator(CommandSender sender) {

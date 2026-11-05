@@ -55,7 +55,7 @@ import java.util.UUID;
  * Vault's service is registered, it asks Vault for the economy on every call,
  * and {@link StoredCurrency#servesVault()} is how it lists the balance once.
  */
-final class VaultBridge {
+public final class VaultBridge {
 
     private static final String ECONOMY = "net.milkbowl.vault.economy.Economy";
     private static final String RESPONSE = "net.milkbowl.vault.economy.EconomyResponse";
@@ -78,6 +78,18 @@ final class VaultBridge {
             return "";
         }
     };
+
+    /** Plugins that only hand a call on (the API, its v2 bridge, the library, the analytics agent's watcher): never "who paid". */
+    private static final Set<String> PASS_THROUGH = Set.of("vault", "vaultunlocked", "exylialib", "exyliaanalytics");
+
+    /** The first plugin on this thread's stack other than {@code self} and the pass-throughs, lower-case; empty when none. */
+    public static String callingPlugin(String self) {
+        return StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames
+                .map(frame -> OWNERS.get(frame.getDeclaringClass()))
+                .filter(owner -> !owner.isEmpty() && !owner.equals(self) && !PASS_THROUGH.contains(owner))
+                .findFirst()
+                .orElse(""));
+    }
 
     private final Plugin plugin;
     private final String self;
@@ -343,17 +355,10 @@ final class VaultBridge {
          * and the analytics say which jobs or shop plugin moved the money;
          * plain {@code vault} when no plugin is found on the stack.
          */
-        /** Plugins that only hand a Vault call on (the API, its v2 bridge, the library, the analytics agent's watcher): never "who paid". */
-        private static final Set<String> PASS_THROUGH = Set.of("vault", "vaultunlocked", "exylialib", "exyliaanalytics");
-
         private Transaction caller() {
             Transaction relayed = Transaction.relayed();
             if (relayed != null && relayed != Transaction.NONE) return relayed;
-            String name = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(frames -> frames
-                    .map(frame -> OWNERS.get(frame.getDeclaringClass()))
-                    .filter(owner -> !owner.isEmpty() && !owner.equals(self) && !PASS_THROUGH.contains(owner))
-                    .findFirst()
-                    .orElse(""));
+            String name = callingPlugin(self);
             return Transaction.of(name.isEmpty() ? "vault" : "vault:" + name);
         }
 
