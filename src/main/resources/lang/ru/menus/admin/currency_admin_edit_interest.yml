@@ -25,38 +25,38 @@ items:
   interest:
     slot: 12
     material: "EXPERIENCE_BOTTLE"
-    name: "{primary}&lПРОЦЕНТЫ"
+    name: "{letters}Валюта {letters_black}▸ <gradient:{primary}:{secondary_light}>Проценты</gradient>"
     lore:
+      - "{letters_black}Настройка валюты"
       - ""
-      - "{secondary}Информация:"
-      - " {letters_black}▎ {letters}Выплачиваются игрокам с правом"
-      - " {letters_black}▎ {letters}на проценты."
+      - "{primary}✎ Информация"
+      - " {letters}Выплачиваются игрокам"
+      - " {letters}с правом на проценты."
       - ""
-      - "{secondary}Статус:"
-      - " {letters_black}▎ {letters}Ставка {letters_black}» {info}%currency_interest_rate%"
-      - " {letters_black}▎ {letters}Каждые {letters_black}» {info}%currency_interest_interval% ⌚"
-      - " {letters_black}▎ {letters}Макс. за выплату {letters_black}» {info}%currency_interest_max%"
+      - "{primary}✦ Статус"
+      - "  {letters_black}· {info}{icon:gold} {letters}Ставка{letters_black}: {info}%currency_interest_rate%"
+      - "  {letters_black}· {info}{icon:clock} {letters}Каждые{letters_black}: {info}%currency_interest_interval%"
+      - "  {letters_black}· {info}{icon:hopper} {letters}Макс. за выплату{letters_black}: {info}%currency_interest_max%"
       - ""
-      - "{warning}➥ Нажми, чтобы изменить"
-      - ""
+      - "{primary}» Нажми, чтобы изменить"
     actions:
       - "exyliaeconomy:currency_admin_interest %currency_id%"
 
   interest-offline:
     slot: 14
     material: "%interest_offline_material%"
-    name: "{primary}&lПРОЦЕНТЫ ОФЛАЙН"
+    name: "{letters}Валюта {letters_black}▸ <gradient:{primary}:{secondary_light}>Проценты офлайн</gradient>"
     lore:
+      - "{letters_black}Настройка валюты"
       - ""
-      - "{secondary}Информация:"
-      - " {letters_black}▎ {letters}Платит и игрокам не в сети,"
-      - " {letters_black}▎ {letters}не проверяя их право."
+      - "{primary}✎ Информация"
+      - " {letters}Платит и игрокам не в сети,"
+      - " {letters}не проверяя их право."
       - ""
-      - "{secondary}Статус:"
-      - " {letters_black}▎ {letters}Сейчас {letters_black}» %interest_offline_status%"
+      - "{primary}✦ Статус"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Сейчас{letters_black}: %interest_offline_status%"
       - ""
-      - "{warning}➥ Нажми, чтобы переключить"
-      - ""
+      - "{primary}» Нажми, чтобы переключить"
     actions:
       - "exyliaeconomy:currency_admin_toggle %currency_id% interest_offline"
 
@@ -64,12 +64,8 @@ items:
     slot: 31
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
-    name: "{error}&lНАЗАД"
+    name: "{letters}Назад {letters_black}▸ <gradient:{error}:{error_light}>Валюта</gradient>"
     lore:
-      - ""
-      - " {letters_black}▎ {letters}Возврат к обзору валюты."
-      - ""
-      - "{warning}➥ Нажми, чтобы вернуться"
-      - ""
+      - "{error}» Нажми, чтобы вернуться"
     actions:
       - "exyliaeconomy:currency_admin_page %currency_id% hub"

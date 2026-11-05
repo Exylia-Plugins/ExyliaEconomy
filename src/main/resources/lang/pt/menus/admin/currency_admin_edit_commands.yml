@@ -25,35 +25,35 @@ items:
   aliases:
     slot: 12
     material: "COMMAND_BLOCK"
-    name: "{primary}&lNOMES DE COMANDO"
+    name: "{letters}Moeda {letters_black}▸ <gradient:{primary}:{secondary_light}>Nomes de comando</gradient>"
     lore:
+      - "{letters_black}Ajuste da moeda"
       - ""
-      - "{secondary}Informação:"
-      - " {letters_black}▎ {letters}O primeiro é o comando;"
-      - " {letters_black}▎ {letters}o resto, seus aliases."
+      - "{primary}✎ Informação"
+      - " {letters}O primeiro é o comando;"
+      - " {letters}o resto, seus aliases."
       - ""
-      - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Nomes {letters_black}» {info}%currency_aliases%"
+      - "{primary}✦ Estado"
+      - "  {letters_black}· {info}{icon:tag} {letters}Nomes{letters_black}: {info}%currency_aliases%"
       - ""
-      - "{warning}➥ Clique para editar"
-      - ""
+      - "{primary}» Clique para editar"
     actions:
       - "exyliaeconomy:currency_admin_aliases %currency_id%"
 
   commands:
     slot: 14
     material: "%commands_material%"
-    name: "{primary}&lCOMANDOS ATIVADOS"
+    name: "{letters}Moeda {letters_black}▸ <gradient:{primary}:{secondary_light}>Comandos ativados</gradient>"
     lore:
+      - "{letters_black}Ajuste da moeda"
       - ""
-      - "{secondary}Informação:"
-      - " {letters_black}▎ {letters}Se os seus comandos existem."
+      - "{primary}✎ Informação"
+      - " {letters}Se os seus comandos existem."
       - ""
-      - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Atual {letters_black}» %commands_status%"
+      - "{primary}✦ Estado"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Atual{letters_black}: %commands_status%"
       - ""
-      - "{warning}➥ Clique para alternar"
-      - ""
+      - "{primary}» Clique para alternar"
     actions:
       - "exyliaeconomy:currency_admin_toggle %currency_id% commands"
 
@@ -61,12 +61,8 @@ items:
     slot: 31
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
-    name: "{error}&lVOLTAR"
+    name: "{letters}Voltar {letters_black}▸ <gradient:{error}:{error_light}>Moeda</gradient>"
     lore:
-      - ""
-      - " {letters_black}▎ {letters}Volta para o resumo da moeda."
-      - ""
-      - "{warning}➥ Clique para voltar"
-      - ""
+      - "{error}» Clique para voltar"
     actions:
       - "exyliaeconomy:currency_admin_page %currency_id% hub"

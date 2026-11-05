@@ -25,73 +25,70 @@ items:
   header:
     slot: 4
     material: "%entry_icon%"
-    name: "{primary}&lENTRY #%entry_id% &8[%entry_delta%&8]"
+    name: "<gradient:{info}:{info_light}>Entry #%entry_id%</gradient> &8[%entry_delta%&8]"
     lore:
+      - "{letters_black}Ledger entry"
       - ""
-      - "{secondary}Information:"
-      - " {letters_black}▎ {letters}Player {letters_black}» {highlight}%ledger_owner%"
-      - " {letters_black}▎ {letters}Currency {letters_black}» {highlight}%currency%"
-      - ""
+      - "{info}✦ Status"
+      - "  {letters_black}· {highlight}{icon:tag} {letters}Player{letters_black}: {highlight}%ledger_owner%"
+      - "  {letters_black}· {highlight}{icon:coin} {letters}Currency{letters_black}: {highlight}%currency%"
 
   amount:
     slot: 11
     material: GOLD_NUGGET
-    name: "{primary}&lAMOUNT"
+    name: "{letters}Entry {letters_black}▸ <gradient:{info}:{info_light}>Amount</gradient>"
     lore:
+      - "{letters_black}Entry detail"
       - ""
-      - "{secondary}Status:"
-      - " {letters_black}▎ {letters}Moved {letters_black}» %entry_delta%"
-      - " {letters_black}▎ {letters}Balance after {letters_black}» {info}%entry_balance%"
-      - ""
+      - "{info}✦ Status"
+      - "  {letters_black}· {info}{icon:gold} {letters}Moved{letters_black}: %entry_delta%"
+      - "  {letters_black}· {info}{icon:gold} {letters}Balance after{letters_black}: {info}%entry_balance%"
 
   when:
     slot: 13
     material: CLOCK
-    name: "{primary}&lWHEN"
+    name: "{letters}Entry {letters_black}▸ <gradient:{info}:{info_light}>When</gradient>"
     lore:
+      - "{letters_black}Entry detail"
       - ""
-      - "{secondary}Status:"
-      - " {letters_black}▎ {letters}Written {letters_black}» {info}%entry_when% ⌚"
-      - " {letters_black}▎ {letters}Server {letters_black}» {info}%entry_server%"
-      - ""
+      - "{info}✦ Status"
+      - "  {letters_black}· {info}{icon:clock} {letters}Written{letters_black}: {info}%entry_when%"
+      - "  {letters_black}· {info}{icon:map} {letters}Server{letters_black}: {info}%entry_server%"
 
   source:
     slot: 15
     material: NAME_TAG
-    name: "{primary}&lSOURCE"
+    name: "{letters}Entry {letters_black}▸ <gradient:{info}:{info_light}>Source</gradient>"
     lore:
+      - "{letters_black}Entry detail"
       - ""
-      - "{secondary}Status:"
-      - " {letters_black}▎ {letters}Reason {letters_black}» {highlight}%entry_reason%"
-      - " {letters_black}▎ {letters}Caused by {letters_black}» {highlight}%entry_initiator%"
-      - ""
+      - "{info}✦ Status"
+      - "  {letters_black}· {highlight}{icon:book} {letters}Reason{letters_black}: {highlight}%entry_reason%"
+      - "  {letters_black}· {highlight}{icon:tag} {letters}Caused by{letters_black}: {highlight}%entry_initiator%"
 
   back:
     slot: 22
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
-    name: "{error}&lBACK"
+    name: "{letters}Back {letters_black}▸ <gradient:{error}:{error_light}>Ledger</gradient>"
     lore:
-      - ""
-      - " {letters_black}▎ {letters}Returns to the ledger."
-      - ""
-      - "{warning}➥ Click to go back"
-      - ""
+      - "{error}» Click to go back"
     actions:
       - "exyliaeconomy:ledger_admin_list %ledger_owner% %currency_id%"
 
   rollback:
     slot: 26
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUwZmQxMDE5OWU4ZTRmY2RhYmNhZTRmODVjODU5MTgxMjdhN2M1NTUzYWQyMzVmMDFjNTZkMThiYjk0NzBkMyJ9fX0="
-    name: "{error}&lROLL BACK"
+    name: "{letters}Entry {letters_black}▸ <gradient:{error}:{error_light}>Roll back</gradient>"
     lore:
+      - "{letters_black}Danger zone"
       - ""
-      - " {letters_black}▎ {letters}Reverses this movement once."
-      - " {letters_black}▎ {letters}Payments, exchanges and banknotes"
-      - " {letters_black}▎ {letters}are never reverted."
+      - "{error}✎ Information"
+      - " {letters}Reverses this movement once."
+      - " {letters}Payments, exchanges and"
+      - " {letters}banknotes are never reverted."
       - ""
-      - "{error}➥ Click to roll back"
+      - "{error}» Click to roll back"
       - "{letters_black}You will be asked to confirm."
-      - ""
     actions:
       - "exyliaeconomy:ledger_admin_rollback %ledger_owner% %entry_id% %currency_id%"

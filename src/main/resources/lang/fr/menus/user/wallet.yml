@@ -7,7 +7,7 @@
 # Values: %wallet_owner% %wallet_currencies%
 # Each currency: %currency% %currency_icon% %currency_balance% %currency_kind%
 
-menu-version: 1
+menu-version: 2
 
 title: "{primary}&lPORTEFEUILLE {letters_black}» {highlight}%wallet_owner% {muted}%current_page%/%total_pages%"
 size: 54
@@ -28,9 +28,7 @@ filler:
     material: LIGHT_GRAY_STAINED_GLASS_PANE
     name: "{muted}Plus aucune monnaie"
     lore:
-      - ""
-      - " {letters_black}▎ {letters}Les monnaies que tu peux posséder apparaissent ici."
-      - ""
+      - "{letters_black}Les monnaies que tu peux posséder apparaissent ici."
     hide_tooltip: false
 
 pagination:
@@ -38,18 +36,16 @@ pagination:
 
   item_template:
     material: "%currency_icon%"
-    name: "{primary}&l%currency%"
+    name: "{letters}Portefeuille {letters_black}▸ <gradient:{info}:{info_light}>%currency%</gradient>"
     lore:
+      - "{letters_black}Monnaie"
       - ""
-      - "{secondary}Informations :"
-      - " {letters_black}▎ {letters}Type {letters_black}» {info}%currency_kind%"
+      - "{info}✦ État"
+      - "  {letters_black}· {info}{icon:tag} {letters}Type{letters_black}: {info}%currency_kind%"
+      - "  {letters_black}· {success}{icon:gold} {letters}Solde{letters_black}: {success}%currency_balance%"
       - ""
-      - "{secondary}État :"
-      - " {letters_black}▎ {letters}Solde {letters_black}» {success}%currency_balance%"
-      - ""
-      - "{warning}➥ Clic gauche pour l'historique"
-      - "{warning}➥ Clic droit pour le top"
-      - ""
+      - "{info}» Clic gauche {letters_black}· {letters}historique"
+      - "{info}» Clic droit {letters_black}· {letters}classement"
     actions:
       - "left: exyliaeconomy:economy_history %currency_id% %wallet_owner_id%"
       - "right: exyliaeconomy:economy_top %currency_id%"
@@ -59,22 +55,18 @@ pagination:
       slot: 48
       sound: "minecraft:item.book.page_turn|1.0|1.0"
       material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0="
-      name: "{error}&l← PAGE PRÉCÉDENTE"
+      name: "{letters}Page {letters_black}▸ <gradient:{error}:{error_light}>← Précédente</gradient>"
       lore:
-        - ""
-        - " {letters_black}▎ {letters}Page {info}%current_page%{letters_black}/{info}%total_pages%"
-        - ""
+        - "  {letters_black}· {letters}Page{letters_black}: {info}%current_page%{letters_black}/{info}%total_pages%"
       actions:
         - "previous_page"
     next:
       slot: 50
       sound: "minecraft:item.book.page_turn|1.0|1.0"
       material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0="
-      name: "{success}&lPAGE SUIVANTE →"
+      name: "{letters}Page {letters_black}▸ <gradient:{success}:{success_light}>Suivante →</gradient>"
       lore:
-        - ""
-        - " {letters_black}▎ {letters}Page {info}%current_page%{letters_black}/{info}%total_pages%"
-        - ""
+        - "  {letters_black}· {letters}Page{letters_black}: {info}%current_page%{letters_black}/{info}%total_pages%"
       actions:
         - "next_page"
 
@@ -82,13 +74,14 @@ items:
   owner:
     slot: 49
     material: "playerhead-%wallet_owner%"
-    name: "{primary}&l%wallet_owner%"
+    name: "<gradient:{info}:{info_light}>%wallet_owner%</gradient>"
     lore:
+      - "{letters_black}Portefeuille"
       - ""
-      - "{secondary}Informations :"
-      - " {letters_black}▎ {letters}Tout ce que contient ce portefeuille,"
-      - " {letters_black}▎ {letters}sur ce serveur et sur tout le réseau."
+      - "{info}✎ Informations"
+      - " {letters}Tout ce que contient ce"
+      - " {letters}portefeuille, sur ce serveur"
+      - " {letters}et sur tout le réseau."
       - ""
-      - "{secondary}État :"
-      - " {letters_black}▎ {letters}Monnaies {letters_black}» {info}%wallet_currencies%"
-      - ""
+      - "{info}✦ État"
+      - "  {letters_black}· {info}{icon:iron} {letters}Monnaies{letters_black}: {info}%wallet_currencies%"

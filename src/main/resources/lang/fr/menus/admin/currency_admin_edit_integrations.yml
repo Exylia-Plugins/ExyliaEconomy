@@ -25,55 +25,57 @@ items:
   leaderboard:
     slot: 11
     material: "%leaderboard_material%"
-    name: "{primary}&lTOP"
+    name: "{letters}Monnaie {letters_black}▸ <gradient:{primary}:{secondary_light}>Top</gradient>"
     lore:
+      - "{letters_black}Réglage de la monnaie"
       - ""
-      - "{secondary}Informations :"
-      - " {letters_black}▎ {letters}Si son top"
-      - " {letters_black}▎ {letters}et ses placeholders."
+      - "{primary}✎ Informations"
+      - " {letters}Si son top et ses placeholders."
       - ""
-      - "{secondary}État :"
-      - " {letters_black}▎ {letters}Actuel {letters_black}» %leaderboard_status%"
+      - "{primary}✦ État"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Actuel{letters_black}: %leaderboard_status%"
       - ""
-      - "{warning}➥ Clique pour basculer"
-      - ""
+      - "{primary}» Clique pour basculer"
     actions:
       - "exyliaeconomy:currency_admin_toggle %currency_id% leaderboard"
 
   networked:
     slot: 13
     material: "%networked_material%"
-    name: "{primary}&lPARTAGÉE ENTRE SERVEURS"
+    name: "{letters}Monnaie {letters_black}▸ <gradient:{primary}:{secondary_light}>Partagée entre serveurs</gradient>"
     lore:
+      - "{letters_black}Réglage de la monnaie"
       - ""
-      - "{secondary}Informations :"
-      - " {letters_black}▎ {letters}Activé : un solde sur tout le réseau ;"
-      - " {letters_black}▎ {letters}désactivé : un par serveur. Chacun"
-      - " {letters_black}▎ {letters}est conservé séparément ; au retour, il est restauré."
+      - "{primary}✎ Informations"
+      - " {letters}Activé : un solde sur tout"
+      - " {letters}le réseau ; désactivé : un"
+      - " {letters}par serveur. Chacun est"
+      - " {letters}conservé séparément ; au"
+      - " {letters}retour, il est restauré."
       - ""
-      - "{secondary}État :"
-      - " {letters_black}▎ {letters}Actuel {letters_black}» %networked_status%"
+      - "{primary}✦ État"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Actuel{letters_black}: %networked_status%"
       - ""
-      - "{warning}➥ Clique pour basculer"
-      - ""
+      - "{primary}» Clique pour basculer"
     actions:
       - "exyliaeconomy:currency_admin_toggle %currency_id% networked"
 
   vault:
     slot: 15
     material: "%vault_material%"
-    name: "{primary}&lÉCONOMIE VAULT"
+    name: "{letters}Monnaie {letters_black}▸ <gradient:{primary}:{secondary_light}>Économie vault</gradient>"
     lore:
+      - "{letters_black}Réglage de la monnaie"
       - ""
-      - "{secondary}Informations :"
-      - " {letters_black}▎ {letters}La publie comme l'économie Vault"
-      - " {letters_black}▎ {letters}du serveur, en remplaçant l'ancienne."
+      - "{primary}✎ Informations"
+      - " {letters}La publie comme l'économie"
+      - " {letters}Vault du serveur, en"
+      - " {letters}remplaçant l'ancienne."
       - ""
-      - "{secondary}État :"
-      - " {letters_black}▎ {letters}Actuel {letters_black}» %vault_status%"
+      - "{primary}✦ État"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Actuel{letters_black}: %vault_status%"
       - ""
-      - "{warning}➥ Clique pour basculer"
-      - ""
+      - "{primary}» Clique pour basculer"
     actions:
       - "exyliaeconomy:currency_admin_toggle %currency_id% vault"
 
@@ -81,12 +83,8 @@ items:
     slot: 31
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
-    name: "{error}&lRETOUR"
+    name: "{letters}Retour {letters_black}▸ <gradient:{error}:{error_light}>Monnaie</gradient>"
     lore:
-      - ""
-      - " {letters_black}▎ {letters}Retourne au résumé de la monnaie."
-      - ""
-      - "{warning}➥ Clique pour revenir"
-      - ""
+      - "{error}» Clique pour revenir"
     actions:
       - "exyliaeconomy:currency_admin_page %currency_id% hub"

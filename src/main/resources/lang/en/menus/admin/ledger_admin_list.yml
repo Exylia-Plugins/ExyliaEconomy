@@ -24,10 +24,8 @@ filler:
     material: LIGHT_GRAY_STAINED_GLASS_PANE
     name: "{muted}No more movements"
     lore:
-      - ""
-      - " {letters_black}▎ {letters}Only stored currencies with the"
-      - " {letters_black}▎ {letters}ledger on keep their movements."
-      - ""
+      - "{letters_black}Only stored currencies with the"
+      - "{letters_black}ledger on keep their movements."
     hide_tooltip: false
 
 pagination:
@@ -35,20 +33,17 @@ pagination:
 
   item_template:
     material: "%entry_icon%"
-    name: "{primary}&lENTRY #%entry_id% &8[%entry_delta%&8]"
+    name: "{letters}Ledger {letters_black}▸ <gradient:{info}:{info_light}>Entry #%entry_id%</gradient> &8[%entry_delta%&8]"
     lore:
+      - "{letters_black}Ledger entry"
       - ""
-      - "{secondary}Information:"
-      - " {letters_black}▎ {letters}Amount {letters_black}» %entry_delta%"
-      - " {letters_black}▎ {letters}Currency {letters_black}» {highlight}%currency%"
-      - " {letters_black}▎ {letters}Reason {letters_black}» {highlight}%entry_reason%"
-      - " {letters_black}▎ {letters}When {letters_black}» {info}%entry_when% ⌚"
+      - "{info}✦ Status"
+      - "  {letters_black}· {highlight}{icon:coin} {letters}Currency{letters_black}: {highlight}%currency%"
+      - "  {letters_black}· {highlight}{icon:book} {letters}Reason{letters_black}: {highlight}%entry_reason%"
+      - "  {letters_black}· {info}{icon:clock} {letters}When{letters_black}: {info}%entry_when%"
+      - "  {letters_black}· {info}{icon:gold} {letters}Balance after{letters_black}: {info}%entry_balance%"
       - ""
-      - "{secondary}Status:"
-      - " {letters_black}▎ {letters}Balance after {letters_black}» {info}%entry_balance%"
-      - ""
-      - "{warning}➥ Click to open"
-      - ""
+      - "{info}» Click to open"
     actions:
       - "exyliaeconomy:ledger_admin_entry %entry_id% %currency_id%"
 
@@ -57,22 +52,18 @@ pagination:
       slot: 48
       sound: "minecraft:item.book.page_turn|1.0|1.0"
       material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0="
-      name: "{error}&l← PREVIOUS PAGE"
+      name: "{letters}Page {letters_black}▸ <gradient:{error}:{error_light}>← Previous</gradient>"
       lore:
-        - ""
-        - " {letters_black}▎ {letters}Page {info}%current_page%{letters_black}/{info}%total_pages%"
-        - ""
+        - "  {letters_black}· {letters}Page{letters_black}: {info}%current_page%{letters_black}/{info}%total_pages%"
       actions:
         - "previous_page"
     next:
       slot: 50
       sound: "minecraft:item.book.page_turn|1.0|1.0"
       material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0="
-      name: "{success}&lNEXT PAGE →"
+      name: "{letters}Page {letters_black}▸ <gradient:{success}:{success_light}>Next →</gradient>"
       lore:
-        - ""
-        - " {letters_black}▎ {letters}Page {info}%current_page%{letters_black}/{info}%total_pages%"
-        - ""
+        - "  {letters_black}· {letters}Page{letters_black}: {info}%current_page%{letters_black}/{info}%total_pages%"
       actions:
         - "next_page"
 
@@ -80,14 +71,16 @@ items:
   currency:
     slot: 49
     material: "%currency_icon%"
-    name: "{primary}&l%currency%"
+    name: "<gradient:{info}:{info_light}>%currency%</gradient>"
     lore:
+      - "{letters_black}Player ledger"
       - ""
-      - "{secondary}Information:"
-      - " {letters_black}▎ {letters}Newest movements of {highlight}%ledger_owner%{letters}."
-      - " {letters_black}▎ {letters}Another currency{letters_black}: {highlight}/eadmin log"
-      - " {letters_black}▎ {highlight}%ledger_owner% <currency>"
+      - "{info}✎ Information"
+      - " {letters}Newest movements of"
+      - " {highlight}%ledger_owner%{letters}."
+      - " {letters}Another currency{letters_black}:"
+      - " {highlight}/eadmin log"
+      - " {highlight}%ledger_owner% <currency>"
       - ""
-      - "{secondary}Status:"
-      - " {letters_black}▎ {letters}Movements {letters_black}» {info}%ledger_size%"
-      - ""
+      - "{info}✦ Status"
+      - "  {letters_black}· {info}{icon:iron} {letters}Movements{letters_black}: {info}%ledger_size%"

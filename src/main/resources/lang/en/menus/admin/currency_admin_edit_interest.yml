@@ -25,38 +25,38 @@ items:
   interest:
     slot: 12
     material: "EXPERIENCE_BOTTLE"
-    name: "{primary}&lINTEREST"
+    name: "{letters}Currency {letters_black}▸ <gradient:{primary}:{secondary_light}>Interest</gradient>"
     lore:
+      - "{letters_black}Currency setting"
       - ""
-      - "{secondary}Information:"
-      - " {letters_black}▎ {letters}Paid to players with the"
-      - " {letters_black}▎ {letters}interest permission."
+      - "{primary}✎ Information"
+      - " {letters}Paid to players with the"
+      - " {letters}interest permission."
       - ""
-      - "{secondary}Status:"
-      - " {letters_black}▎ {letters}Rate {letters_black}» {info}%currency_interest_rate%"
-      - " {letters_black}▎ {letters}Every {letters_black}» {info}%currency_interest_interval% ⌚"
-      - " {letters_black}▎ {letters}Most per payout {letters_black}» {info}%currency_interest_max%"
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:gold} {letters}Rate{letters_black}: {info}%currency_interest_rate%"
+      - "  {letters_black}· {info}{icon:clock} {letters}Every{letters_black}: {info}%currency_interest_interval%"
+      - "  {letters_black}· {info}{icon:hopper} {letters}Most per payout{letters_black}: {info}%currency_interest_max%"
       - ""
-      - "{warning}➥ Click to edit"
-      - ""
+      - "{primary}» Click to edit"
     actions:
       - "exyliaeconomy:currency_admin_interest %currency_id%"
 
   interest-offline:
     slot: 14
     material: "%interest_offline_material%"
-    name: "{primary}&lINTEREST WHILE OFFLINE"
+    name: "{letters}Currency {letters_black}▸ <gradient:{primary}:{secondary_light}>Interest while offline</gradient>"
     lore:
+      - "{letters_black}Currency setting"
       - ""
-      - "{secondary}Information:"
-      - " {letters_black}▎ {letters}Also pays players who are offline,"
-      - " {letters_black}▎ {letters}without checking their permission."
+      - "{primary}✎ Information"
+      - " {letters}Also pays players who are offline,"
+      - " {letters}without checking their permission."
       - ""
-      - "{secondary}Status:"
-      - " {letters_black}▎ {letters}Current {letters_black}» %interest_offline_status%"
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Current{letters_black}: %interest_offline_status%"
       - ""
-      - "{warning}➥ Click to toggle"
-      - ""
+      - "{primary}» Click to toggle"
     actions:
       - "exyliaeconomy:currency_admin_toggle %currency_id% interest_offline"
 
@@ -64,12 +64,8 @@ items:
     slot: 31
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
-    name: "{error}&lBACK"
+    name: "{letters}Back {letters_black}▸ <gradient:{error}:{error_light}>Currency</gradient>"
     lore:
-      - ""
-      - " {letters_black}▎ {letters}Returns to the currency overview."
-      - ""
-      - "{warning}➥ Click to go back"
-      - ""
+      - "{error}» Click to go back"
     actions:
       - "exyliaeconomy:currency_admin_page %currency_id% hub"

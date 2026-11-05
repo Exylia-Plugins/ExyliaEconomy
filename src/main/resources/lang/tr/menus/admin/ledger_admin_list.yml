@@ -24,10 +24,8 @@ filler:
     material: LIGHT_GRAY_STAINED_GLASS_PANE
     name: "{muted}Başka hareket yok"
     lore:
-      - ""
-      - " {letters_black}▎ {letters}Yalnızca kaydı açık olan saklanan"
-      - " {letters_black}▎ {letters}para birimleri hareketleri tutar."
-      - ""
+      - "{letters_black}Yalnızca kaydı açık olan saklanan"
+      - "{letters_black}para birimleri hareketleri tutar."
     hide_tooltip: false
 
 pagination:
@@ -35,20 +33,17 @@ pagination:
 
   item_template:
     material: "%entry_icon%"
-    name: "{primary}&lKAYIT #%entry_id% &8[%entry_delta%&8]"
+    name: "{letters}Kayıt defteri {letters_black}▸ <gradient:{info}:{info_light}>Kayıt #%entry_id%</gradient> &8[%entry_delta%&8]"
     lore:
+      - "{letters_black}Kayıt girdisi"
       - ""
-      - "{secondary}Bilgi:"
-      - " {letters_black}▎ {letters}Miktar {letters_black}» %entry_delta%"
-      - " {letters_black}▎ {letters}Para birimi {letters_black}» {highlight}%currency%"
-      - " {letters_black}▎ {letters}Sebep {letters_black}» {highlight}%entry_reason%"
-      - " {letters_black}▎ {letters}Ne zaman {letters_black}» {info}%entry_when% ⌚"
+      - "{info}✦ Durum"
+      - "  {letters_black}· {highlight}{icon:coin} {letters}Para birimi{letters_black}: {highlight}%currency%"
+      - "  {letters_black}· {highlight}{icon:book} {letters}Sebep{letters_black}: {highlight}%entry_reason%"
+      - "  {letters_black}· {info}{icon:clock} {letters}Ne zaman{letters_black}: {info}%entry_when%"
+      - "  {letters_black}· {info}{icon:gold} {letters}Sonraki bakiye{letters_black}: {info}%entry_balance%"
       - ""
-      - "{secondary}Durum:"
-      - " {letters_black}▎ {letters}Sonraki bakiye {letters_black}» {info}%entry_balance%"
-      - ""
-      - "{warning}➥ Açmak için tıkla"
-      - ""
+      - "{info}» Açmak için tıkla"
     actions:
       - "exyliaeconomy:ledger_admin_entry %entry_id% %currency_id%"
 
@@ -57,22 +52,18 @@ pagination:
       slot: 48
       sound: "minecraft:item.book.page_turn|1.0|1.0"
       material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0="
-      name: "{error}&l← ÖNCEKİ SAYFA"
+      name: "{letters}Sayfa {letters_black}▸ <gradient:{error}:{error_light}>← Önceki</gradient>"
       lore:
-        - ""
-        - " {letters_black}▎ {letters}Sayfa {info}%current_page%{letters_black}/{info}%total_pages%"
-        - ""
+        - "  {letters_black}· {letters}Sayfa{letters_black}: {info}%current_page%{letters_black}/{info}%total_pages%"
       actions:
         - "previous_page"
     next:
       slot: 50
       sound: "minecraft:item.book.page_turn|1.0|1.0"
       material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0="
-      name: "{success}&lSONRAKİ SAYFA →"
+      name: "{letters}Sayfa {letters_black}▸ <gradient:{success}:{success_light}>Sonraki →</gradient>"
       lore:
-        - ""
-        - " {letters_black}▎ {letters}Sayfa {info}%current_page%{letters_black}/{info}%total_pages%"
-        - ""
+        - "  {letters_black}· {letters}Sayfa{letters_black}: {info}%current_page%{letters_black}/{info}%total_pages%"
       actions:
         - "next_page"
 
@@ -80,14 +71,16 @@ items:
   currency:
     slot: 49
     material: "%currency_icon%"
-    name: "{primary}&l%currency%"
+    name: "<gradient:{info}:{info_light}>%currency%</gradient>"
     lore:
+      - "{letters_black}Oyuncu kayıtları"
       - ""
-      - "{secondary}Bilgi:"
-      - " {letters_black}▎ {letters}{highlight}%ledger_owner% {letters}için son hareketler."
-      - " {letters_black}▎ {letters}Başka para birimi{letters_black}: {highlight}/eadmin log"
-      - " {letters_black}▎ {highlight}%ledger_owner% <para birimi>"
+      - "{info}✎ Bilgi"
+      - " {highlight}%ledger_owner% {letters}için"
+      - " {letters}son hareketler."
+      - " {letters}Başka para birimi{letters_black}:"
+      - " {highlight}/eadmin log"
+      - " {highlight}%ledger_owner% <para birimi>"
       - ""
-      - "{secondary}Durum:"
-      - " {letters_black}▎ {letters}Hareketler {letters_black}» {info}%ledger_size%"
-      - ""
+      - "{info}✦ Durum"
+      - "  {letters_black}· {info}{icon:iron} {letters}Hareketler{letters_black}: {info}%ledger_size%"

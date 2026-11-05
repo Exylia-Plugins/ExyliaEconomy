@@ -25,156 +25,159 @@ items:
   experience-levels:
     slot: 11
     material: "%experience_levels_material%"
-    name: "{primary}&lTECRÜBE SEVİYELERİ"
+    name: "{letters}Ekonomi {letters_black}▸ <gradient:{primary}:{secondary_light}>Tecrübe seviyeleri</gradient>"
     lore:
+      - "{letters_black}Ekonomi ayarı"
       - ""
-      - "{secondary}Bilgi:"
-      - " {letters_black}▎ {letters}xp_levels'ı marketlerin fiyat"
-      - " {letters_black}▎ {letters}verebileceği bir para birimi yapar."
+      - "{primary}✎ Bilgi"
+      - " {letters}xp_levels'ı marketlerin"
+      - " {letters}fiyat verebileceği bir"
+      - " {letters}para birimi yapar."
       - ""
-      - "{secondary}Durum:"
-      - " {letters_black}▎ {letters}Şu an {letters_black}» %experience_levels_status%"
+      - "{primary}✦ Durum"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Şu an{letters_black}: %experience_levels_status%"
       - ""
-      - "{warning}➥ Değiştirmek için tıkla"
-      - ""
+      - "{primary}» Değiştirmek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_settings_toggle experience_levels"
 
   experience-points:
     slot: 12
     material: "%experience_points_material%"
-    name: "{primary}&lTECRÜBE PUANLARI"
+    name: "{letters}Ekonomi {letters_black}▸ <gradient:{primary}:{secondary_light}>Tecrübe puanları</gradient>"
     lore:
+      - "{letters_black}Ekonomi ayarı"
       - ""
-      - "{secondary}Bilgi:"
-      - " {letters_black}▎ {letters}xp_points'i marketlerin fiyat"
-      - " {letters_black}▎ {letters}verebileceği bir para birimi yapar."
+      - "{primary}✎ Bilgi"
+      - " {letters}xp_points'i marketlerin"
+      - " {letters}fiyat verebileceği bir"
+      - " {letters}para birimi yapar."
       - ""
-      - "{secondary}Durum:"
-      - " {letters_black}▎ {letters}Şu an {letters_black}» %experience_points_status%"
+      - "{primary}✦ Durum"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Şu an{letters_black}: %experience_points_status%"
       - ""
-      - "{warning}➥ Değiştirmek için tıkla"
-      - ""
+      - "{primary}» Değiştirmek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_settings_toggle experience_points"
 
   vault-provide:
     slot: 14
     material: "GOLD_BLOCK"
-    name: "{primary}&lVAULT EKONOMİSİ"
+    name: "{letters}Ekonomi {letters_black}▸ <gradient:{primary}:{secondary_light}>Vault ekonomisi</gradient>"
     lore:
+      - "{letters_black}Ekonomi ayarı"
       - ""
-      - "{secondary}Bilgi:"
-      - " {letters_black}▎ {letters}Vault'un sunduğu depolanan para birimi."
-      - " {letters_black}▎ {letters}O para biriminin ekranından seç."
+      - "{primary}✎ Bilgi"
+      - " {letters}Vault'un sunduğu depolanan"
+      - " {letters}para birimi. O para"
+      - " {letters}biriminin ekranından seç."
       - ""
-      - "{secondary}Durum:"
-      - " {letters_black}▎ {letters}Yayınlanan {letters_black}» {highlight}%vault_provide%"
-      - ""
+      - "{primary}✦ Durum"
+      - "  {letters_black}· {highlight}{icon:tag} {letters}Yayınlanan{letters_black}: {highlight}%vault_provide%"
 
   vault-force:
     slot: 15
     material: "%vault_force_material%"
-    name: "{primary}&lVAULT ÖNCELİĞİ"
+    name: "{letters}Ekonomi {letters_black}▸ <gradient:{primary}:{secondary_light}>Vault önceliği</gradient>"
     lore:
+      - "{letters_black}Ekonomi ayarı"
       - ""
-      - "{secondary}Bilgi:"
-      - " {letters_black}▎ {letters}Başka bir ekonomi eklentisi kurulu"
-      - " {letters_black}▎ {letters}olsa bile Vault'a hizmet verir."
+      - "{primary}✎ Bilgi"
+      - " {letters}Başka bir ekonomi eklentisi kurulu"
+      - " {letters}olsa bile Vault'a hizmet verir."
       - ""
-      - "{secondary}Durum:"
-      - " {letters_black}▎ {letters}Şu an {letters_black}» %vault_force_status%"
+      - "{primary}✦ Durum"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Şu an{letters_black}: %vault_force_status%"
       - ""
-      - "{warning}➥ Değiştirmek için tıkla"
-      - ""
+      - "{primary}» Değiştirmek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_settings_toggle vault_force"
 
   ledger:
     slot: 20
     material: "%ledger_material%"
-    name: "{primary}&lKAYIT DEFTERİ"
+    name: "{letters}Ekonomi {letters_black}▸ <gradient:{primary}:{secondary_light}>Kayıt defteri</gradient>"
     lore:
+      - "{letters_black}Ekonomi ayarı"
       - ""
-      - "{secondary}Bilgi:"
-      - " {letters_black}▎ {letters}Geçmiş ekranı için depolanan her"
-      - " {letters_black}▎ {letters}işlemi kaydeder."
+      - "{primary}✎ Bilgi"
+      - " {letters}Geçmiş ekranı için depolanan"
+      - " {letters}her işlemi kaydeder."
       - ""
-      - "{secondary}Durum:"
-      - " {letters_black}▎ {letters}Şu an {letters_black}» %ledger_status%"
+      - "{primary}✦ Durum"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Şu an{letters_black}: %ledger_status%"
       - ""
-      - "{warning}➥ Değiştirmek için tıkla"
-      - ""
+      - "{primary}» Değiştirmek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_settings_toggle ledger"
 
   ledger-days:
     slot: 21
     material: "CLOCK"
-    name: "{primary}&lKAYIT SAKLAMA SÜRESİ"
+    name: "{letters}Ekonomi {letters_black}▸ <gradient:{primary}:{secondary_light}>Kayıt saklama süresi</gradient>"
     lore:
+      - "{letters_black}Ekonomi ayarı"
       - ""
-      - "{secondary}Bilgi:"
-      - " {letters_black}▎ {letters}Eski satırlar her saat silinir."
+      - "{primary}✎ Bilgi"
+      - " {letters}Eski satırlar her saat silinir."
       - ""
-      - "{secondary}Durum:"
-      - " {letters_black}▎ {letters}Saklama {letters_black}» {info}%ledger_days%"
+      - "{primary}✦ Durum"
+      - "  {letters_black}· {info}{icon:clock} {letters}Saklama{letters_black}: {info}%ledger_days%"
       - ""
-      - "{warning}➥ Değiştirmek için tıkla"
-      - ""
+      - "{primary}» Değiştirmek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_settings_toggle ledger_days"
 
   offline-pay-notice:
     slot: 22
     material: "%offline_pay_notice_material%"
-    name: "{primary}&lÇEVRİMDIŞI ÖDEME BİLDİRİMİ"
+    name: "{letters}Ekonomi {letters_black}▸ <gradient:{primary}:{secondary_light}>Çevrimdışı ödeme bildirimi</gradient>"
     lore:
+      - "{letters_black}Ekonomi ayarı"
       - ""
-      - "{secondary}Bilgi:"
-      - " {letters_black}▎ {letters}Oyunculara girişte çevrimdışıyken"
-      - " {letters_black}▎ {letters}aldıkları ödemeleri bildirir."
+      - "{primary}✎ Bilgi"
+      - " {letters}Oyunculara girişte çevrimdışıyken"
+      - " {letters}aldıkları ödemeleri bildirir."
       - ""
-      - "{secondary}Durum:"
-      - " {letters_black}▎ {letters}Şu an {letters_black}» %offline_pay_notice_status%"
+      - "{primary}✦ Durum"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Şu an{letters_black}: %offline_pay_notice_status%"
       - ""
-      - "{warning}➥ Değiştirmek için tıkla"
-      - ""
+      - "{primary}» Değiştirmek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_settings_toggle offline_pay_notice"
 
   language:
     slot: 23
     material: "WRITABLE_BOOK"
-    name: "{primary}&lDİL"
+    name: "{letters}Ekonomi {letters_black}▸ <gradient:{primary}:{secondary_light}>Dil</gradient>"
     lore:
+      - "{letters_black}Ekonomi ayarı"
       - ""
-      - "{secondary}Bilgi:"
-      - " {letters_black}▎ {letters}Varsayılan, ExyliaLib dilini izler."
+      - "{primary}✎ Bilgi"
+      - " {letters}Varsayılan, ExyliaLib dilini izler."
       - ""
-      - "{secondary}Durum:"
-      - " {letters_black}▎ {letters}Şu an {letters_black}» {highlight}%language%"
+      - "{primary}✦ Durum"
+      - "  {letters_black}· {highlight}{icon:tag} {letters}Şu an{letters_black}: {highlight}%language%"
       - ""
-      - "{warning}➥ Değiştirmek için tıkla"
-      - ""
+      - "{primary}» Değiştirmek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_settings_toggle language"
 
   debug:
     slot: 24
     material: "%debug_material%"
-    name: "{primary}&lHATA AYIKLAMA"
+    name: "{letters}Ekonomi {letters_black}▸ <gradient:{primary}:{secondary_light}>Hata ayıklama</gradient>"
     lore:
+      - "{letters_black}Ekonomi ayarı"
       - ""
-      - "{secondary}Bilgi:"
-      - " {letters_black}▎ {letters}Eklentinin ne yaptığını konsolda"
-      - " {letters_black}▎ {letters}açıklar."
+      - "{primary}✎ Bilgi"
+      - " {letters}Eklentinin ne yaptığını"
+      - " {letters}konsolda açıklar."
       - ""
-      - "{secondary}Durum:"
-      - " {letters_black}▎ {letters}Şu an {letters_black}» %debug_status%"
+      - "{primary}✦ Durum"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Şu an{letters_black}: %debug_status%"
       - ""
-      - "{warning}➥ Değiştirmek için tıkla"
-      - ""
+      - "{primary}» Değiştirmek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_settings_toggle debug"
 
@@ -182,12 +185,8 @@ items:
     slot: 40
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
-    name: "{error}&lGERİ"
+    name: "{letters}Geri {letters_black}▸ <gradient:{error}:{error_light}>Para birimleri</gradient>"
     lore:
-      - ""
-      - " {letters_black}▎ {letters}Para birimi listesine döner."
-      - ""
-      - "{warning}➥ Geri dönmek için tıkla"
-      - ""
+      - "{error}» Geri dönmek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_open_list"

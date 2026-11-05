@@ -25,36 +25,37 @@ items:
   exchangeable:
     slot: 12
     material: "%exchangeable_material%"
-    name: "{primary}&lCÂMBIO"
+    name: "{letters}Moeda {letters_black}▸ <gradient:{primary}:{secondary_light}>Câmbio</gradient>"
     lore:
+      - "{letters_black}Ajuste da moeda"
       - ""
-      - "{secondary}Informação:"
-      - " {letters_black}▎ {letters}Se pode ser trocada pelas suas taxas."
+      - "{primary}✎ Informação"
+      - " {letters}Se pode ser trocada"
+      - " {letters}pelas suas taxas."
       - ""
-      - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Atual {letters_black}» %exchangeable_status%"
+      - "{primary}✦ Estado"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Atual{letters_black}: %exchangeable_status%"
       - ""
-      - "{warning}➥ Clique para alternar"
-      - ""
+      - "{primary}» Clique para alternar"
     actions:
       - "exyliaeconomy:currency_admin_toggle %currency_id% exchangeable"
 
   rates:
     slot: 14
     material: "SUNFLOWER"
-    name: "{primary}&lTAXAS DE CÂMBIO"
+    name: "{letters}Moeda {letters_black}▸ <gradient:{primary}:{secondary_light}>Taxas de câmbio</gradient>"
     lore:
+      - "{letters_black}Ajuste da moeda"
       - ""
-      - "{secondary}Informação:"
-      - " {letters_black}▎ {letters}shards=0.01: 1 desta vale"
-      - " {letters_black}▎ {letters}0.01 shards. Só é usada"
-      - " {letters_black}▎ {letters}com o câmbio ativo."
+      - "{primary}✎ Informação"
+      - " {letters}shards=0.01: 1 desta vale"
+      - " {letters}0.01 shards. Só é usada"
+      - " {letters}com o câmbio ativo."
       - ""
-      - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Taxas {letters_black}» {info}%currency_rates%"
+      - "{primary}✦ Estado"
+      - "  {letters_black}· {info}{icon:emerald} {letters}Taxas{letters_black}: {info}%currency_rates%"
       - ""
-      - "{warning}➥ Clique para editar"
-      - ""
+      - "{primary}» Clique para editar"
     actions:
       - "exyliaeconomy:currency_admin_rates %currency_id%"
 
@@ -62,12 +63,8 @@ items:
     slot: 31
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
-    name: "{error}&lVOLTAR"
+    name: "{letters}Voltar {letters_black}▸ <gradient:{error}:{error_light}>Moeda</gradient>"
     lore:
-      - ""
-      - " {letters_black}▎ {letters}Volta para o resumo da moeda."
-      - ""
-      - "{warning}➥ Clique para voltar"
-      - ""
+      - "{error}» Clique para voltar"
     actions:
       - "exyliaeconomy:currency_admin_page %currency_id% hub"

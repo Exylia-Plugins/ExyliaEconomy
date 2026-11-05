@@ -25,51 +25,54 @@ items:
   transferable:
     slot: 11
     material: "%transferable_material%"
-    name: "{primary}&lTRANSFERENCIAS"
+    name: "{letters}Moneda {letters_black}▸ <gradient:{primary}:{secondary_light}>Transferencias</gradient>"
     lore:
+      - "{letters_black}Ajuste de la moneda"
       - ""
-      - "{secondary}Información:"
-      - " {letters_black}▎ {letters}Si los jugadores pueden pagarse entre sí."
+      - "{primary}✎ Información"
+      - " {letters}Si los jugadores pueden"
+      - " {letters}pagarse entre sí."
       - ""
-      - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Actual {letters_black}» %transferable_status%"
+      - "{primary}✦ Estado"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Actual{letters_black}: %transferable_status%"
       - ""
-      - "{warning}➥ Clic para alternar"
-      - ""
+      - "{primary}» Clic para alternar"
     actions:
       - "exyliaeconomy:currency_admin_toggle %currency_id% transferable"
 
   pay-confirm:
     slot: 13
     material: "PAPER"
-    name: "{primary}&lCONFIRMACIÓN DE PAGO"
+    name: "{letters}Moneda {letters_black}▸ <gradient:{primary}:{secondary_light}>Confirmación de pago</gradient>"
     lore:
+      - "{letters_black}Ajuste de la moneda"
       - ""
-      - "{secondary}Información:"
-      - " {letters_black}▎ {letters}Un /pay por encima pide confirmación."
+      - "{primary}✎ Información"
+      - " {letters}Un /pay por encima"
+      - " {letters}pide confirmación."
       - ""
-      - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Pregunta desde {letters_black}» {info}%currency_pay_confirm%"
+      - "{primary}✦ Estado"
+      - "  {letters_black}· {info}{icon:hopper} {letters}Pregunta desde{letters_black}: {info}%currency_pay_confirm%"
       - ""
-      - "{warning}➥ Clic para editar"
-      - ""
+      - "{primary}» Clic para editar"
     actions:
       - "exyliaeconomy:currency_admin_pay_confirm %currency_id%"
 
   banknotes:
     slot: 15
     material: "%banknotes_material%"
-    name: "{primary}&lBILLETES"
+    name: "{letters}Moneda {letters_black}▸ <gradient:{primary}:{secondary_light}>Billetes</gradient>"
     lore:
+      - "{letters_black}Ajuste de la moneda"
       - ""
-      - "{secondary}Información:"
-      - " {letters_black}▎ {letters}Si /withdraw puede emitirla como billete."
+      - "{primary}✎ Información"
+      - " {letters}Si /withdraw puede"
+      - " {letters}emitirla como billete."
       - ""
-      - "{secondary}Estado:"
-      - " {letters_black}▎ {letters}Actual {letters_black}» %banknotes_status%"
+      - "{primary}✦ Estado"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Actual{letters_black}: %banknotes_status%"
       - ""
-      - "{warning}➥ Clic para alternar"
-      - ""
+      - "{primary}» Clic para alternar"
     actions:
       - "exyliaeconomy:currency_admin_toggle %currency_id% banknotes"
 
@@ -77,12 +80,8 @@ items:
     slot: 31
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
-    name: "{error}&lVOLVER"
+    name: "{letters}Volver {letters_black}▸ <gradient:{error}:{error_light}>Moneda</gradient>"
     lore:
-      - ""
-      - " {letters_black}▎ {letters}Vuelve al resumen de la moneda."
-      - ""
-      - "{warning}➥ Clic para volver"
-      - ""
+      - "{error}» Clic para volver"
     actions:
       - "exyliaeconomy:currency_admin_page %currency_id% hub"

@@ -25,73 +25,70 @@ items:
   header:
     slot: 4
     material: "%entry_icon%"
-    name: "{primary}&lKAYIT #%entry_id% &8[%entry_delta%&8]"
+    name: "<gradient:{info}:{info_light}>Kayıt #%entry_id%</gradient> &8[%entry_delta%&8]"
     lore:
+      - "{letters_black}Kayıt girdisi"
       - ""
-      - "{secondary}Bilgi:"
-      - " {letters_black}▎ {letters}Oyuncu {letters_black}» {highlight}%ledger_owner%"
-      - " {letters_black}▎ {letters}Para birimi {letters_black}» {highlight}%currency%"
-      - ""
+      - "{info}✦ Durum"
+      - "  {letters_black}· {highlight}{icon:tag} {letters}Oyuncu{letters_black}: {highlight}%ledger_owner%"
+      - "  {letters_black}· {highlight}{icon:coin} {letters}Para birimi{letters_black}: {highlight}%currency%"
 
   amount:
     slot: 11
     material: GOLD_NUGGET
-    name: "{primary}&lMİKTAR"
+    name: "{letters}Kayıt {letters_black}▸ <gradient:{info}:{info_light}>Miktar</gradient>"
     lore:
+      - "{letters_black}Kayıt ayrıntısı"
       - ""
-      - "{secondary}Durum:"
-      - " {letters_black}▎ {letters}Hareket {letters_black}» %entry_delta%"
-      - " {letters_black}▎ {letters}Sonraki bakiye {letters_black}» {info}%entry_balance%"
-      - ""
+      - "{info}✦ Durum"
+      - "  {letters_black}· {info}{icon:gold} {letters}Hareket{letters_black}: %entry_delta%"
+      - "  {letters_black}· {info}{icon:gold} {letters}Sonraki bakiye{letters_black}: {info}%entry_balance%"
 
   when:
     slot: 13
     material: CLOCK
-    name: "{primary}&lZAMAN"
+    name: "{letters}Kayıt {letters_black}▸ <gradient:{info}:{info_light}>Zaman</gradient>"
     lore:
+      - "{letters_black}Kayıt ayrıntısı"
       - ""
-      - "{secondary}Durum:"
-      - " {letters_black}▎ {letters}Yazıldı {letters_black}» {info}%entry_when% ⌚"
-      - " {letters_black}▎ {letters}Sunucu {letters_black}» {info}%entry_server%"
-      - ""
+      - "{info}✦ Durum"
+      - "  {letters_black}· {info}{icon:clock} {letters}Yazıldı{letters_black}: {info}%entry_when%"
+      - "  {letters_black}· {info}{icon:map} {letters}Sunucu{letters_black}: {info}%entry_server%"
 
   source:
     slot: 15
     material: NAME_TAG
-    name: "{primary}&lKAYNAK"
+    name: "{letters}Kayıt {letters_black}▸ <gradient:{info}:{info_light}>Kaynak</gradient>"
     lore:
+      - "{letters_black}Kayıt ayrıntısı"
       - ""
-      - "{secondary}Durum:"
-      - " {letters_black}▎ {letters}Sebep {letters_black}» {highlight}%entry_reason%"
-      - " {letters_black}▎ {letters}Yapan {letters_black}» {highlight}%entry_initiator%"
-      - ""
+      - "{info}✦ Durum"
+      - "  {letters_black}· {highlight}{icon:book} {letters}Sebep{letters_black}: {highlight}%entry_reason%"
+      - "  {letters_black}· {highlight}{icon:tag} {letters}Yapan{letters_black}: {highlight}%entry_initiator%"
 
   back:
     slot: 22
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
-    name: "{error}&lGERİ"
+    name: "{letters}Geri {letters_black}▸ <gradient:{error}:{error_light}>Kayıt defteri</gradient>"
     lore:
-      - ""
-      - " {letters_black}▎ {letters}Kayda geri döner."
-      - ""
-      - "{warning}➥ Geri dönmek için tıkla"
-      - ""
+      - "{error}» Geri dönmek için tıkla"
     actions:
       - "exyliaeconomy:ledger_admin_list %ledger_owner% %currency_id%"
 
   rollback:
     slot: 26
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUwZmQxMDE5OWU4ZTRmY2RhYmNhZTRmODVjODU5MTgxMjdhN2M1NTUzYWQyMzVmMDFjNTZkMThiYjk0NzBkMyJ9fX0="
-    name: "{error}&lGERİ AL"
+    name: "{letters}Kayıt {letters_black}▸ <gradient:{error}:{error_light}>Geri al</gradient>"
     lore:
+      - "{letters_black}Tehlikeli bölge"
       - ""
-      - " {letters_black}▎ {letters}Bu hareketi bir kez geri alır."
-      - " {letters_black}▎ {letters}Ödemeler, takaslar ve banknotlar"
-      - " {letters_black}▎ {letters}asla geri alınmaz."
+      - "{error}✎ Bilgi"
+      - " {letters}Bu hareketi bir kez geri"
+      - " {letters}alır. Ödemeler, takaslar ve"
+      - " {letters}banknotlar asla geri alınmaz."
       - ""
-      - "{error}➥ Geri almak için tıkla"
+      - "{error}» Geri almak için tıkla"
       - "{letters_black}Onaylaman istenecek."
-      - ""
     actions:
       - "exyliaeconomy:ledger_admin_rollback %ledger_owner% %entry_id% %currency_id%"

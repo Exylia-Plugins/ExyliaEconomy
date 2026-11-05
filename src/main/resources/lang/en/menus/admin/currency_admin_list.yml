@@ -21,9 +21,7 @@ filler:
     material: LIGHT_GRAY_STAINED_GLASS_PANE
     name: "{muted}No more currencies"
     lore:
-      - ""
-      - " {letters_black}▎ {letters}Create one with the button below."
-      - ""
+      - "{letters_black}Create one with the button below."
     hide_tooltip: false
 
 pagination:
@@ -31,20 +29,20 @@ pagination:
 
   item_template:
     material: "%currency_icon%"
-    name: "{primary}&l%currency_name%"
+    name: "{letters}Currency {letters_black}▸ <gradient:{primary}:{secondary_light}>%currency_name%</gradient>"
     lore:
+      - "{letters_black}Currency · %currency_id%"
       - ""
-      - "{secondary}Information:"
-      - " {letters_black}▎ {letters}ID {letters_black}» {info}%currency_id%"
-      - " {letters_black}▎ {letters}Kind {letters_black}» {info}%currency_kind%"
-      - " {letters_black}▎ {letters}Sort order {letters_black}» {info}%currency_sort_order%"
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:tag} {letters}Kind{letters_black}: {info}%currency_kind%"
+      - "  {letters_black}· {info}{icon:iron} {letters}Sort order{letters_black}: {info}%currency_sort_order%"
       - ""
-      - "{secondary}Preview:"
-      - " {letters_black}▎ {letters}Looks like {letters_black}» {letters}%currency_preview%"
+      - "{primary}✦ Preview"
+      - "  {letters_black}· {info}{icon:eye} {letters}Looks like{letters_black}: {letters}%currency_preview%"
       - ""
-      - "{warning}➥ Left-click to edit"
-      - "{error}➥ Right-click to delete"
-      - ""
+      - "{primary}» Left-click {letters_black}· {letters}edit"
+      - "{error}» Right-click {letters_black}· {letters}delete"
+      - "{letters_black}You will be asked to confirm."
     actions:
       - "left: exyliaeconomy:currency_admin_edit %currency_id%"
       - "right: exyliaeconomy:currency_admin_delete %currency_id%"
@@ -54,22 +52,18 @@ pagination:
       slot: 48
       sound: "minecraft:item.book.page_turn|1.0|1.0"
       material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0="
-      name: "{error}&l← PREVIOUS PAGE"
+      name: "{letters}Page {letters_black}▸ <gradient:{error}:{error_light}>← Previous</gradient>"
       lore:
-        - ""
-        - " {letters_black}▎ {letters}Page {info}%current_page%{letters_black}/{info}%total_pages%"
-        - ""
+        - "  {letters_black}· {letters}Page{letters_black}: {info}%current_page%{letters_black}/{info}%total_pages%"
       actions:
         - "previous_page"
     next:
       slot: 50
       sound: "minecraft:item.book.page_turn|1.0|1.0"
       material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0="
-      name: "{success}&lNEXT PAGE →"
+      name: "{letters}Page {letters_black}▸ <gradient:{success}:{success_light}>Next →</gradient>"
       lore:
-        - ""
-        - " {letters_black}▎ {letters}Page {info}%current_page%{letters_black}/{info}%total_pages%"
-        - ""
+        - "  {letters_black}· {letters}Page{letters_black}: {info}%current_page%{letters_black}/{info}%total_pages%"
       actions:
         - "next_page"
 
@@ -77,30 +71,30 @@ items:
   create:
     slot: 45
     material: "EMERALD_BLOCK"
-    name: "{primary}&lCREATE CURRENCY"
+    name: "{letters}Currencies {letters_black}▸ <gradient:{success}:{success_light}>Create currency</gradient>"
     lore:
+      - "{letters_black}New currency"
       - ""
-      - "{secondary}Kinds:"
-      - " {letters_black}▎ {highlight}Stored {letters_black}» {letters}balances in the database"
-      - " {letters_black}▎ {highlight}Item {letters_black}» {letters}an exact item players carry"
-      - " {letters_black}▎ {highlight}Display only {letters_black}» {letters}restyles another plugin's"
+      - "{success}✦ Kinds"
+      - "  {letters_black}· {highlight}Stored{letters_black}: {letters}balances in the database"
+      - "  {letters_black}· {highlight}Item{letters_black}: {letters}an exact item players carry"
+      - "  {letters_black}· {highlight}Display only{letters_black}: {letters}restyles another plugin's"
       - ""
-      - "{warning}➥ Click to create"
-      - ""
+      - "{success}» Click to create"
     actions:
       - "exyliaeconomy:currency_admin_create"
 
   settings:
     slot: 53
     material: "COMPARATOR"
-    name: "{primary}&lECONOMY SETTINGS"
+    name: "{letters}Plugin {letters_black}▸ <gradient:{primary}:{secondary_light}>Economy settings</gradient>"
     lore:
+      - "{letters_black}Configuration"
       - ""
-      - "{secondary}Information:"
-      - " {letters_black}▎ {letters}Experience currencies, the ledger,"
-      - " {letters_black}▎ {letters}Vault, language and debug."
+      - "{primary}✎ Information"
+      - " {letters}Experience currencies, the ledger,"
+      - " {letters}Vault, language and debug."
       - ""
-      - "{warning}➥ Click to open"
-      - ""
+      - "{primary}» Click to open"
     actions:
       - "exyliaeconomy:currency_admin_settings"
