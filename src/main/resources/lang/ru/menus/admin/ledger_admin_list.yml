@@ -27,6 +27,15 @@ filler:
       - "{letters_black}Операции хранят только валюты"
       - "{letters_black}сервера с включённым журналом."
     hide_tooltip: false
+  custom:
+    page_first:
+      slots: '48'
+      material: GRAY_DYE
+      name: "{muted}← Первая страница"
+    page_last:
+      slots: '50'
+      material: GRAY_DYE
+      name: "{muted}Последняя страница →"
 
 pagination:
   slots: '0-35'
@@ -43,7 +52,7 @@ pagination:
       - "  {letters_black}· {info}{icon:clock} {letters}Когда{letters_black}: {info}%entry_when%"
       - "  {letters_black}· {info}{icon:gold} {letters}Баланс после{letters_black}: {info}%entry_balance%"
       - ""
-      - "{info}» Нажми, чтобы открыть"
+      - "{info}{icon:click} Нажми, чтобы открыть"
     actions:
       - "exyliaeconomy:ledger_admin_entry %entry_id% %currency_id%"
 

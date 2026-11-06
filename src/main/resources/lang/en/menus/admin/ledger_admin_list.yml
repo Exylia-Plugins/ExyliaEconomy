@@ -27,6 +27,15 @@ filler:
       - "{letters_black}Only stored currencies with the"
       - "{letters_black}ledger on keep their movements."
     hide_tooltip: false
+  custom:
+    page_first:
+      slots: '48'
+      material: GRAY_DYE
+      name: "{muted}← First page"
+    page_last:
+      slots: '50'
+      material: GRAY_DYE
+      name: "{muted}Last page →"
 
 pagination:
   slots: '0-35'
@@ -43,7 +52,7 @@ pagination:
       - "  {letters_black}· {info}{icon:clock} {letters}When{letters_black}: {info}%entry_when%"
       - "  {letters_black}· {info}{icon:gold} {letters}Balance after{letters_black}: {info}%entry_balance%"
       - ""
-      - "{info}» Click to open"
+      - "{info}{icon:click} Click to open"
     actions:
       - "exyliaeconomy:ledger_admin_entry %entry_id% %currency_id%"
 

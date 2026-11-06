@@ -23,6 +23,15 @@ filler:
     lore:
       - "{letters_black}Crée-en une avec le bouton ci-dessous."
     hide_tooltip: false
+  custom:
+    page_first:
+      slots: '48'
+      material: GRAY_DYE
+      name: "{muted}← Première page"
+    page_last:
+      slots: '50'
+      material: GRAY_DYE
+      name: "{muted}Dernière page →"
 
 pagination:
   slots: '0-35'
@@ -40,8 +49,8 @@ pagination:
       - "{primary}✦ Aperçu"
       - "  {letters_black}· {info}{icon:eye} {letters}Rendu{letters_black}: {letters}%currency_preview%"
       - ""
-      - "{primary}» Clic gauche {letters_black}· {letters}modifier"
-      - "{error}» Clic droit {letters_black}· {letters}supprimer"
+      - "{primary}{icon:click} Clic gauche {letters_black}· {letters}modifier"
+      - "{error}{icon:right_click} Clic droit {letters_black}· {letters}supprimer"
       - "{letters_black}Une confirmation te sera demandée."
     actions:
       - "left: exyliaeconomy:currency_admin_edit %currency_id%"
@@ -80,7 +89,7 @@ items:
       - "  {letters_black}· {highlight}Objet{letters_black}: {letters}un objet exact que portent les joueurs"
       - "  {letters_black}· {highlight}Visuelle{letters_black}: {letters}habille celle d'un autre plugin"
       - ""
-      - "{success}» Clique pour créer"
+      - "{success}{icon:click} Clique pour créer"
     actions:
       - "exyliaeconomy:currency_admin_create"
 
@@ -95,6 +104,6 @@ items:
       - " {letters}Monnaies d'expérience, journal,"
       - " {letters}Vault, langue et débogage."
       - ""
-      - "{primary}» Clique pour ouvrir"
+      - "{primary}{icon:click} Clique pour ouvrir"
     actions:
       - "exyliaeconomy:currency_admin_settings"

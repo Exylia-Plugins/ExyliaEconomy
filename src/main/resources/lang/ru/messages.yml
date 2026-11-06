@@ -186,10 +186,10 @@ admin:
   provider-decimals: '{letters_black}Как у провайдера'
   item-set: '{success}Задано'
   item-not-set: '{error}Не задано'
-  'on': '{success}✔ Включено'
-  'off': '{error}✘ Выключено'
+  'on': '{success}{icon:on} Включено'
+  'off': '{error}{icon:off} Выключено'
   ledger-forever: Навсегда
-  ledger-days: '%days% дн. ⌚'
+  ledger-days: '%days% дн.'
   kind-stored: Хранимая
   kind-item: Предмет
   kind-display: Только отображение

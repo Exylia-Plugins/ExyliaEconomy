@@ -186,10 +186,10 @@ admin:
   provider-decimals: '{letters_black}Sağlayıcınınki'
   item-set: '{success}Ayarlandı'
   item-not-set: '{error}Ayarlanmadı'
-  'on': '{success}✔ Açık'
-  'off': '{error}✘ Kapalı'
+  'on': '{success}{icon:on} Açık'
+  'off': '{error}{icon:off} Kapalı'
   ledger-forever: Süresiz
-  ledger-days: '%days% gün ⌚'
+  ledger-days: '%days% gün'
   kind-stored: Depolanan
   kind-item: Eşya
   kind-display: Yalnızca görüntü

@@ -27,6 +27,15 @@ filler:
       - "{letters_black}Só moedas armazenadas com o"
       - "{letters_black}registro ativo guardam movimentos."
     hide_tooltip: false
+  custom:
+    page_first:
+      slots: '48'
+      material: GRAY_DYE
+      name: "{muted}← Primeira página"
+    page_last:
+      slots: '50'
+      material: GRAY_DYE
+      name: "{muted}Última página →"
 
 pagination:
   slots: '0-35'
@@ -43,7 +52,7 @@ pagination:
       - "  {letters_black}· {info}{icon:clock} {letters}Quando{letters_black}: {info}%entry_when%"
       - "  {letters_black}· {info}{icon:gold} {letters}Saldo depois{letters_black}: {info}%entry_balance%"
       - ""
-      - "{info}» Clique para abrir"
+      - "{info}{icon:click} Clique para abrir"
     actions:
       - "exyliaeconomy:ledger_admin_entry %entry_id% %currency_id%"
 

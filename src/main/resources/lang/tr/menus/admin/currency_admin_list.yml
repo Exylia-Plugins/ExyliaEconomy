@@ -23,6 +23,15 @@ filler:
     lore:
       - "{letters_black}Aşağıdaki düğmeyle bir tane oluştur."
     hide_tooltip: false
+  custom:
+    page_first:
+      slots: '48'
+      material: GRAY_DYE
+      name: "{muted}← İlk sayfa"
+    page_last:
+      slots: '50'
+      material: GRAY_DYE
+      name: "{muted}Son sayfa →"
 
 pagination:
   slots: '0-35'
@@ -40,8 +49,8 @@ pagination:
       - "{primary}✦ Önizleme"
       - "  {letters_black}· {info}{icon:eye} {letters}Görünüm{letters_black}: {letters}%currency_preview%"
       - ""
-      - "{primary}» Sol tık {letters_black}· {letters}düzenle"
-      - "{error}» Sağ tık {letters_black}· {letters}sil"
+      - "{primary}{icon:click} Sol tık {letters_black}· {letters}düzenle"
+      - "{error}{icon:right_click} Sağ tık {letters_black}· {letters}sil"
       - "{letters_black}Onaylaman istenecek."
     actions:
       - "left: exyliaeconomy:currency_admin_edit %currency_id%"
@@ -80,7 +89,7 @@ items:
       - "  {letters_black}· {highlight}Eşya{letters_black}: {letters}oyuncuların taşıdığı birebir eşya"
       - "  {letters_black}· {highlight}Yalnızca görüntü{letters_black}: {letters}başka eklentininkini biçimlendirir"
       - ""
-      - "{success}» Oluşturmak için tıkla"
+      - "{success}{icon:click} Oluşturmak için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_create"
 
@@ -95,6 +104,6 @@ items:
       - " {letters}Tecrübe para birimleri, kayıt,"
       - " {letters}Vault, dil ve hata ayıklama."
       - ""
-      - "{primary}» Açmak için tıkla"
+      - "{primary}{icon:click} Açmak için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_settings"

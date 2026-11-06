@@ -186,10 +186,10 @@ admin:
   provider-decimals: '{letters_black}Del proveedor'
   item-set: '{success}Definido'
   item-not-set: '{error}Sin definir'
-  'on': '{success}✔ Activado'
-  'off': '{error}✘ Desactivado'
+  'on': '{success}{icon:on} Activado'
+  'off': '{error}{icon:off} Desactivado'
   ledger-forever: Para siempre
-  ledger-days: '%days% días ⌚'
+  ledger-days: '%days% días'
   kind-stored: Almacenada
   kind-item: Ítem
   kind-display: Solo visual

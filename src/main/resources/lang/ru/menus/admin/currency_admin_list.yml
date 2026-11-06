@@ -23,6 +23,15 @@ filler:
     lore:
       - "{letters_black}Создай её кнопкой ниже."
     hide_tooltip: false
+  custom:
+    page_first:
+      slots: '48'
+      material: GRAY_DYE
+      name: "{muted}← Первая страница"
+    page_last:
+      slots: '50'
+      material: GRAY_DYE
+      name: "{muted}Последняя страница →"
 
 pagination:
   slots: '0-35'
@@ -40,8 +49,8 @@ pagination:
       - "{primary}✦ Предпросмотр"
       - "  {letters_black}· {info}{icon:eye} {letters}Выглядит так{letters_black}: {letters}%currency_preview%"
       - ""
-      - "{primary}» ЛКМ {letters_black}· {letters}изменить"
-      - "{error}» ПКМ {letters_black}· {letters}удалить"
+      - "{primary}{icon:click} ЛКМ {letters_black}· {letters}изменить"
+      - "{error}{icon:right_click} ПКМ {letters_black}· {letters}удалить"
       - "{letters_black}Потребуется подтверждение."
     actions:
       - "left: exyliaeconomy:currency_admin_edit %currency_id%"
@@ -80,7 +89,7 @@ items:
       - "  {letters_black}· {highlight}Предмет{letters_black}: {letters}точный предмет у игроков"
       - "  {letters_black}· {highlight}Отображение{letters_black}: {letters}стиль валюты другого плагина"
       - ""
-      - "{success}» Нажми, чтобы создать"
+      - "{success}{icon:click} Нажми, чтобы создать"
     actions:
       - "exyliaeconomy:currency_admin_create"
 
@@ -95,6 +104,6 @@ items:
       - " {letters}Валюты опыта, журнал,"
       - " {letters}Vault, язык и отладка."
       - ""
-      - "{primary}» Нажми, чтобы открыть"
+      - "{primary}{icon:click} Нажми, чтобы открыть"
     actions:
       - "exyliaeconomy:currency_admin_settings"

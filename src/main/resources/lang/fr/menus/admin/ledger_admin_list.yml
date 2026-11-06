@@ -27,6 +27,15 @@ filler:
       - "{letters_black}Seules les monnaies stockées avec le"
       - "{letters_black}registre actif gardent leurs mouvements."
     hide_tooltip: false
+  custom:
+    page_first:
+      slots: '48'
+      material: GRAY_DYE
+      name: "{muted}← Première page"
+    page_last:
+      slots: '50'
+      material: GRAY_DYE
+      name: "{muted}Dernière page →"
 
 pagination:
   slots: '0-35'
@@ -43,7 +52,7 @@ pagination:
       - "  {letters_black}· {info}{icon:clock} {letters}Quand{letters_black}: {info}%entry_when%"
       - "  {letters_black}· {info}{icon:gold} {letters}Solde après{letters_black}: {info}%entry_balance%"
       - ""
-      - "{info}» Clique pour ouvrir"
+      - "{info}{icon:click} Clique pour ouvrir"
     actions:
       - "exyliaeconomy:ledger_admin_entry %entry_id% %currency_id%"
 

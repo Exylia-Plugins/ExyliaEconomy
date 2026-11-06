@@ -27,6 +27,15 @@ filler:
       - "{letters_black}Yalnızca kaydı açık olan saklanan"
       - "{letters_black}para birimleri hareketleri tutar."
     hide_tooltip: false
+  custom:
+    page_first:
+      slots: '48'
+      material: GRAY_DYE
+      name: "{muted}← İlk sayfa"
+    page_last:
+      slots: '50'
+      material: GRAY_DYE
+      name: "{muted}Son sayfa →"
 
 pagination:
   slots: '0-35'
@@ -43,7 +52,7 @@ pagination:
       - "  {letters_black}· {info}{icon:clock} {letters}Ne zaman{letters_black}: {info}%entry_when%"
       - "  {letters_black}· {info}{icon:gold} {letters}Sonraki bakiye{letters_black}: {info}%entry_balance%"
       - ""
-      - "{info}» Açmak için tıkla"
+      - "{info}{icon:click} Açmak için tıkla"
     actions:
       - "exyliaeconomy:ledger_admin_entry %entry_id% %currency_id%"
 

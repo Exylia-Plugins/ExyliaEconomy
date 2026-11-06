@@ -7,10 +7,10 @@
 # Values: %wallet_owner% %wallet_currencies%
 # Each currency: %currency% %currency_icon% %currency_balance% %currency_kind%
 
-menu-version: 2
+menu-version: 3
 
 title: "{primary}&lPORTEFEUILLE {letters_black}» {highlight}%wallet_owner% {muted}%current_page%/%total_pages%"
-size: 54
+size: 36
 type: PAGINATION
 
 open_sounds:
@@ -30,9 +30,18 @@ filler:
     lore:
       - "{letters_black}Les monnaies que tu peux posséder apparaissent ici."
     hide_tooltip: false
+  custom:
+    page_first:
+      slots: '30'
+      material: GRAY_DYE
+      name: "{muted}← Première page"
+    page_last:
+      slots: '32'
+      material: GRAY_DYE
+      name: "{muted}Dernière page →"
 
 pagination:
-  slots: '0-35'
+  slots: '10-16,19-25'
 
   item_template:
     material: "%currency_icon%"
@@ -44,15 +53,15 @@ pagination:
       - "  {letters_black}· {info}{icon:tag} {letters}Type{letters_black}: {info}%currency_kind%"
       - "  {letters_black}· {success}{icon:gold} {letters}Solde{letters_black}: {success}%currency_balance%"
       - ""
-      - "{info}» Clic gauche {letters_black}· {letters}historique"
-      - "{info}» Clic droit {letters_black}· {letters}classement"
+      - "{info}{icon:click} Clic gauche {letters_black}· {letters}historique"
+      - "{info}{icon:right_click} Clic droit {letters_black}· {letters}classement"
     actions:
       - "left: exyliaeconomy:economy_history %currency_id% %wallet_owner_id%"
       - "right: exyliaeconomy:economy_top %currency_id%"
 
   navigation:
     previous:
-      slot: 48
+      slot: 30
       sound: "minecraft:item.book.page_turn|1.0|1.0"
       material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0="
       name: "{letters}Page {letters_black}▸ <gradient:{error}:{error_light}>← Précédente</gradient>"
@@ -61,7 +70,7 @@ pagination:
       actions:
         - "previous_page"
     next:
-      slot: 50
+      slot: 32
       sound: "minecraft:item.book.page_turn|1.0|1.0"
       material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0="
       name: "{letters}Page {letters_black}▸ <gradient:{success}:{success_light}>Suivante →</gradient>"
@@ -72,7 +81,7 @@ pagination:
 
 items:
   owner:
-    slot: 49
+    slot: 31
     material: "playerhead-%wallet_owner%"
     name: "<gradient:{info}:{info_light}>%wallet_owner%</gradient>"
     lore:

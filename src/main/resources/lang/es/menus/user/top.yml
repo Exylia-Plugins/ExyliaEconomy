@@ -7,7 +7,7 @@
 # Values: %currency% %currency_icon% %top_size% %top_total%
 # Each place: %top_position% %top_player% %top_amount%
 
-menu-version: 2
+menu-version: 3
 
 title: "{primary}&lTOP {letters_black}» {highlight}%currency% {muted}%current_page%/%total_pages%"
 size: 54
@@ -30,6 +30,15 @@ filler:
     lore:
       - "{letters_black}Aquí aparecen quienes tienen algo."
     hide_tooltip: false
+  custom:
+    page_first:
+      slots: '48'
+      material: GRAY_DYE
+      name: "{muted}← Primera página"
+    page_last:
+      slots: '50'
+      material: GRAY_DYE
+      name: "{muted}Última página →"
 
 pagination:
   slots: '0-35'
@@ -85,6 +94,6 @@ items:
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
     name: "{letters}Volver {letters_black}▸ <gradient:{error}:{error_light}>Cartera</gradient>"
     lore:
-      - "{error}» Clic para volver"
+      - "{error}{icon:click} Clic para volver"
     actions:
       - "exyliaeconomy:economy_wallet"

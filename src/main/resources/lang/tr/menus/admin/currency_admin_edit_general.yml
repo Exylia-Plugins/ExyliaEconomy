@@ -3,7 +3,7 @@
 # The look of one currency: its names, amounts, icon and place in lists.
 
 title: "{primary}&lGENEL {letters_black}» {highlight}%currency_id%"
-size: 36
+size: 27
 type: SIMPLE
 refresh:
   mode: ON_CLICK
@@ -23,7 +23,7 @@ filler:
 
 items:
   icon:
-    slot: 11
+    slot: 12
     material: "%currency_icon%"
     name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Simge</gradient>"
     lore:
@@ -33,7 +33,7 @@ items:
       - " {letters}Cüzdan ve listelerde"
       - " {letters}nasıl göründüğü."
       - ""
-      - "{primary}» Seçmek için tıkla"
+      - "{primary}{icon:click} Seçmek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_icon %currency_id%"
 
@@ -55,12 +55,12 @@ items:
       - "  {letters_black}· {info}{icon:eye} {letters}Görünüm{letters_black}: {letters}%currency_preview%"
       - "  {letters_black}· {info}{icon:eye} {letters}Kısa{letters_black}: {letters}%currency_preview_compact%"
       - ""
-      - "{primary}» Düzenlemek için tıkla"
+      - "{primary}{icon:click} Düzenlemek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_appearance %currency_id%"
 
   sort-order:
-    slot: 15
+    slot: 14
     material: "HOPPER"
     name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Sıralama düzeni</gradient>"
     lore:
@@ -73,16 +73,16 @@ items:
       - "{primary}✦ Durum"
       - "  {letters_black}· {info}{icon:iron} {letters}Şu an{letters_black}: {info}%currency_sort_order%"
       - ""
-      - "{primary}» Ayarlamak için tıkla"
+      - "{primary}{icon:click} Ayarlamak için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_sort %currency_id%"
 
   back:
-    slot: 31
+    slot: 22
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
     name: "{letters}Geri {letters_black}▸ <gradient:{error}:{error_light}>Para birimi</gradient>"
     lore:
-      - "{error}» Geri dönmek için tıkla"
+      - "{error}{icon:click} Geri dönmek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_page %currency_id% hub"

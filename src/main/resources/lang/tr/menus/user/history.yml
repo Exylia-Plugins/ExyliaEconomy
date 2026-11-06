@@ -7,7 +7,7 @@
 # Values: %currency% %currency_icon% %history_owner% %history_size%
 # Each movement: %entry_icon% %entry_when% %entry_delta% %entry_reason% %entry_balance% %entry_server%
 
-menu-version: 2
+menu-version: 3
 
 title: "{primary}&lGEÇMİŞ {letters_black}» {highlight}%history_owner% {muted}%current_page%/%total_pages%"
 size: 54
@@ -31,9 +31,18 @@ filler:
       - "{letters_black}Yalnızca bu sunucunun depoladığı"
       - "{letters_black}para birimleri geçmiş tutar."
     hide_tooltip: false
+  custom:
+    page_first:
+      slots: '48'
+      material: GRAY_DYE
+      name: "{muted}← İlk sayfa"
+    page_last:
+      slots: '50'
+      material: GRAY_DYE
+      name: "{muted}Son sayfa →"
 
 pagination:
-  slots: '0-35'
+  slots: '10-16,19-25,28-34,37-43'
 
   item_template:
     material: "%entry_icon%"
@@ -68,7 +77,7 @@ pagination:
 
 items:
   currency:
-    slot: 45
+    slot: 46
     material: "%currency_icon%"
     name: "<gradient:{info}:{info_light}>%currency%</gradient>"
     lore:
@@ -86,6 +95,6 @@ items:
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
     name: "{letters}Geri {letters_black}▸ <gradient:{error}:{error_light}>Cüzdan</gradient>"
     lore:
-      - "{error}» Geri dönmek için tıkla"
+      - "{error}{icon:click} Geri dönmek için tıkla"
     actions:
       - "exyliaeconomy:economy_wallet %history_owner_id%"

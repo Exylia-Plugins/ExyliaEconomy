@@ -5,7 +5,7 @@
 # pay confirmation; a display-only one its look and pay confirmation.
 
 title: "{primary}&lPARA BİRİMİ {letters_black}» {highlight}%currency_id%"
-size: 45
+size: 36
 type: SIMPLE
 refresh:
   mode: ON_CLICK
@@ -40,7 +40,7 @@ items:
       - "  {letters_black}· {info}{icon:eye} {letters}Kısa{letters_black}: {letters}%currency_preview_compact%"
 
   general:
-    slot: 19
+    slot: 11
     material: "NAME_TAG"
     condition: "%currency_kind% == STORED"
     name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Genel</gradient>"
@@ -53,12 +53,12 @@ items:
       - "{primary}✦ Durum"
       - "  {letters_black}· {info}{icon:tag} {letters}Ad{letters_black}: {info}%currency_name%"
       - ""
-      - "{primary}» Açmak için tıkla"
+      - "{primary}{icon:click} Açmak için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_page %currency_id% general"
 
   commands:
-    slot: 20
+    slot: 12
     material: "COMMAND_BLOCK"
     condition: "%currency_kind% == STORED"
     name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Komutlar</gradient>"
@@ -72,12 +72,12 @@ items:
       - "  {letters_black}· {info}{icon:tag} {letters}Adlar{letters_black}: {info}%currency_aliases%"
       - "  {letters_black}· {info}{icon:redstone} {letters}Etkin{letters_black}: %commands_status%"
       - ""
-      - "{primary}» Açmak için tıkla"
+      - "{primary}{icon:click} Açmak için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_page %currency_id% commands"
 
   rules:
-    slot: 21
+    slot: 14
     material: "BOOK"
     condition: "%currency_kind% == STORED"
     name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Kurallar</gradient>"
@@ -93,12 +93,12 @@ items:
       - "  {letters_black}· {info}{icon:hopper} {letters}En az{letters_black}: {info}%currency_minimum_transfer%"
       - "  {letters_black}· {info}{icon:gold} {letters}Vergi{letters_black}: {info}%currency_tax%"
       - ""
-      - "{primary}» Düzenlemek için tıkla"
+      - "{primary}{icon:click} Düzenlemek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_rules %currency_id%"
 
   payments:
-    slot: 22
+    slot: 15
     material: "GOLD_NUGGET"
     condition: "%currency_kind% == STORED"
     name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Ödemeler</gradient>"
@@ -113,12 +113,12 @@ items:
       - "  {letters_black}· {info}{icon:hopper} {letters}Şunun üstünde sorar{letters_black}: {info}%currency_pay_confirm%"
       - "  {letters_black}· {info}{icon:redstone} {letters}Banknotlar{letters_black}: %banknotes_status%"
       - ""
-      - "{primary}» Açmak için tıkla"
+      - "{primary}{icon:click} Açmak için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_page %currency_id% payments"
 
   exchange:
-    slot: 23
+    slot: 21
     material: "SUNFLOWER"
     condition: "%currency_kind% == STORED"
     name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Takas</gradient>"
@@ -132,12 +132,12 @@ items:
       - "  {letters_black}· {info}{icon:redstone} {letters}Takas{letters_black}: %exchangeable_status%"
       - "  {letters_black}· {info}{icon:emerald} {letters}Oranlar{letters_black}: {info}%currency_rates%"
       - ""
-      - "{primary}» Açmak için tıkla"
+      - "{primary}{icon:click} Açmak için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_page %currency_id% exchange"
 
   interest:
-    slot: 24
+    slot: 22
     material: "EXPERIENCE_BOTTLE"
     condition: "%currency_kind% == STORED"
     name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Faiz</gradient>"
@@ -152,12 +152,12 @@ items:
       - "  {letters_black}· {info}{icon:clock} {letters}Sıklık{letters_black}: {info}%currency_interest_interval%"
       - "  {letters_black}· {info}{icon:redstone} {letters}Çevrimdışı{letters_black}: %interest_offline_status%"
       - ""
-      - "{primary}» Açmak için tıkla"
+      - "{primary}{icon:click} Açmak için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_page %currency_id% interest"
 
   integrations:
-    slot: 25
+    slot: 23
     material: "ENDER_EYE"
     condition: "%currency_kind% == STORED"
     name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Entegrasyonlar</gradient>"
@@ -172,12 +172,12 @@ items:
       - "  {letters_black}· {info}{icon:redstone} {letters}Ağ{letters_black}: %networked_status%"
       - "  {letters_black}· {info}{icon:redstone} {letters}Vault{letters_black}: %vault_status%"
       - ""
-      - "{primary}» Açmak için tıkla"
+      - "{primary}{icon:click} Açmak için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_page %currency_id% integrations"
 
   general-item:
-    slot: 20
+    slot: 11
     material: "NAME_TAG"
     condition: "%currency_kind% == ITEM"
     name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Genel</gradient>"
@@ -191,12 +191,12 @@ items:
       - "  {letters_black}· {info}{icon:tag} {letters}Ad{letters_black}: {info}%currency_name%"
       - "  {letters_black}· {info}{icon:eye} {letters}Görünüm{letters_black}: {letters}%currency_preview%"
       - ""
-      - "{primary}» Açmak için tıkla"
+      - "{primary}{icon:click} Açmak için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_page %currency_id% general"
 
   commands-item:
-    slot: 21
+    slot: 12
     material: "COMMAND_BLOCK"
     condition: "%currency_kind% == ITEM"
     name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Komutlar</gradient>"
@@ -210,12 +210,12 @@ items:
       - "{primary}✦ Durum"
       - "  {letters_black}· {info}{icon:tag} {letters}Adlar{letters_black}: {info}%currency_aliases%"
       - ""
-      - "{primary}» Düzenlemek için tıkla"
+      - "{primary}{icon:click} Düzenlemek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_aliases %currency_id%"
 
   item:
-    slot: 23
+    slot: 14
     material: "%currency_item_icon%"
     condition: "%currency_kind% == ITEM"
     name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Eşya</gradient>"
@@ -230,12 +230,12 @@ items:
       - "{primary}✦ Durum"
       - "  {letters_black}· {info}{icon:check} {letters}Eşya{letters_black}: %currency_item_state%"
       - ""
-      - "{primary}» Yenisini koymak için tıkla"
+      - "{primary}{icon:click} Yenisini koymak için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_item %currency_id%"
 
   pay-confirm-item:
-    slot: 24
+    slot: 15
     material: "PAPER"
     condition: "%currency_kind% == ITEM"
     name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Ödeme onayı</gradient>"
@@ -249,12 +249,12 @@ items:
       - "{primary}✦ Durum"
       - "  {letters_black}· {info}{icon:hopper} {letters}Şunun üstünde sorar{letters_black}: {info}%currency_pay_confirm%"
       - ""
-      - "{primary}» Düzenlemek için tıkla"
+      - "{primary}{icon:click} Düzenlemek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_pay_confirm %currency_id%"
 
   general-display:
-    slot: 21
+    slot: 12
     material: "NAME_TAG"
     condition: "%currency_kind% == DISPLAY"
     name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Genel</gradient>"
@@ -268,12 +268,12 @@ items:
       - "  {letters_black}· {info}{icon:tag} {letters}Ad{letters_black}: {info}%currency_name%"
       - "  {letters_black}· {info}{icon:eye} {letters}Görünüm{letters_black}: {letters}%currency_preview%"
       - ""
-      - "{primary}» Açmak için tıkla"
+      - "{primary}{icon:click} Açmak için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_page %currency_id% general"
 
   pay-confirm-display:
-    slot: 23
+    slot: 14
     material: "PAPER"
     condition: "%currency_kind% == DISPLAY"
     name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Ödeme onayı</gradient>"
@@ -287,22 +287,22 @@ items:
       - "{primary}✦ Durum"
       - "  {letters_black}· {info}{icon:hopper} {letters}Şunun üstünde sorar{letters_black}: {info}%currency_pay_confirm%"
       - ""
-      - "{primary}» Düzenlemek için tıkla"
+      - "{primary}{icon:click} Düzenlemek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_pay_confirm %currency_id%"
 
   back:
-    slot: 40
+    slot: 31
     sound: "minecraft:item.bundle.remove_one|1.0|0.5"
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
     name: "{letters}Geri {letters_black}▸ <gradient:{error}:{error_light}>Para birimleri</gradient>"
     lore:
-      - "{error}» Geri dönmek için tıkla"
+      - "{error}{icon:click} Geri dönmek için tıkla"
     actions:
       - "exyliaeconomy:currency_admin_open_list"
 
   delete:
-    slot: 44
+    slot: 35
     material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUwZmQxMDE5OWU4ZTRmY2RhYmNhZTRmODVjODU5MTgxMjdhN2M1NTUzYWQyMzVmMDFjNTZkMThiYjk0NzBkMyJ9fX0="
     name: "{letters}Para birimi {letters_black}▸ <gradient:{error}:{error_light}>Sil</gradient>"
     lore:
@@ -313,7 +313,7 @@ items:
       - " {letters}bakiyeler veritabanında"
       - " {letters}kullanılmadan kalır."
       - ""
-      - "{error}» Silmek için tıkla"
+      - "{error}{icon:click} Silmek için tıkla"
       - "{letters_black}Onaylaman istenecek."
     actions:
       - "exyliaeconomy:currency_admin_delete %currency_id%"
