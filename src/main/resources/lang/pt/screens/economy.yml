@@ -1,0 +1,22 @@
+back: 'Carteira'
+wallet:
+  title: 'Carteira'
+  subtitle: '{letters_black}%wallet_owner% · clique numa moeda para o histórico'
+  count: 'Moedas'
+  tooltip: '%currency%<nl>{info}Clique {letters_black}· histórico<nl>{info}Clique direito {letters_black}· ranking'
+  empty: 'Nenhuma moeda ainda'
+  empty_hint: 'As moedas que você pode ter aparecem aqui'
+top:
+  title: 'Mais ricos · %currency%'
+  subtitle: '{letters_black}Quem tem mais'
+  count: 'No ranking'
+  empty: 'Ninguém no ranking ainda'
+  empty_hint: 'Ganhe algo para ser o primeiro'
+  total: '{letters_black}Em circulação {success}%top_total%'
+history:
+  title: 'Histórico · %currency%'
+  subtitle: '{letters_black}%history_owner% · mais recentes primeiro'
+  count: 'Movimentos'
+  tooltip: '%entry_reason%<nl>{letters_black}%entry_when% · %entry_server%'
+  empty: 'Nenhum movimento ainda'
+  empty_hint: 'Pagamentos e recompensas aparecem aqui'

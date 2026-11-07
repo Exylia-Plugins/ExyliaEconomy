@@ -1,0 +1,82 @@
+<!--
+  /wallet, /baltop and a wallet's history in the SCREEN menu style, on one screen. It stands for the chest menus
+  menus/user/wallet.yml (view wallet), top.yml (view top) and history.yml (view history) and reads whichever is
+  open (its values and rows), so it needs no code of its own.
+
+  One file for every language: the words come from lang/<code>/screens/economy.yml (t="key"). The look is in
+  theme.css; put your own rules in custom.css next to it and this file keeps updating with the plugin.
+  /exylialib screens check lists anything wrong with file:line:col; edits show on open screens within seconds.
+
+  Wallet values: wallet_owner, wallet_owner_id, wallet_currencies. Rows (source="main"): currency_id, currency,
+    currency_icon, currency_balance, currency_kind.
+  Top values: currency, currency_icon, top_size, top_total. Rows: top_position, top_player, top_amount.
+  History values: currency, currency_icon, history_owner, history_owner_id, history_size. Rows: entry_icon,
+    entry_when, entry_delta, entry_reason, entry_balance, entry_server.
+  Actions: exyliaeconomy:economy_history <currency> <owner id>, exyliaeconomy:economy_top <currency>,
+    exyliaeconomy:economy_wallet [owner id].
+-->
+<screen backdrop="linear-gradient(to bottom, {info}18, {primary}06)"
+        routes="menus/user/wallet:view=wallet menus/user/top:view=top menus/user/history:view=history">
+  <column class="frame">
+    <row class="head">
+      <img if="view == 'wallet'" face="%wallet_owner%" class="head-icon"/>
+      <img else if="view == 'history'" face="%history_owner%" class="head-icon"/>
+      <item else material="%currency_icon%" class="head-icon"/>
+      <column class="title">
+        <h1 if="view == 'wallet'" t="wallet.title">Wallet</h1>
+        <h1 else if="view == 'top'" t="top.title">Richest · %currency%</h1>
+        <h1 else t="history.title">History · %currency%</h1>
+        <small if="view == 'wallet'" t="wallet.subtitle">{letters_black}%wallet_owner% · click a currency for its history</small>
+        <small else if="view == 'top'" t="top.subtitle">{letters_black}The players holding the most</small>
+        <small else t="history.subtitle">{letters_black}%history_owner% · newest first</small>
+      </column>
+      <box class="spacer"/>
+      <column class="pill">
+        <small if="view == 'wallet'" t="wallet.count">Currencies</small>
+        <small else if="view == 'top'" t="top.count">Ranked</small>
+        <small else t="history.count">Movements</small>
+        <b if="view == 'wallet'">{info}%wallet_currencies%</b>
+        <b else if="view == 'top'">{info}%top_size%</b>
+        <b else>{info}%history_size%</b>
+      </column>
+    </row>
+
+    <grid source="main" columns="2" rows="5" class="fill">
+      <card if="view == 'wallet'" class="line coin"
+            action="exyliaeconomy:economy_history %currency_id% %wallet_owner_id%"
+            action-right="exyliaeconomy:economy_top %currency_id%"
+            tooltip="%currency%<nl>{info}Click {letters_black}· history<nl>{info}Right-click {letters_black}· leaderboard"
+            t-tooltip="wallet.tooltip">
+        <item row material="gold_nugget"/>
+        <column class="who"><b>%currency%</b><small>{letters_black}%currency_kind%</small></column>
+        <box class="spacer"/>
+        <b class="amount">{success}%currency_balance%</b>
+      </card>
+      <card else if="view == 'top'" class="line place">
+        <b class="pos">{highlight}#%top_position%</b>
+        <img face="%top_player%" class="face"/>
+        <b>%top_player%</b>
+        <box class="spacer"/>
+        <b class="amount">{success}%top_amount%</b>
+      </card>
+      <card else class="line entry" tooltip="%entry_reason%<nl>{letters_black}%entry_when% · %entry_server%" t-tooltip="history.tooltip">
+        <item row material="paper"/>
+        <column class="who"><small>%entry_reason%</small><small>{letters_black}%entry_when%</small></column>
+        <box class="spacer"/>
+        <column class="right"><b>%entry_delta%</b><small>{letters_black}%entry_balance%</small></column>
+      </card>
+      <empty if="view == 'wallet'"><text t="wallet.empty">No currencies yet</text><small t="wallet.empty_hint">Currencies you can hold appear here</small></empty>
+      <empty else if="view == 'top'"><text t="top.empty">Nobody ranked yet</text><small t="top.empty_hint">Earn some to be the first</small></empty>
+      <empty else><text t="history.empty">No movements yet</text><small t="history.empty_hint">Payments and rewards show up here</small></empty>
+    </grid>
+
+    <row class="foot">
+      <button if="view == 'history'" class="ghost small" action="exyliaeconomy:economy_wallet %history_owner_id%" t="back">Wallet</button>
+      <button else if="view == 'top'" class="ghost small" action="exyliaeconomy:economy_wallet" t="back">Wallet</button>
+      <box class="spacer"/>
+      <pager for="main" keys="a d"/>
+      <box class="spacer"/>
+      <small if="view == 'top'" t="top.total">{letters_black}In circulation {success}%top_total%</small>
+    </row>
+  </column>
+</screen>

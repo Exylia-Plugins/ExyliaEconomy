@@ -1,0 +1,33 @@
+/* The economy screen's look. ExyliaLib's base theme is read before this file, so anything here overrides it; put
+   your own rules in custom.css next to it. Sizes are screen pixels of a 400 by 225 screen; colours are palette
+   tokens. Browsing takes the info tone; money held takes success, rankings highlight. */
+
+small, b, h1, h2, text, button, label { flex-direction: row; gap: 3px; align-items: center; }
+small { font-size: 7px; }
+.spacer { flex-grow: 1; }
+.fill { flex-grow: 1; }
+
+.frame { width: 340px; height: 200px; gap: 6px; padding: 10px 12px; outline: 1px {info}50;
+         background: linear-gradient(to bottom, {info}0c, {primary}05); }
+.head { flex-direction: row; align-items: center; gap: 6px; }
+.head-icon { width: 16px; height: 16px; }
+.title { gap: 1px; }
+.title h1 { font-size: 13px; }
+.pill { align-items: end; gap: 1px; padding: 3px 6px; background: {info}12; }
+.foot { flex-direction: row; align-items: center; gap: 5px; }
+
+grid { gap: 4px; }
+.line { flex-direction: row; align-items: center; gap: 4px; padding: 2px 5px; background: {info}0a; }
+.line b { font-size: 7px; }
+.line small { font-size: 6px; }
+.line item, .line .face { width: 12px; height: 12px; }
+.coin:hover { background: {info}26; outline: 1px {info}; }
+.place { background: {highlight}08; }
+.pos { width: 16px; }
+.who { gap: 1px; }
+.right { gap: 1px; align-items: end; }
+.amount { font-size: 8px; }
+
+button.small { padding: 3px 7px; font-size: 8px; }
+.ghost { background: {letters_black}14; }
+.ghost:hover { background: {error}40; }

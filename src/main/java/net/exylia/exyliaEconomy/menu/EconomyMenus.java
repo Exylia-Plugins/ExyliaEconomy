@@ -1,5 +1,7 @@
 package net.exylia.exyliaEconomy.menu;
 
+import net.exylia.lib.screen.ScreenSet;
+import net.exylia.lib.screen.Screens;
 import net.exylia.exyliaEconomy.ExyliaEconomy;
 import net.exylia.lib.config.Languages;
 import net.exylia.lib.ui.Menus;
@@ -60,6 +62,22 @@ public final class EconomyMenus {
         for (String id : IDS) {
             YamlConfiguration config = read(id);
             if (config != null) menus.load(id, config);
+        }
+        loadScreens();
+    }
+
+    /**
+     * Installs and reads the screen that stands for the wallet, the leaderboard and the history in the SCREEN menu
+     * style; it names them in {@code routes}. A file the owner broke keeps the chest menus, and says why.
+     */
+    private void loadScreens() {
+        ScreenSet screens = Screens.of(plugin.getPlugin()).files(ExyliaEconomy.class, "screens");
+        if (!screens.markups().isEmpty()) screens.reload();
+        try {
+            screens.markup("economy").problems().forEach(problem -> plugin.getDebug().warn("Screen " + problem));
+        } catch (IllegalArgumentException broken) {
+            plugin.getDebug().warn("Screen economy could not be read, its chest menus open instead: "
+                    + broken.getMessage());
         }
     }
 

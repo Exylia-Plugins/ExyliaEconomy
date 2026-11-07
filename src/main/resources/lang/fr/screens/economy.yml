@@ -1,0 +1,22 @@
+back: 'Portefeuille'
+wallet:
+  title: 'Portefeuille'
+  subtitle: '{letters_black}%wallet_owner% · clique une monnaie pour son historique'
+  count: 'Monnaies'
+  tooltip: '%currency%<nl>{info}Clic {letters_black}· historique<nl>{info}Clic droit {letters_black}· classement'
+  empty: 'Aucune monnaie'
+  empty_hint: 'Les monnaies que tu peux détenir apparaissent ici'
+top:
+  title: 'Les plus riches · %currency%'
+  subtitle: '{letters_black}Ceux qui en ont le plus'
+  count: 'Classés'
+  empty: 'Personne au classement'
+  empty_hint: 'Gagnes-en pour être le premier'
+  total: '{letters_black}En circulation {success}%top_total%'
+history:
+  title: 'Historique · %currency%'
+  subtitle: '{letters_black}%history_owner% · le plus récent d''abord'
+  count: 'Mouvements'
+  tooltip: '%entry_reason%<nl>{letters_black}%entry_when% · %entry_server%'
+  empty: 'Aucun mouvement'
+  empty_hint: 'Paiements et récompenses apparaissent ici'

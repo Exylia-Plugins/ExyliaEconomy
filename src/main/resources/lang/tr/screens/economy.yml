@@ -1,0 +1,22 @@
+back: 'Cüzdan'
+wallet:
+  title: 'Cüzdan'
+  subtitle: '{letters_black}%wallet_owner% · geçmişi için bir para birimine tıkla'
+  count: 'Para birimleri'
+  tooltip: '%currency%<nl>{info}Tıkla {letters_black}· geçmiş<nl>{info}Sağ tık {letters_black}· sıralama'
+  empty: 'Henüz para birimi yok'
+  empty_hint: 'Tutabileceğin para birimleri burada görünür'
+top:
+  title: 'En zenginler · %currency%'
+  subtitle: '{letters_black}En çok tutanlar'
+  count: 'Sıralamada'
+  empty: 'Henüz sıralamada kimse yok'
+  empty_hint: 'İlk olmak için biraz kazan'
+  total: '{letters_black}Dolaşımda {success}%top_total%'
+history:
+  title: 'Geçmiş · %currency%'
+  subtitle: '{letters_black}%history_owner% · en yeniler önce'
+  count: 'Hareketler'
+  tooltip: '%entry_reason%<nl>{letters_black}%entry_when% · %entry_server%'
+  empty: 'Henüz hareket yok'
+  empty_hint: 'Ödemeler ve ödüller burada görünür'

@@ -1,0 +1,22 @@
+back: 'Кошелёк'
+wallet:
+  title: 'Кошелёк'
+  subtitle: '{letters_black}%wallet_owner% · нажми на валюту для истории'
+  count: 'Валюты'
+  tooltip: '%currency%<nl>{info}Клик {letters_black}· история<nl>{info}ПКМ {letters_black}· рейтинг'
+  empty: 'Валют пока нет'
+  empty_hint: 'Здесь появятся валюты, которые можно иметь'
+top:
+  title: 'Богачи · %currency%'
+  subtitle: '{letters_black}У кого больше всего'
+  count: 'В рейтинге'
+  empty: 'В рейтинге пока никого'
+  empty_hint: 'Заработай, чтобы стать первым'
+  total: '{letters_black}В обороте {success}%top_total%'
+history:
+  title: 'История · %currency%'
+  subtitle: '{letters_black}%history_owner% · сначала новые'
+  count: 'Операции'
+  tooltip: '%entry_reason%<nl>{letters_black}%entry_when% · %entry_server%'
+  empty: 'Операций пока нет'
+  empty_hint: 'Здесь появятся платежи и награды'
