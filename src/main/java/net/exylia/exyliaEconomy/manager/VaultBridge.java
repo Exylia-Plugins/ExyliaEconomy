@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 /**
  * Publishes one stored currency as the server's Vault economy.
@@ -89,6 +90,13 @@ public final class VaultBridge {
                 .filter(owner -> !owner.isEmpty() && !owner.equals(self) && !PASS_THROUGH.contains(owner))
                 .findFirst()
                 .orElse(""));
+    }
+
+    /** The transaction a Vault change is filed under; the plugin is only looked up when needed, that walks the stack. */
+    static Transaction reason(@Nullable Transaction relayed, Supplier<String> plugin) {
+        if (relayed != null && relayed != Transaction.NONE) return relayed;
+        String name = plugin.get();
+        return Transaction.of(name.isEmpty() ? "vault" : "vault:" + name);
     }
 
     private final Plugin plugin;
@@ -356,10 +364,7 @@ public final class VaultBridge {
          * plain {@code vault} when no plugin is found on the stack.
          */
         private Transaction caller() {
-            Transaction relayed = Transaction.relayed();
-            if (relayed != null && relayed != Transaction.NONE) return relayed;
-            String name = callingPlugin(self);
-            return Transaction.of(name.isEmpty() ? "vault" : "vault:" + name);
+            return reason(Transaction.relayed(), () -> callingPlugin(self));
         }
 
         /** What actually moved, never what was asked: a deposit refused at a ceiling is a failure. */
