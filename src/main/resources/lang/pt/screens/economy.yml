@@ -1,22 +1,30 @@
-back: 'Carteira'
+# Words of the economy screen (screens/economy.html), one per t="key" there. Colour tokens such as {info} work
+# here; keep the %placeholders%. Edits show on open screens within seconds.
+keys: '{highlight}Clique {letters_black}abrir   {highlight}A/D {letters_black}página   {highlight}Shift {letters_black}fechar'
+side:
+  subtitle: '{letters_black}Carteira'
+  currencies: '{letters_black}Moedas'
+nav:
+  wallet: 'Saldos'
+tab:
+  history: 'Histórico'
+  top: 'Ranking'
 wallet:
-  title: 'Carteira'
-  subtitle: '{letters_black}%wallet_owner% · clique numa moeda para o histórico'
-  count: 'Moedas'
-  tooltip: '%currency%<nl>{info}Clique {letters_black}· histórico<nl>{info}Clique direito {letters_black}· ranking'
-  empty: 'Nenhuma moeda ainda'
+  title: 'Saldos'
+  subtitle: '{letters_black}Tudo o que esta carteira tem, aqui e na rede'
+  history: 'Histórico'
+  top: 'Top'
+  empty: 'Ainda sem moedas'
   empty_hint: 'As moedas que você pode ter aparecem aqui'
 top:
-  title: 'Mais ricos · %currency%'
-  subtitle: '{letters_black}Quem tem mais'
-  count: 'No ranking'
+  place: 'Sua posição'
+  amount: 'Você tem'
+  total: 'Em circulação'
   empty: 'Ninguém no ranking ainda'
   empty_hint: 'Ganhe algo para ser o primeiro'
-  total: '{letters_black}Em circulação {success}%top_total%'
 history:
-  title: 'Histórico · %currency%'
-  subtitle: '{letters_black}%history_owner% · mais recentes primeiro'
-  count: 'Movimentos'
-  tooltip: '%entry_reason%<nl>{letters_black}%entry_when% · %entry_server%'
-  empty: 'Nenhum movimento ainda'
+  balance: 'Saldo'
+  in: 'Recebido'
+  out: 'Gasto'
+  empty: 'Sem movimentos ainda'
   empty_hint: 'Pagamentos e recompensas aparecem aqui'

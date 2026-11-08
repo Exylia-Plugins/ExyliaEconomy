@@ -1,22 +1,30 @@
-back: 'Portefeuille'
+# Words of the economy screen (screens/economy.html), one per t="key" there. Colour tokens such as {info} work
+# here; keep the %placeholders%. Edits show on open screens within seconds.
+keys: '{highlight}Clic {letters_black}ouvrir   {highlight}A/D {letters_black}page   {highlight}Shift {letters_black}fermer'
+side:
+  subtitle: '{letters_black}Portefeuille'
+  currencies: '{letters_black}Monnaies'
+nav:
+  wallet: 'Soldes'
+tab:
+  history: 'Historique'
+  top: 'Classement'
 wallet:
-  title: 'Portefeuille'
-  subtitle: '{letters_black}%wallet_owner% · clique une monnaie pour son historique'
-  count: 'Monnaies'
-  tooltip: '%currency%<nl>{info}Clic {letters_black}· historique<nl>{info}Clic droit {letters_black}· classement'
-  empty: 'Aucune monnaie'
-  empty_hint: 'Les monnaies que tu peux détenir apparaissent ici'
+  title: 'Soldes'
+  subtitle: '{letters_black}Tout ce que contient ce portefeuille, ici et sur le réseau'
+  history: 'Historique'
+  top: 'Top'
+  empty: 'Aucune monnaie pour l’instant'
+  empty_hint: 'Les monnaies que vous pouvez détenir apparaissent ici'
 top:
-  title: 'Les plus riches · %currency%'
-  subtitle: '{letters_black}Ceux qui en ont le plus'
-  count: 'Classés'
+  place: 'Votre place'
+  amount: 'Vous avez'
+  total: 'En circulation'
   empty: 'Personne au classement'
-  empty_hint: 'Gagnes-en pour être le premier'
-  total: '{letters_black}En circulation {success}%top_total%'
+  empty_hint: 'Gagnez-en pour être le premier'
 history:
-  title: 'Historique · %currency%'
-  subtitle: '{letters_black}%history_owner% · le plus récent d''abord'
-  count: 'Mouvements'
-  tooltip: '%entry_reason%<nl>{letters_black}%entry_when% · %entry_server%'
+  balance: 'Solde'
+  in: 'Reçu'
+  out: 'Dépensé'
   empty: 'Aucun mouvement'
   empty_hint: 'Paiements et récompenses apparaissent ici'

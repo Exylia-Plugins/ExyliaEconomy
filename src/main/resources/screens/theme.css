@@ -5,29 +5,59 @@
 small, b, h1, h2, text, button, label { flex-direction: row; gap: 3px; align-items: center; }
 small { font-size: 7px; }
 .spacer { flex-grow: 1; }
-.fill { flex-grow: 1; }
+.fill, .grow { flex-grow: 1; }
+.tight { gap: 1px; }
+.right { align-items: end; }
+.line { flex-direction: row; align-items: center; gap: 4px; }
+h1 { font-size: 13px; }
 
-.frame { width: 340px; height: 200px; gap: 6px; padding: 10px 12px; outline: 1px {info}50;
-         background: linear-gradient(to bottom, {info}0c, {primary}05); }
-.head { flex-direction: row; align-items: center; gap: 6px; }
-.head-icon { width: 16px; height: 16px; }
-.title { gap: 1px; }
-.title h1 { font-size: 13px; }
-.pill { align-items: end; gap: 1px; padding: 3px 6px; background: {info}12; }
+.app { flex-direction: row; gap: 0px; width: 400px; height: 225px; outline: 1px {info}50;
+       background: linear-gradient(to bottom, {info}0e, {primary}05); }
+.side { width: 108px; padding: 9px 7px; gap: 6px; align-items: stretch; }
+.ident { flex-direction: row; align-items: center; gap: 5px; }
+.ident-icon { width: 16px; height: 16px; }
+.ident-name { font-size: 10px; }
+.side-label { font-size: 6px; padding: 2px 0px 0px 2px; }
+.nav { gap: 2px; }
+.nav-item { flex-direction: row; align-items: center; gap: 5px; padding: 1px 6px 1px 0px; color: {letters_black};
+            transition: transform 2t ease-out; }
+.nav-item .mark { width: 2px; height: 10px; }
+.nav-item item { width: 10px; height: 10px; }
+.nav-item:hover { background: {info}22; color: {letters}; transform: translateX(1px); }
+.nav-item[selected] { background: {info}40; color: {letters}; }
+.nav-item[selected] .mark { background: {info_light}; }
+
+.main { flex-grow: 1; padding: 9px 11px 4px 11px; gap: 4px; background: {primary}06; }
+.page { flex-grow: 1; gap: 5px; enter: translate(0, 6px) 4t ease-out; }
+.keys { flex-direction: row; font-size: 6px; }
 .foot { flex-direction: row; align-items: center; gap: 5px; }
+.big-icon { width: 16px; height: 16px; }
 
-grid { gap: 4px; }
-.line { flex-direction: row; align-items: center; gap: 4px; padding: 2px 5px; background: {info}0a; }
-.line b { font-size: 7px; }
-.line small { font-size: 6px; }
-.line item, .line .face { width: 12px; height: 12px; }
-.coin:hover { background: {info}26; outline: 1px {info}; }
-.place { background: {highlight}08; }
-.pos { width: 16px; }
-.who { gap: 1px; }
-.right { gap: 1px; align-items: end; }
-.amount { font-size: 8px; }
+.tabs { flex-direction: row; gap: 2px; }
+button.tab { padding: 3px 7px; font-size: 8px; background: {letters_black}14; color: {letters_black}; }
+button.tab:hover { background: {info}40; }
+button.tab[selected] { background: {info}80; color: {letters}; }
+button.tab[disabled] { background: {neutral}10; color: {muted}; }
 
-button.small { padding: 3px 7px; font-size: 8px; }
+.tiles { flex-direction: row; gap: 4px; }
+.tile { align-items: center; gap: 1px; padding: 3px 2px; background: {letters_black}0f; }
+.tile b { font-size: 9px; }
+.tile small { font-size: 6px; }
+
+grid { gap: 3px; }
+.entry { flex-direction: row; align-items: center; gap: 5px; padding: 3px 5px; background: {letters_black}0c; }
+.entry.slim { padding: 1px 5px; }
+.entry b { font-size: 8px; }
+.entry small { font-size: 6px; }
+.go:hover { background: {info}26; outline: 1px {info}; }
+.entry[selected] { background: {success}12; outline: 1px {success}60; }
+.row-icon { width: 13px; height: 13px; }
+.face { width: 11px; height: 11px; }
+.pos { width: 18px; }
+.amount { font-size: 9px; }
+.bar { height: 2px; color: {highlight}; }
+
+button.small { padding: 2px 6px; font-size: 7px; }
 .ghost { background: {letters_black}14; }
-.ghost:hover { background: {error}40; }
+.ghost:hover { background: {info}40; }
+.ghost[disabled] { background: {neutral}10; color: {muted}; }

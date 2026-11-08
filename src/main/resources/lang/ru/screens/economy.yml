@@ -1,22 +1,30 @@
-back: 'Кошелёк'
+# Words of the economy screen (screens/economy.html), one per t="key" there. Colour tokens such as {info} work
+# here; keep the %placeholders%. Edits show on open screens within seconds.
+keys: '{highlight}Клик {letters_black}открыть   {highlight}A/D {letters_black}страница   {highlight}Shift {letters_black}закрыть'
+side:
+  subtitle: '{letters_black}Кошелёк'
+  currencies: '{letters_black}Валюты'
+nav:
+  wallet: 'Балансы'
+tab:
+  history: 'История'
+  top: 'Рейтинг'
 wallet:
-  title: 'Кошелёк'
-  subtitle: '{letters_black}%wallet_owner% · нажми на валюту для истории'
-  count: 'Валюты'
-  tooltip: '%currency%<nl>{info}Клик {letters_black}· история<nl>{info}ПКМ {letters_black}· рейтинг'
+  title: 'Балансы'
+  subtitle: '{letters_black}Всё, что есть в этом кошельке, здесь и по всей сети'
+  history: 'История'
+  top: 'Топ'
   empty: 'Валют пока нет'
-  empty_hint: 'Здесь появятся валюты, которые можно иметь'
+  empty_hint: 'Здесь появятся доступные вам валюты'
 top:
-  title: 'Богачи · %currency%'
-  subtitle: '{letters_black}У кого больше всего'
-  count: 'В рейтинге'
+  place: 'Ваше место'
+  amount: 'У вас'
+  total: 'В обращении'
   empty: 'В рейтинге пока никого'
-  empty_hint: 'Заработай, чтобы стать первым'
-  total: '{letters_black}В обороте {success}%top_total%'
+  empty_hint: 'Заработайте и станьте первым'
 history:
-  title: 'История · %currency%'
-  subtitle: '{letters_black}%history_owner% · сначала новые'
-  count: 'Операции'
-  tooltip: '%entry_reason%<nl>{letters_black}%entry_when% · %entry_server%'
-  empty: 'Операций пока нет'
+  balance: 'Баланс'
+  in: 'Получено'
+  out: 'Потрачено'
+  empty: 'Движений пока нет'
   empty_hint: 'Здесь появятся платежи и награды'

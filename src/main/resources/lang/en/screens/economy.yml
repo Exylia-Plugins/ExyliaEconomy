@@ -1,24 +1,30 @@
 # Words of the economy screen (screens/economy.html), one per t="key" there. Colour tokens such as {info} work
 # here; keep the %placeholders%. Edits show on open screens within seconds.
-back: 'Wallet'
+keys: '{highlight}Click {letters_black}open   {highlight}A/D {letters_black}page   {highlight}Shift {letters_black}close'
+side:
+  subtitle: '{letters_black}Wallet'
+  currencies: '{letters_black}Currencies'
+nav:
+  wallet: 'Balances'
+tab:
+  history: 'History'
+  top: 'Leaderboard'
 wallet:
-  title: 'Wallet'
-  subtitle: '{letters_black}%wallet_owner% · click a currency for its history'
-  count: 'Currencies'
-  tooltip: '%currency%<nl>{info}Click {letters_black}· history<nl>{info}Right-click {letters_black}· leaderboard'
+  title: 'Balances'
+  subtitle: '{letters_black}Everything this wallet holds, here and across the network'
+  history: 'History'
+  top: 'Top'
   empty: 'No currencies yet'
   empty_hint: 'Currencies you can hold appear here'
 top:
-  title: 'Richest · %currency%'
-  subtitle: '{letters_black}The players holding the most'
-  count: 'Ranked'
+  place: 'Your place'
+  amount: 'You hold'
+  total: 'In circulation'
   empty: 'Nobody ranked yet'
   empty_hint: 'Earn some to be the first'
-  total: '{letters_black}In circulation {success}%top_total%'
 history:
-  title: 'History · %currency%'
-  subtitle: '{letters_black}%history_owner% · newest first'
-  count: 'Movements'
-  tooltip: '%entry_reason%<nl>{letters_black}%entry_when% · %entry_server%'
+  balance: 'Balance'
+  in: 'Received'
+  out: 'Spent'
   empty: 'No movements yet'
   empty_hint: 'Payments and rewards show up here'

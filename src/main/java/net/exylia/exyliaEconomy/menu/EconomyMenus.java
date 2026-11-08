@@ -1,5 +1,9 @@
 package net.exylia.exyliaEconomy.menu;
 
+import net.exylia.lib.economy.CurrencyInfo;
+import net.exylia.lib.economy.Economy;
+import net.exylia.lib.item.Items;
+import net.exylia.lib.screen.ScreenMarkup;
 import net.exylia.lib.screen.ScreenSet;
 import net.exylia.lib.screen.Screens;
 import net.exylia.exyliaEconomy.ExyliaEconomy;
@@ -74,7 +78,13 @@ public final class EconomyMenus {
         ScreenSet screens = Screens.of(plugin.getPlugin()).files(ExyliaEconomy.class, "screens");
         if (!screens.markups().isEmpty()) screens.reload();
         try {
-            screens.markup("economy").problems().forEach(problem -> plugin.getDebug().warn("Screen " + problem));
+            ScreenMarkup economy = screens.markup("economy").rows("currencies", session ->
+                    WalletMenu.visible(session.viewer()).stream().map(id -> {
+                        CurrencyInfo info = Economy.info(id);
+                        return UiEntry.of(id).with("side_id", id).withFormatted("side_name", info.namePlural())
+                                .item(Items.icon(info.icon())).build();
+                    }).toList());
+            economy.problems().forEach(problem -> plugin.getDebug().warn("Screen " + problem));
         } catch (IllegalArgumentException broken) {
             plugin.getDebug().warn("Screen economy could not be read, its chest menus open instead: "
                     + broken.getMessage());

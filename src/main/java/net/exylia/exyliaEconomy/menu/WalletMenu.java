@@ -2,6 +2,8 @@ package net.exylia.exyliaEconomy.menu;
 
 import net.exylia.exyliaEconomy.ExyliaEconomy;
 import net.exylia.lib.text.Values;
+import net.exylia.exyliaEconomy.manager.StoredEconomy;
+import net.exylia.exyliaEconomy.model.CurrencyRules;
 import net.exylia.exyliaEconomy.service.EconomyActions;
 import net.exylia.lib.economy.CurrencyInfo;
 import net.exylia.lib.economy.Economy;
@@ -85,6 +87,8 @@ public final class WalletMenu {
 
     private static Values context(ExyliaPlayer owner, int currencies) {
         return Values.of()
+                .put("owner_name", owner.name())
+                .put("owner_id", owner.id().toString())
                 .put("wallet_owner", owner.name())
                 .put("wallet_owner_id", owner.id().toString())
                 .put("wallet_currencies", currencies);
@@ -99,6 +103,7 @@ public final class WalletMenu {
         row.withFormatted("currency_icon", info.icon());
         row.withFormatted("currency_balance", info.format(balance));
         row.withFormatted("currency_kind", EconomyActions.kindLabel(id));
+        row.with("currency_ranked", StoredEconomy.rules(id).map(CurrencyRules::leaderboard).orElse(false));
         return row.build();
     }
 }

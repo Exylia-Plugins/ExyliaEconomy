@@ -33,8 +33,13 @@ public final class TopMenu {
 
     private static void open(Player viewer, String currency, CurrencyInfo info, List<StoredEconomy.TopEntry> entries) {
         if (!viewer.isOnline()) return;
+        double leader = entries.isEmpty() ? 0 : entries.get(0).amount().doubleValue();
+        StoredEconomy.TopEntry me = entries.stream()
+                .filter(entry -> entry.player().equals(viewer.getUniqueId())).findFirst().orElse(null);
         List<UiEntry> rows = entries.stream().map(entry -> {
             UiEntry.Builder row = UiEntry.of(entry);
+            row.with("top_percent", leader <= 0 ? 0 : (int) Math.ceil(entry.amount().doubleValue() / leader * 100));
+            row.with("top_me", entry == me);
             row.with("top_position", entry.position());
             row.with("top_player", entry.name());
             row.withFormatted("top_amount", info.format(entry.amount()));
@@ -43,7 +48,12 @@ public final class TopMenu {
         }).toList();
 
         ExyliaEconomy.getInstance().getMenus().open(viewer, ID, Values.of()
+                .put("owner_name", viewer.getName())
+                .put("owner_id", viewer.getUniqueId().toString())
                 .put("currency_id", currency)
+                .put("currency_ranked", true)
+                .put("top_me_place", me == null ? "—" : "#" + me.position())
+                .put("top_me_amount", me == null ? "—" : info.format(me.amount()))
                 .put("currency", info.namePlural())
                 .put("currency_icon", info.icon())
                 .put("top_size", entries.size())

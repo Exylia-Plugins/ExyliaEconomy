@@ -3,6 +3,7 @@ package net.exylia.exyliaEconomy.menu;
 import net.exylia.exyliaEconomy.ExyliaEconomy;
 import net.exylia.lib.text.Values;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
+import net.exylia.exyliaEconomy.model.CurrencyRules;
 import net.exylia.exyliaEconomy.model.LedgerEntry;
 import net.exylia.exyliaEconomy.service.EconomyActions;
 import net.exylia.lib.economy.CurrencyInfo;
@@ -12,6 +13,7 @@ import net.exylia.lib.player.ExyliaPlayer;
 import net.exylia.lib.ui.UiEntry;
 import org.bukkit.entity.Player;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -37,7 +39,17 @@ public final class HistoryMenu {
         StoredEconomy.history(currency, owner.id(), DEPTH).thenAccept(lines ->
                 ExyliaEconomy.getInstance().getTasks().runAtEntity(viewer, () -> {
                     if (!viewer.isOnline()) return;
+                    BigDecimal in = lines.stream().filter(LedgerEntry::isDeposit).map(line -> line.delta().abs())
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    BigDecimal out = lines.stream().filter(line -> !line.isDeposit()).map(line -> line.delta().abs())
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
                     ExyliaEconomy.getInstance().getMenus().open(viewer, ID, Values.of()
+                            .put("owner_name", owner.name())
+                            .put("owner_id", owner.id().toString())
+                            .put("currency_ranked", StoredEconomy.rules(currency).map(CurrencyRules::leaderboard).orElse(false))
+                            .put("history_balance", lines.isEmpty() ? "—" : info.format(lines.get(0).balanceAfter()))
+                            .put("history_in", info.format(in))
+                            .put("history_out", info.format(out))
                             .put("currency_id", currency)
                             .put("currency", info.namePlural())
                             .put("currency_icon", info.icon())
