@@ -28,7 +28,7 @@ class LedgerKeyTest {
 
     private static final Duration WAIT = Duration.ofSeconds(30);
 
-    private static StoredEconomy economy(Plugin plugin, String id, StoredCurrency[] holder) throws Exception {
+    static StoredEconomy economy(Plugin plugin, String id, StoredCurrency[] holder) throws Exception {
         Constructor<StoredEconomy> constructor = StoredEconomy.class.getDeclaredConstructor(Plugin.class, Runnable.class);
         constructor.setAccessible(true);
         StoredEconomy economy = constructor.newInstance(plugin, (Runnable) () -> { });

@@ -144,9 +144,13 @@ public final class VaultBridge {
     /** Serves the currency through Vault, or stops serving when it is {@code null}. */
     void publish(@Nullable StoredCurrency currency, boolean force) {
         if (proxy == null) {
+            // No Vault to publish to, but 'vault' is still ExyliaLib's default currency: without this a server
+            // running on this plugin alone has no default money, and /eco give without a currency is refused.
+            current = currency;
+            serving = currency;
             if (currency != null) {
-                Debug.of(plugin).warn("Economy: vault.provide names '" + currency.id()
-                        + "' but Vault is not installed, so nothing is published.");
+                Debug.of(plugin).log("Economy: Vault is not installed, so '" + currency.id()
+                        + "' is published to nothing and only answers as the 'vault' currency here.");
             }
             return;
         }
@@ -187,7 +191,7 @@ public final class VaultBridge {
     void refresh() {
         StoredCurrency currency = current;
         if (proxy == null || currency == null) {
-            serving = null;
+            serving = currency;
             return;
         }
         RegisteredServiceProvider<?> registration = Bukkit.getServicesManager().getRegistration(economyClass);
