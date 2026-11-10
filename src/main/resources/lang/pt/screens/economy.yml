@@ -1,6 +1,6 @@
 # Words of the economy screen (screens/economy.html), one per t="key" there. Colour tokens such as {info} work
 # here; keep the %placeholders%. Edits show on open screens within seconds.
-keys: '{highlight}Clique {letters_black}abrir   {highlight}A/D {letters_black}página   {highlight}Shift {letters_black}fechar'
+keys: '{highlight}Clique {letters_black}abrir   {highlight}A/D {letters_black}página   {highlight}<key:key.sneak> {letters_black}fechar'
 side:
   subtitle: '{letters_black}Carteira'
   currencies: '{letters_black}Moedas'
