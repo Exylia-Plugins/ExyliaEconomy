@@ -57,6 +57,7 @@ public final class CurrencyAdminActions {
     private static final FormKey<BigDecimal> START = FormKey.decimal("start");
     private static final FormKey<BigDecimal> MAX = FormKey.decimal("max");
     private static final FormKey<String> PERMISSION = FormKey.text("permission");
+    private static final FormKey<String> AVAILABLE = FormKey.text("available_on");
     private static final FormKey<BigDecimal> MINIMUM = FormKey.decimal("minimum_transfer");
     private static final FormKey<BigDecimal> TAX = FormKey.decimal("tax");
     private static final FormKey<String> RATES = FormKey.text("rates");
@@ -218,6 +219,8 @@ public final class CurrencyAdminActions {
                         .hint(admin().maxHint())
                         .text(PERMISSION, admin().permission(), row.permission())
                         .hint(admin().permissionHint())
+                        .text(AVAILABLE, admin().availableOn(), String.join(", ", row.servers()))
+                        .hint(admin().availableOnHint())
                         .decimal(MINIMUM, admin().minimumTransfer(), row.minimumTransfer())
                         .decimal(TAX, admin().tax(), BigDecimal.valueOf(row.transferTaxPercent()))
                         .hint(admin().taxHint()),
@@ -226,6 +229,8 @@ public final class CurrencyAdminActions {
                     BigDecimal max = values.getDecimal(MAX);
                     draft.max = max.signum() <= 0 ? BigDecimal.valueOf(-1) : max;
                     draft.permission = values.getOr(PERMISSION, "").trim();
+                    draft.availableOn = java.util.Arrays.stream(values.getOr(AVAILABLE, "").split("[,\\s]+"))
+                            .map(String::trim).filter(name -> !name.isEmpty()).distinct().toList();
                     draft.minimumTransfer = values.getDecimal(MINIMUM).max(BigDecimal.ZERO);
                     draft.transferTaxPercent = Math.max(0, Math.min(100, values.getDecimal(TAX).doubleValue()));
                 }));
@@ -378,9 +383,10 @@ public final class CurrencyAdminActions {
     }
 
     /**
-     * Networked or not is which rows hold the balances, so the switch is only
-     * thrown while nothing but starting balances would stay behind: refused
-     * otherwise, never a quiet reset of everybody's money.
+     * The scope (every server, the server's group, this server) is which rows
+     * hold the balances, so it only moves on while nothing but starting
+     * balances would stay behind: refused otherwise, never a quiet reset of
+     * everybody's money.
      */
     private void toggleNetworked(Player player, CurrencyStore store, CurrencyRow row) {
         StoredEconomy.holdsBalances(row.id()).whenComplete((held, failure) -> plugin.getTasks().runAtEntity(player, () -> {
@@ -394,7 +400,7 @@ public final class CurrencyAdminActions {
                 ExyliaEconomy.getInstance().getMessages().send(player, EconomyMessages.get().currencyNetworkedLocked(), Values.of("id", row.id()));
                 return;
             }
-            CurrencyRow changed = current.edit(draft -> draft.networked = !draft.networked);
+            CurrencyRow changed = current.edit(draft -> draft.scope = draft.scope.next());
             CompletableFuture<Void> written = store.save(changed);
             StoredEconomy.changed(written);
             reported(player, written, row.id(), null);

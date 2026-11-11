@@ -1,5 +1,7 @@
 package net.exylia.exyliaEconomy.manager;
 
+import net.exylia.exyliaEconomy.model.CurrencyScope;
+
 import net.exylia.exyliaEconomy.database.BalanceRow;
 import net.exylia.exyliaEconomy.database.ImportedRow;
 import net.exylia.exyliaEconomy.database.PendingRow;
@@ -70,7 +72,7 @@ class MoneySafetyTest {
         CurrencyInfo info = new CurrencyInfo(plain.id(), plain.name(), plain.namePlural(), plain.symbol(), plain.icon(),
                 2, plain.format(), plain.compactFormat());
         return new CurrencyFile.Stored(id, info, List.of(), START, max, "", true, BigDecimal.ZERO, 0, true, Map.of(),
-                true, true, true);
+                true, CurrencyScope.GLOBAL, List.of(), true);
     }
 
     private static void join(StoredEconomy economy, UUID player) throws Exception {

@@ -205,6 +205,12 @@ admin:
   interest-max-hint: Le plafond d'un versement. 0 pour aucun plafond.
   language-default: Celle du serveur
   rollback-prompt: '{error}Annuler {highlight}%count% {error}mouvements de {highlight}%player%{error} ? {letters}Net : %net% {letters_black}· Transferts exclus : %excluded%'
+  available-on: 'Serveurs'
+  available-on-hint: 'Groupes réseau ou ids de serveur, séparés par des virgules. Vide : tous les serveurs.'
+  everywhere: '{letters_black}Tous les serveurs'
+  scope-global: '{success}Tous les serveurs'
+  scope-group: '{info}Groupe {highlight}%group%'
+  scope-server: '{warning}Ce serveur seul'
 demo:
   seed-done: '[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}{highlight}%players% {success}joueurs de démo créés dans {highlight}%currencies% {success}monnaies. {letters_black}Nouvelles monnaies : {info}%created% {letters_black}· Pour vous : {info}%granted%'
   seed-warning: '%prefix% {warning}Les données de démo sont réservées aux serveurs de test. {letters_black}Retirez-les avec {highlight}/economyadmin demo clear{letters_black}.'

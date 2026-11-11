@@ -404,7 +404,13 @@ public record EconomyMessages(
             String interestMax,
             String interestMaxHint,
             String languageDefault,
-            String rollbackPrompt) {
+            String rollbackPrompt,
+            String availableOn,
+            String availableOnHint,
+            String everywhere,
+            String scopeGlobal,
+            String scopeGroup,
+            String scopeServer) {
 
         public CurrencyAdmin() {
             this("{warning}Choose an icon",
@@ -468,7 +474,13 @@ public record EconomyMessages(
                     "The cap on one payout. 0 for no cap.",
                     "Server default",
                     "{error}Roll back {highlight}%count% {error}movements of {highlight}%player%{error}?"
-                            + " {letters}Net: %net% {letters_black}· Transfers left out: %excluded%");
+                            + " {letters}Net: %net% {letters_black}· Transfers left out: %excluded%",
+                    "Servers",
+                    "Network groups or server ids, separated by commas. Blank: every server.",
+                    "{letters_black}Every server",
+                    "{success}Every server",
+                    "{info}Group {highlight}%group%",
+                    "{warning}This server only");
         }
     }
 

@@ -1,5 +1,6 @@
 package net.exylia.exyliaEconomy.manager;
 
+import net.exylia.exyliaEconomy.model.CurrencyScope;
 import net.exylia.lib.debug.Debug;
 import net.exylia.lib.economy.CurrencyInfo;
 import org.bukkit.configuration.ConfigurationSection;
@@ -57,7 +58,8 @@ public final class CurrencyFile {
             boolean exchangeable,
             @NotNull Map<String, BigDecimal> rates,
             boolean leaderboard,
-            boolean networked,
+            @NotNull CurrencyScope scope,
+            @NotNull List<String> availableOn,
             boolean commands) {
 
         /** Whether balances are capped. */
@@ -177,7 +179,8 @@ public final class CurrencyFile {
                 block.getBoolean("exchange.enabled", true),
                 rates,
                 block.getBoolean("leaderboard", true),
-                block.getBoolean("networked", true),
+                CurrencyScope.parse(block.getString("scope", ""), block.getBoolean("networked", true)),
+                block.getStringList("available-on").stream().map(String::trim).filter(name -> !name.isEmpty()).toList(),
                 block.getBoolean("commands", true));
     }
 
@@ -247,8 +250,13 @@ public final class CurrencyFile {
             #   exchange        whether it can be swapped for other currencies, and at
             #                   what rate: 'shards: 0.01' means 1 of this = 0.01 shards
             #   leaderboard     whether /shards top and the top placeholders work
-            #   networked       whether balances follow the player across servers that
-            #                   share this database. Off = each server keeps its own
+            #   scope           which servers share a player's balance:
+            #                     global  every server sharing this database
+            #                     group   the servers of one network-group (ExyliaLib's
+            #                             config.yml): two survivals share, boxpvp apart
+            #                     server  each server keeps its own
+            #   available-on    groups or server ids the currency exists on. [] = every
+            #                   server; [survival, boxpvp] leaves it out of the lobby
             #   commands        whether the alias commands exist at all
             # ---------------------------------------------------------------------
             stored:
@@ -274,7 +282,8 @@ public final class CurrencyFile {
                   enabled: false
                   rates: {}
                 leaderboard: true
-                networked: true
+                scope: global
+                available-on: []
                 commands: true
               shards:
                 name: Shard
@@ -296,7 +305,8 @@ public final class CurrencyFile {
                   enabled: false
                   rates: {}
                 leaderboard: true
-                networked: true
+                scope: global
+                available-on: []
                 commands: true
 
             # ---------------------------------------------------------------------

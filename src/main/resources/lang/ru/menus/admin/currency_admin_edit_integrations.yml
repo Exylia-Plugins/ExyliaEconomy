@@ -42,20 +42,22 @@ items:
   networked:
     slot: 13
     material: "%networked_material%"
-    name: "{letters}Валюта {letters_black}▸ <gradient:{primary}:{secondary_light}>Общая для серверов</gradient>"
+    name: "{letters}Валюта {letters_black}▸ <gradient:{primary}:{secondary_light}>Охват в сети</gradient>"
     lore:
       - "{letters_black}Настройка валюты"
       - ""
       - "{primary}✎ Информация"
-      - " {letters}Вкл — один баланс на всю"
-      - " {letters}сеть; выкл — свой на сервер."
-      - " {letters}Оба хранятся отдельно:"
-      - " {letters}переключение их вернёт."
+      - " {letters}Какие серверы делят один"
+      - " {letters}баланс: все, серверы группы"
+      - " {letters}или только этот."
+      - " {letters}Каждый хранится отдельно."
       - ""
-      - "{primary}✦ Статус"
-      - "  {letters_black}· {info}{icon:redstone} {letters}Сейчас{letters_black}: %networked_status%"
+      - "{primary}✦ Состояние"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Общая для{letters_black}: %networked_status%"
+      - "  {letters_black}· {info}{icon:compass} {letters}Есть на{letters_black}: %available_status%"
       - ""
-      - "{primary}{icon:click} Нажми, чтобы переключить"
+      - "{primary}{icon:click} Нажмите, чтобы сменить"
+      - "{letters_black}Все, группа, сервер."
     actions:
       - "exyliaeconomy:currency_admin_toggle %currency_id% networked"
 

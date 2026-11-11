@@ -1,5 +1,7 @@
 package net.exylia.exyliaEconomy.database;
 
+import net.exylia.exyliaEconomy.model.CurrencyScope;
+
 import net.exylia.lib.database.DataKind;
 import net.exylia.exyliaEconomy.manager.CurrencyFile;
 import net.exylia.lib.database.Column;
@@ -65,6 +67,8 @@ public record CurrencyRow(
         @Column long interestInterval,
         @Column BigDecimal interestMax,
         @Column boolean interestOffline,
+        @Column(length = 16) String scope,
+        @Column(length = Column.UNBOUNDED) List<String> availableOn,
         @Column("created_at") long createdAt,
         @Column("updated_at") long updatedAt) {
 
@@ -88,7 +92,8 @@ public record CurrencyRow(
                 kind == Kind.DISPLAY ? -1 : 0, "%amount% %name%", "",
                 kind == Kind.DISPLAY ? List.of() : List.of(id), "", BigDecimal.ZERO, BigDecimal.valueOf(-1), "",
                 true, BigDecimal.ONE, 0, false, "", true, true, true,
-                BigDecimal.ZERO, false, 0, DEFAULT_INTEREST_INTERVAL, BigDecimal.ZERO, false, now, now);
+                BigDecimal.ZERO, false, 0, DEFAULT_INTEREST_INTERVAL, BigDecimal.ZERO, false,
+                CurrencyScope.GLOBAL.name(), List.of(), now, now);
     }
 
     /** A stored currency read from the old file. */
@@ -99,8 +104,9 @@ public record CurrencyRow(
                 info.icon(), info.decimals(), info.format(), info.compactFormat(), stored.aliases(), "",
                 stored.start(), stored.max(), stored.permission(), stored.transferable(), stored.minimumTransfer(),
                 stored.transferTaxPercent(), stored.exchangeable(), encodeRates(stored.rates()),
-                stored.leaderboard(), stored.networked(), stored.commands(),
-                BigDecimal.ZERO, false, 0, DEFAULT_INTEREST_INTERVAL, BigDecimal.ZERO, false, now, now);
+                stored.leaderboard(), stored.scope() == CurrencyScope.GLOBAL, stored.commands(),
+                BigDecimal.ZERO, false, 0, DEFAULT_INTEREST_INTERVAL, BigDecimal.ZERO, false,
+                stored.scope().name(), stored.availableOn(), now, now);
     }
 
     /** An item currency read from the old file. */
@@ -147,7 +153,21 @@ public record CurrencyRow(
     public CurrencyFile.Stored stored() {
         return new CurrencyFile.Stored(id, info(), aliases == null ? List.of() : List.copyOf(aliases), start, max,
                 permission == null ? "" : permission, transferable, minimumTransfer, Math.max(0, transferTaxPercent),
-                exchangeable, decodeRates(rates), leaderboard, networked, commands);
+                exchangeable, decodeRates(rates), leaderboard, scopeKind(), servers(), commands);
+    }
+
+    /**
+     * Which servers share a balance. A row written before scopes existed has
+     * none, and its old networked switch says it instead.
+     */
+    public CurrencyScope scopeKind() {
+        return CurrencyScope.parse(scope, networked);
+    }
+
+    /** The groups and server ids it exists on; empty is every server. */
+    public List<String> servers() {
+        return availableOn == null ? List.of() : availableOn.stream()
+                .filter(name -> name != null && !name.isBlank()).map(String::trim).toList();
     }
 
     /** The row as the item currency the runtime registers. */
@@ -205,7 +225,9 @@ public record CurrencyRow(
         public BigDecimal start, max, minimumTransfer, payConfirmAbove, interestMax;
         public double transferTaxPercent, interestRate;
         public long interestInterval;
-        public boolean transferable, exchangeable, leaderboard, networked, commands, banknotes, interestOffline;
+        public boolean transferable, exchangeable, leaderboard, commands, banknotes, interestOffline;
+        public CurrencyScope scope;
+        public List<String> availableOn;
         private final CurrencyRow source;
 
         private Draft(CurrencyRow row) {
@@ -216,7 +238,7 @@ public record CurrencyRow(
             decimals = row.decimals; aliases = row.aliases; start = row.start; max = row.max;
             minimumTransfer = row.minimumTransfer; transferTaxPercent = row.transferTaxPercent;
             transferable = row.transferable; exchangeable = row.exchangeable;
-            leaderboard = row.leaderboard; networked = row.networked; commands = row.commands;
+            leaderboard = row.leaderboard; scope = row.scopeKind(); availableOn = row.servers(); commands = row.commands;
             payConfirmAbove = row.payConfirmAbove; banknotes = row.banknotes; interestRate = row.interestRate;
             interestInterval = row.interestInterval; interestMax = row.interestMax;
             interestOffline = row.interestOffline;
@@ -225,8 +247,9 @@ public record CurrencyRow(
         private CurrencyRow build() {
             return new CurrencyRow(source.id, source.kind, sortOrder, name, plural, symbol, icon, decimals, format,
                     compactFormat, aliases, item, start, max, permission, transferable, minimumTransfer,
-                    transferTaxPercent, exchangeable, rates, leaderboard, networked, commands, payConfirmAbove,
-                    banknotes, interestRate, interestInterval, interestMax, interestOffline, source.createdAt,
+                    transferTaxPercent, exchangeable, rates, leaderboard, scope == CurrencyScope.GLOBAL, commands,
+                    payConfirmAbove, banknotes, interestRate, interestInterval, interestMax, interestOffline,
+                    scope.name(), availableOn == null ? List.of() : List.copyOf(availableOn), source.createdAt,
                     System.currentTimeMillis());
         }
     }

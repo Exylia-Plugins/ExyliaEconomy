@@ -8,6 +8,8 @@ import net.exylia.exyliaEconomy.database.CurrencyRow;
 import net.exylia.exyliaEconomy.database.EconomySettingsRow;
 import net.exylia.exyliaEconomy.manager.CurrencyStore;
 import net.exylia.exyliaEconomy.manager.StoredEconomy;
+import net.exylia.exyliaEconomy.model.CurrencyScope;
+import net.exylia.lib.network.NetworkGroups;
 import net.exylia.lib.economy.CurrencyInfo;
 import net.exylia.lib.ui.UiEntry;
 import net.exylia.lib.util.TimeFormats;
@@ -135,7 +137,7 @@ public final class CurrencyAdminMenus {
         toggle(context, "transferable", row.transferable());
         toggle(context, "exchangeable", row.exchangeable());
         toggle(context, "leaderboard", row.leaderboard());
-        toggle(context, "networked", row.networked());
+        scope(context, row);
         toggle(context, "commands", row.commands());
         toggle(context, "vault", vault);
         toggle(context, "banknotes", row.banknotes());
@@ -191,6 +193,23 @@ public final class CurrencyAdminMenus {
     }
 
     /** A setting that is on or off: its word and the dye that shows it. */
+    /** Which servers share a balance, and where the currency exists at all. */
+    private static void scope(Values context, CurrencyRow row) {
+        String group = NetworkGroups.current();
+        CurrencyScope scope = row.scopeKind();
+        context.put("networked_status", switch (scope) {
+                    case GLOBAL -> admin().scopeGlobal();
+                    case GROUP -> Values.of("group", group.isEmpty() ? admin().none() : group).apply(admin().scopeGroup());
+                    case SERVER -> admin().scopeServer();
+                })
+                .put("networked_material", switch (scope) {
+                    case GLOBAL -> "ENDER_EYE";
+                    case GROUP -> "ENDER_PEARL";
+                    case SERVER -> "COMPASS";
+                })
+                .put("available_status", row.servers().isEmpty() ? admin().everywhere() : String.join(", ", row.servers()));
+    }
+
     private static void toggle(Values context, String name, boolean on) {
         context.put(name + "_status", on ? admin().on() : admin().off())
                 .put(name + "_material", on ? "LIME_DYE" : "ORANGE_DYE");

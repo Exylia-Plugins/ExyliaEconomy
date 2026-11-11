@@ -1,5 +1,7 @@
 package net.exylia.exyliaEconomy.manager;
 
+import net.exylia.exyliaEconomy.model.CurrencyScope;
+
 import net.exylia.exyliaEconomy.database.BalanceRow;
 import net.exylia.exyliaEconomy.testing.TestServer;
 import net.exylia.lib.database.MemoryDatabase;
@@ -82,7 +84,7 @@ class PlayerFlagsTest {
         TestServer.set(economy, "server", "S");
         CurrencyInfo info = CurrencyInfo.of("topc", "topc", "topc", "$");
         CurrencyFile.Stored settings = new CurrencyFile.Stored("topc", info, List.of(), BigDecimal.ZERO,
-                BigDecimal.ZERO, "", true, BigDecimal.ZERO, 0, true, Map.of(), true, true, true);
+                BigDecimal.ZERO, "", true, BigDecimal.ZERO, 0, true, Map.of(), true, CurrencyScope.GLOBAL, List.of(), true);
         TestServer.set(economy, "stored", Map.of("topc", new StoredCurrency(settings, economy)));
         TestServer.set(economy, "ready", true);
 

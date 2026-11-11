@@ -43,19 +43,22 @@ items:
   networked:
     slot: 13
     material: "%networked_material%"
-    name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Sunucular arası ortak</gradient>"
+    name: "{letters}Para birimi {letters_black}▸ <gradient:{primary}:{secondary_light}>Ağ kapsamı</gradient>"
     lore:
       - "{letters_black}Para birimi ayarı"
       - ""
       - "{primary}✎ Bilgi"
-      - " {letters}Açık: tüm ağda tek bakiye; kapalı:"
-      - " {letters}sunucu başına bir. Her biri ayrı"
-      - " {letters}tutulur, geri dönünce geri gelir."
+      - " {letters}Hangi sunucular bir bakiyeyi"
+      - " {letters}paylaşır: hepsi, sunucunun"
+      - " {letters}grubu ya da yalnızca bu."
+      - " {letters}Her biri ayrı tutulur."
       - ""
       - "{primary}✦ Durum"
-      - "  {letters_black}· {info}{icon:redstone} {letters}Şu an{letters_black}: %networked_status%"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Paylaşan{letters_black}: %networked_status%"
+      - "  {letters_black}· {info}{icon:compass} {letters}Olduğu yer{letters_black}: %available_status%"
       - ""
       - "{primary}{icon:click} Değiştirmek için tıkla"
+      - "{letters_black}Hepsi, grup, sunucu."
     actions:
       - "exyliaeconomy:currency_admin_toggle %currency_id% networked"
 

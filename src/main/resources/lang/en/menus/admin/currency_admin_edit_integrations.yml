@@ -43,20 +43,22 @@ items:
   networked:
     slot: 13
     material: "%networked_material%"
-    name: "{letters}Currency {letters_black}▸ <gradient:{primary}:{secondary_light}>Shared across servers</gradient>"
+    name: "{letters}Currency {letters_black}▸ <gradient:{primary}:{secondary_light}>Network scope</gradient>"
     lore:
       - "{letters_black}Currency setting"
       - ""
       - "{primary}✎ Information"
-      - " {letters}On, one balance across the"
-      - " {letters}network; off, one per server."
-      - " {letters}Each set is kept apart, so"
-      - " {letters}switching back restores it."
+      - " {letters}Which servers share one"
+      - " {letters}balance: every server, the"
+      - " {letters}server's group, or this one."
+      - " {letters}Each set is kept apart."
       - ""
       - "{primary}✦ Status"
-      - "  {letters_black}· {info}{icon:redstone} {letters}Current{letters_black}: %networked_status%"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Shared by{letters_black}: %networked_status%"
+      - "  {letters_black}· {info}{icon:compass} {letters}Exists on{letters_black}: %available_status%"
       - ""
-      - "{primary}{icon:click} Click to toggle"
+      - "{primary}{icon:click} Click to change"
+      - "{letters_black}Every server, group, server."
     actions:
       - "exyliaeconomy:currency_admin_toggle %currency_id% networked"
 

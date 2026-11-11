@@ -1,5 +1,7 @@
 package net.exylia.exyliaEconomy.manager;
 
+import net.exylia.exyliaEconomy.model.CurrencyScope;
+
 import net.exylia.exyliaEconomy.database.BalanceRow;
 import net.exylia.exyliaEconomy.database.PendingRow;
 import net.exylia.exyliaEconomy.testing.TestServer;
@@ -46,6 +48,7 @@ class BalanceHandoverTest {
 
     private static Plugin first;
     private static Plugin second;
+    private static Plugin third;
 
     @BeforeAll
     static void servers() {
@@ -54,6 +57,8 @@ class BalanceHandoverTest {
         second = TestServer.plugin("EconomyServerB");
         MemoryDatabase.install(first, "economy-handover");
         MemoryDatabase.install(second, "economy-handover");
+        third = TestServer.plugin("EconomyServerC");
+        MemoryDatabase.install(third, "economy-handover");
     }
 
     /** One server's economy, holding the given currencies. */
@@ -97,7 +102,7 @@ class BalanceHandoverTest {
         CurrencyInfo info = new CurrencyInfo(plain.id(), plain.name(), plain.namePlural(), plain.symbol(), plain.icon(),
                 decimals, plain.format(), plain.compactFormat());
         return new CurrencyFile.Stored(id, info, List.of(), START, max, "", true, BigDecimal.ZERO, 0, true, rates,
-                true, true, true);
+                true, CurrencyScope.GLOBAL, List.of(), true);
     }
 
     /** The same currency, kept per server instead of across the network. */
@@ -106,7 +111,16 @@ class BalanceHandoverTest {
         return new CurrencyFile.Stored(networked.id(), networked.info(), networked.aliases(), networked.start(),
                 networked.max(), networked.permission(), networked.transferable(), networked.minimumTransfer(),
                 networked.transferTaxPercent(), networked.exchangeable(), networked.rates(), networked.leaderboard(),
-                false, networked.commands());
+                CurrencyScope.SERVER, List.of(), networked.commands());
+    }
+
+    /** The same currency, kept per network group. */
+    private static CurrencyFile.Stored grouped(String id) {
+        CurrencyFile.Stored shared = currency(id, 0, BigDecimal.ZERO, Map.of());
+        return new CurrencyFile.Stored(shared.id(), shared.info(), shared.aliases(), shared.start(),
+                shared.max(), shared.permission(), shared.transferable(), shared.minimumTransfer(),
+                shared.transferTaxPercent(), shared.exchangeable(), shared.rates(), shared.leaderboard(),
+                CurrencyScope.GROUP, List.of(), shared.commands());
     }
 
     private static CurrencyFile.Stored dollars() {
@@ -155,6 +169,52 @@ class BalanceHandoverTest {
         assertEquals(0, new BigDecimal("150").compareTo(row(player, "coins@A").orElseThrow().amount()),
                 "B changed the balance A keeps");
         assertTrue(row(player, "coins").isEmpty(), "a shared row for a currency kept per server");
+    }
+
+    @Test
+    @DisplayName("a currency kept per group is one balance inside a group and another in the next")
+    void perGroupCurrency() throws Exception {
+        CurrencyFile.Stored money = grouped("money");
+        Server a = server(first, "A", money);
+        Server b = server(second, "B", money);
+        Server c = server(third, "C", money);
+        TestServer.set(a.economy(), "group", "survival");
+        TestServer.set(b.economy(), "group", "survival");
+        TestServer.set(c.economy(), "group", "boxpvp");
+        UUID player = UUID.randomUUID();
+
+        a.join(player);
+        TestServer.await("A holds the survival balance", WAIT, () -> a.currency("money").isLoaded(player));
+        a.currency("money").deposit(player, new BigDecimal("50"), Transaction.of("test"));
+        a.leave(player);
+        TestServer.await("A wrote the survival row", WAIT, () -> row(player, "money#survival")
+                .filter(stored -> stored.amount().compareTo(new BigDecimal("150")) == 0).isPresent());
+
+        b.join(player);
+        // Paid on boxpvp while they stand on survival: the boxpvp balance, never the survival one.
+        c.currency("money").deposit(player, new BigDecimal("5"), Transaction.of("test"));
+        TestServer.await("B reads the balance A left", WAIT, () -> b.currency("money").isLoaded(player)
+                && b.currency("money").balance(player).compareTo(new BigDecimal("150")) == 0);
+        b.leave(player);
+
+        c.join(player);
+        BigDecimal onBox = new BigDecimal("105");
+        TestServer.await("C holds the boxpvp balance", WAIT, () -> {
+            try {
+                c.sweep();
+            } catch (Exception failure) {
+                throw new IllegalStateException(failure);
+            }
+            return c.currency("money").isLoaded(player)
+                    && c.currency("money").balance(player).compareTo(onBox) == 0
+                    && pending(player) == 0;
+        });
+        c.leave(player);
+        TestServer.await("C wrote the boxpvp row", WAIT, () -> row(player, "money#boxpvp")
+                .filter(stored -> stored.amount().compareTo(onBox) == 0).isPresent());
+        assertEquals(0, new BigDecimal("150").compareTo(row(player, "money#survival").orElseThrow().amount()),
+                "boxpvp changed the survival balance");
+        assertTrue(row(player, "money").isEmpty(), "a shared row for a currency kept per group");
     }
 
     @Test

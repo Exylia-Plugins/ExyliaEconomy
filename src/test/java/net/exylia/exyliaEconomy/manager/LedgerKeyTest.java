@@ -1,5 +1,7 @@
 package net.exylia.exyliaEconomy.manager;
 
+import net.exylia.exyliaEconomy.model.CurrencyScope;
+
 import net.exylia.exyliaEconomy.database.LedgerRow;
 import net.exylia.exyliaEconomy.model.LedgerEntry;
 import net.exylia.exyliaEconomy.testing.TestServer;
@@ -37,7 +39,7 @@ class LedgerKeyTest {
         CurrencyInfo info = new CurrencyInfo(plain.id(), plain.name(), plain.namePlural(), plain.symbol(), plain.icon(),
                 0, plain.format(), plain.compactFormat());
         CurrencyFile.Stored settings = new CurrencyFile.Stored("gems", info, List.of(), BigDecimal.ZERO, BigDecimal.ZERO,
-                "", true, BigDecimal.ZERO, 0, true, Map.of(), true, false, true);
+                "", true, BigDecimal.ZERO, 0, true, Map.of(), true, CurrencyScope.SERVER, List.of(), true);
         holder[0] = new StoredCurrency(settings, economy);
         TestServer.set(economy, "stored", Map.of("gems", holder[0]));
         TestServer.set(economy, "contents", new CurrencyFile.Contents(Map.of("gems", settings), Map.of(), Map.of(),

@@ -29,6 +29,8 @@ import net.exylia.lib.economy.ItemCurrency;
 import net.exylia.lib.economy.Transaction;
 import net.exylia.lib.format.Amounts;
 import net.exylia.lib.player.ExyliaPlayers;
+import net.exylia.exyliaEconomy.model.CurrencyScope;
+import net.exylia.lib.network.NetworkGroups;
 import net.exylia.lib.redis.Channel;
 import net.exylia.lib.redis.Channels;
 import net.exylia.lib.redis.Redis;
@@ -164,6 +166,8 @@ public final class StoredEconomy implements Listener {
     private final Repository<TakenRow> taken;
     private final PlayerFlags flags;
     private final String server;
+    /** This server's network group as balances are keyed with it; empty when it has none. */
+    private final String group;
 
     private volatile CurrencyFile.Contents contents;
     /** Swapped whole on every load, never changed in place: read from any thread. */
@@ -201,6 +205,7 @@ public final class StoredEconomy implements Listener {
     private volatile boolean ready;
     private volatile boolean stopping;
     private boolean warnedName;
+    private final Set<String> warnedGroup = ConcurrentHashMap.newKeySet();
     /** The first day the ledger purge has not deleted yet, since this start. */
     private volatile long purgedBefore;
     /** The first hour of taken pending marks not deleted yet, since this start. */
@@ -260,6 +265,7 @@ public final class StoredEconomy implements Listener {
         this.taken = Databases.of(plugin).repository(TakenRow.class);
         this.flags = new PlayerFlags(plugin);
         this.server = Redis.serverId(plugin);
+        this.group = NetworkGroups.current();
         this.vault = new VaultBridge(plugin);
     }
 
@@ -440,8 +446,8 @@ public final class StoredEconomy implements Listener {
     }
 
     /**
-     * Whether a stored currency holds balances that switching it between
-     * networked and per-server would leave behind: a row under the key it
+     * Whether a stored currency holds balances that changing its scope
+     * (global, group, server) would leave behind: a row under the key it
      * uses now with anything but the starting balance in it.
      *
      * <p>ponytail: only the rows this server can name, the shared key or its
@@ -490,13 +496,16 @@ public final class StoredEconomy implements Listener {
         Map<String, StoredCurrency> before = stored;
         Map<String, StoredCurrency> next = new LinkedHashMap<>();
         for (CurrencyFile.Stored settings : read.stored().values()) {
+            // Not on this server at all: never registered here, so no command,
+            // no Vault and no balance of it exists on this server.
+            if (!NetworkGroups.matches(plugin, settings.availableOn())) continue;
             StoredCurrency kept = before.get(settings.id());
-            if (kept != null && kept.settings().networked() == settings.networked()) {
+            if (kept != null && kept.settings().scope() == settings.scope()) {
                 kept.settings(settings);
                 next.put(settings.id(), kept);
                 continue;
             }
-            // Networked or not is which rows the balances live in: a currency
+            // The scope is which rows the balances live in: a currency
             // switched over is another set of balances. The old instance lets
             // go of its rows under its old key below, and this one claims the
             // new ones after that, in each player's chain.
@@ -527,14 +536,20 @@ public final class StoredEconomy implements Listener {
         // that fails to load.
         String provide = read.vaultProvide().toLowerCase(Locale.ROOT);
         StoredCurrency named = provide.isBlank() ? null : next.get(provide);
-        if (named == null && !provide.isBlank()) {
+        // The Vault currency exists, only not on this server: this server has
+        // no Vault money of ours, rather than another currency standing in.
+        boolean elsewhere = named == null && read.stored().containsKey(provide);
+        if (elsewhere) {
+            debug.log("Economy: Vault's currency '" + provide + "' is not available on this server, so none of"
+                    + " ours serves Vault here.");
+        } else if (named == null && !provide.isBlank()) {
             debug.warn("Economy: Vault is set to '" + provide + "', which is not a stored currency.");
         }
         // ExyliaLib's default currency is 'vault'. With no economy plugin behind
         // Vault, a name that is no currency (any more) leaves the whole server
         // without money, so the first stored currency serves it instead. Blank
         // is an admin who turned Vault off, and stays off.
-        StoredCurrency published = named != null || provide.isBlank() || vault.othersServe()
+        StoredCurrency published = named != null || elsewhere || provide.isBlank() || vault.othersServe()
                 ? named : next.values().stream().findFirst().orElse(null);
         if (published != named) {
             debug.warn("Economy: no currency is set for Vault and no economy plugin is installed, so '"
@@ -554,19 +569,34 @@ public final class StoredEconomy implements Listener {
                 + " experience currencies.");
         safely("install the currency commands", afterLoad);
         warnSharedName(next.values());
+        warnNoGroup(next.values());
+    }
+
+    /**
+     * Says so once when a currency is kept per group on a server with none: it
+     * then keeps a balance of its own here, which is rarely what was meant.
+     */
+    private void warnNoGroup(Collection<StoredCurrency> currencies) {
+        if (!group.isEmpty()) return;
+        for (StoredCurrency currency : currencies) {
+            if (currency.settings().scope() != CurrencyScope.GROUP || !warnedGroup.add(currency.id())) continue;
+            debug.warn("Economy: '" + currency.id() + "' is kept per network group, but this server has no"
+                    + " network-group in ExyliaLib's config.yml, so it keeps its own balance of it here."
+                    + " Set network-group, or leave this server out with the currency's available-on.");
+        }
     }
 
     /**
      * Says so once when servers sharing balances may all be {@code server-1}.
      *
-     * <p>Ownership of a networked balance is by server id: two servers with
+     * <p>Ownership of a shared balance is by server id: two servers with
      * the default one both think they hold the player and write over each
      * other. One server on its own file has nobody to share with.
      */
     private void warnSharedName(Collection<StoredCurrency> currencies) {
         if (warnedName || !"server-1".equals(server)) return;
         boolean shared = Redis.isActive() || !"h2".equalsIgnoreCase(Databases.of(plugin).engine());
-        if (!shared || currencies.stream().noneMatch(currency -> currency.settings().networked())) return;
+        if (!shared || currencies.stream().allMatch(currency -> currency.settings().scope() == CurrencyScope.SERVER)) return;
         warnedName = true;
         debug.warn("Economy: this server's id is the default 'server-1' while balances are shared through"
                 + " Redis or a network database. Give every server its own server-id in database.yml, or two"
@@ -1208,14 +1238,21 @@ public final class StoredEconomy implements Listener {
     /**
      * The id a currency's balances are stored under.
      *
-     * <p>A networked currency is one balance across the network, so its rows
+     * <p>A global currency is one balance across the network, so its rows
      * are keyed by its id alone and the servers hand ownership of them over.
-     * One that is not belongs to the server it was earned on: its rows are
-     * keyed {@code id@server}, which is a different row, a different
-     * leaderboard and a different queue on every server sharing the database.
+     * One kept per group is the same within its group, keyed
+     * {@code id#group}: the servers of that group hand its rows over between
+     * them and no other server reads them. One kept per server belongs to the
+     * server it was earned on, keyed {@code id@server}. Each key is a different
+     * row, a different leaderboard, a different history and a different queue.
+     * A group currency on a server with no group is kept per server.
      */
     private String key(StoredCurrency currency) {
-        return currency.settings().networked() ? currency.id() : currency.id() + "@" + server;
+        return switch (currency.settings().scope()) {
+            case GLOBAL -> currency.id();
+            case GROUP -> group.isEmpty() ? currency.id() + "@" + server : currency.id() + "#" + group;
+            case SERVER -> currency.id() + "@" + server;
+        };
     }
 
     /**
@@ -1223,14 +1260,17 @@ public final class StoredEconomy implements Listener {
      * not this server's to take.
      *
      * <p>A row queued for a currency kept per server carries the server it
-     * belongs to; nobody else claims it. A row with no scope is claimed by
-     * whoever reads it, which is what a networked currency means and what the
-     * rows queued before a currency was made local need to stop existing.
+     * belongs to; nobody else claims it, and one queued for a group
+     * ({@code id#group}) only a server of that group. A row with no scope is
+     * claimed by whoever reads it, which is what a global currency means and
+     * what the rows queued before a currency was made local need to stop existing.
      */
     private @Nullable StoredCurrency pendingCurrency(String key) {
-        int scope = key.indexOf('@');
+        int at = key.indexOf('@');
+        int scope = at >= 0 ? at : key.indexOf('#');
         if (scope < 0) return stored.get(key);
-        if (!key.substring(scope + 1).equals(server)) return null;
+        String owner = key.substring(scope + 1);
+        if (!owner.equals(at >= 0 ? server : group)) return null;
         return stored.get(key.substring(0, scope));
     }
 

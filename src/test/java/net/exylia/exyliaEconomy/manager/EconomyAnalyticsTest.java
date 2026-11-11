@@ -1,5 +1,7 @@
 package net.exylia.exyliaEconomy.manager;
 
+import net.exylia.exyliaEconomy.model.CurrencyScope;
+
 import net.exylia.exyliaEconomy.database.BalanceRow;
 import net.exylia.exyliaEconomy.database.PendingRow;
 import net.exylia.exyliaEconomy.testing.TestServer;
@@ -54,7 +56,7 @@ class EconomyAnalyticsTest {
         CurrencyInfo info = new CurrencyInfo(plain.id(), plain.name(), plain.namePlural(), plain.symbol(), plain.icon(),
                 2, plain.format(), plain.compactFormat());
         CurrencyFile.Stored settings = new CurrencyFile.Stored("dollars", info, List.of(), START, BigDecimal.ZERO, "",
-                true, BigDecimal.ZERO, 0, true, Map.of(), true, true, true);
+                true, BigDecimal.ZERO, 0, true, Map.of(), true, CurrencyScope.GLOBAL, List.of(), true);
         holder[0] = new StoredCurrency(settings, economy);
         TestServer.set(economy, "stored", Map.of("dollars", holder[0]));
         TestServer.set(economy, "ready", true);

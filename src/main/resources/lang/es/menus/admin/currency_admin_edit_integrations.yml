@@ -43,20 +43,22 @@ items:
   networked:
     slot: 13
     material: "%networked_material%"
-    name: "{letters}Moneda {letters_black}▸ <gradient:{primary}:{secondary_light}>Compartida entre servidores</gradient>"
+    name: "{letters}Moneda {letters_black}▸ <gradient:{primary}:{secondary_light}>Alcance en la red</gradient>"
     lore:
       - "{letters_black}Ajuste de la moneda"
       - ""
       - "{primary}✎ Información"
-      - " {letters}Activada: un saldo en toda la"
-      - " {letters}red; desactivada: uno por"
-      - " {letters}servidor. Cada uno se guarda"
-      - " {letters}aparte; al volver, se restaura."
+      - " {letters}Qué servidores comparten un"
+      - " {letters}saldo: todos, los del grupo"
+      - " {letters}del servidor o solo este."
+      - " {letters}Cada uno se guarda aparte."
       - ""
       - "{primary}✦ Estado"
-      - "  {letters_black}· {info}{icon:redstone} {letters}Actual{letters_black}: %networked_status%"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Compartida en{letters_black}: %networked_status%"
+      - "  {letters_black}· {info}{icon:compass} {letters}Existe en{letters_black}: %available_status%"
       - ""
-      - "{primary}{icon:click} Clic para alternar"
+      - "{primary}{icon:click} Clic para cambiar"
+      - "{letters_black}Todos, grupo, servidor."
     actions:
       - "exyliaeconomy:currency_admin_toggle %currency_id% networked"
 
