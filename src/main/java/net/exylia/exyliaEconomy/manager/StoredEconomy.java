@@ -26,6 +26,7 @@ import net.exylia.lib.economy.Economy;
 import net.exylia.lib.economy.EconomyResponse;
 import net.exylia.lib.economy.ExperienceCurrency;
 import net.exylia.lib.economy.ItemCurrency;
+import net.exylia.lib.economy.MoneySupply;
 import net.exylia.lib.economy.Transaction;
 import net.exylia.lib.format.Amounts;
 import net.exylia.lib.player.ExyliaPlayers;
@@ -217,6 +218,8 @@ public final class StoredEconomy implements Listener {
     private TaskHandle supplier;
     /** ExyliaAnalytics.supply(String, String, BigDecimal, long), once it is found. */
     private volatile Method supply;
+    /** Whether ExyliaAnalytics was looked for and is not installed. */
+    private volatile boolean analyticsMissing;
 
     /** @param total every balance of the currency added up, hidden players included: the money supply */
     private record CachedTop(long at, List<TopEntry> entries, BigDecimal total) { }
@@ -1150,13 +1153,13 @@ public final class StoredEconomy implements Listener {
      */
     private void reportSupply() {
         Method report = supply;
-        if (report == null) {
+        if (report == null && !analyticsMissing) {
             try {
                 report = Class.forName(ANALYTICS).getMethod("supply", String.class, String.class, BigDecimal.class,
                         long.class);
                 supply = report;
             } catch (ReflectiveOperationException | LinkageError absent) {
-                return;
+                analyticsMissing = true;
             }
         }
         if (!ready || stopping) return;
@@ -1165,6 +1168,8 @@ public final class StoredEconomy implements Listener {
         for (StoredCurrency currency : stored.values()) {
             String key = key(currency);
             step = step.thenCompose(ignored -> supplyOf(key).thenAccept(total -> {
+                MoneySupply.report(currency.id(), total.sum(), total.holders());
+                if (call == null) return;
                 try {
                     call.invoke(null, currency.id(), key, total.sum(), total.holders());
                 } catch (ReflectiveOperationException | RuntimeException failure) {
