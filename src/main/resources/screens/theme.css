@@ -11,53 +11,53 @@ small { font-size: 7px; }
 .line { flex-direction: row; align-items: center; gap: 4px; }
 h1 { font-size: 13px; }
 
-.app { flex-direction: row; gap: 0px; width: 400px; height: 225px; outline: 1px {info}50;
-       background: linear-gradient(to bottom, {info}0e, {primary}05); }
+.app { flex-direction: row; gap: 0px; width: 400px; height: 225px; outline: 1px var(--info)50;
+       background: linear-gradient(to bottom, var(--info)0e, var(--primary)05); }
 .side { width: 108px; padding: 9px 7px; gap: 6px; align-items: stretch; }
 .ident { flex-direction: row; align-items: center; gap: 5px; }
 .ident-icon { width: 16px; height: 16px; }
 .ident-name { font-size: 10px; }
 .side-label { font-size: 6px; padding: 2px 0px 0px 2px; }
 .nav { gap: 2px; }
-.nav-item { flex-direction: row; align-items: center; gap: 5px; padding: 1px 6px 1px 0px; color: {letters_black};
+.nav-item { flex-direction: row; align-items: center; gap: 5px; padding: 1px 6px 1px 0px; color: var(--letters-black);
             transition: transform 2t ease-out; }
 .nav-item .mark { width: 2px; height: 10px; }
 .nav-item item { width: 10px; height: 10px; }
-.nav-item:hover { background: {info}22; color: {letters}; transform: translateX(1px); }
-.nav-item[selected] { background: {info}40; color: {letters}; }
-.nav-item[selected] .mark { background: {info_light}; }
+.nav-item:hover { background: var(--info)22; color: var(--letters); transform: translateX(1px); }
+.nav-item[selected] { background: var(--info)40; color: var(--letters); }
+.nav-item[selected] .mark { background: var(--info-light); }
 
-.main { flex-grow: 1; padding: 9px 11px 4px 11px; gap: 4px; background: {primary}06; }
+.main { flex-grow: 1; padding: 9px 11px 4px 11px; gap: 4px; background: var(--primary)06; }
 .page { flex-grow: 1; gap: 5px; enter: translate(0, 6px) 4t ease-out; }
 .keys { flex-direction: row; font-size: 6px; }
 .foot { flex-direction: row; align-items: center; gap: 5px; }
 .big-icon { width: 16px; height: 16px; }
 
 .tabs { flex-direction: row; gap: 2px; }
-button.tab { padding: 3px 7px; font-size: 8px; background: {letters_black}14; color: {letters_black}; }
-button.tab:hover { background: {info}40; }
-button.tab[selected] { background: {info}80; color: {letters}; }
-button.tab[disabled] { background: {neutral}10; color: {muted}; }
+button.tab { padding: 3px 7px; font-size: 8px; background: var(--letters-black)14; color: var(--letters-black); }
+button.tab:hover { background: var(--info)40; }
+button.tab[selected] { background: var(--info)80; color: var(--letters); }
+button.tab[disabled] { background: var(--neutral)10; color: var(--muted); }
 
 .tiles { flex-direction: row; gap: 4px; }
-.tile { align-items: center; gap: 1px; padding: 3px 2px; background: {letters_black}0f; }
+.tile { align-items: center; gap: 1px; padding: 3px 2px; background: var(--letters-black)0f; }
 .tile b { font-size: 9px; }
 .tile small { font-size: 6px; }
 
 grid { gap: 3px; }
-.entry { flex-direction: row; align-items: center; gap: 5px; padding: 3px 5px; background: {letters_black}0c; }
+.entry { flex-direction: row; align-items: center; gap: 5px; padding: 3px 5px; background: var(--letters-black)0c; }
 .entry.slim { padding: 1px 5px; }
 .entry b { font-size: 8px; }
 .entry small { font-size: 6px; }
-.go:hover { background: {info}26; outline: 1px {info}; }
-.entry[selected] { background: {success}12; outline: 1px {success}60; }
+.go:hover { background: var(--info)26; outline: 1px var(--info); }
+.entry[selected] { background: var(--success)12; outline: 1px var(--success)60; }
 .row-icon { width: 13px; height: 13px; }
 .face { width: 11px; height: 11px; }
 .pos { width: 18px; }
 .amount { font-size: 9px; }
-.bar { height: 2px; color: {highlight}; }
+.bar { height: 2px; color: var(--highlight); }
 
 button.small { padding: 2px 6px; font-size: 7px; }
-.ghost { background: {letters_black}14; }
-.ghost:hover { background: {info}40; }
-.ghost[disabled] { background: {neutral}10; color: {muted}; }
+.ghost { background: var(--letters-black)14; }
+.ghost:hover { background: var(--info)40; }
+.ghost[disabled] { background: var(--neutral)10; color: var(--muted); }
