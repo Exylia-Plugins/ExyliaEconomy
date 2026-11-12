@@ -173,8 +173,8 @@ public record EconomyMessages(
         this("{primary}&lECONOMY {letters_black}•<reset>",
                 "%prefix% {letters}Your {highlight}%currency%{letters}: {success}%amount%",
                 "%prefix% {highlight}%player%{letters}'s {highlight}%currency%{letters}: {success}%amount%",
-                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}You paid {highlight}%amount% {success}to {highlight}%player%{success}.",
-                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {highlight}%player% {success}paid you {highlight}%amount%{success}.",
+                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2;hud:paid]%prefix% {success}You paid {highlight}%amount% {success}to {highlight}%player%{success}.",
+                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4;hud:earned]%prefix% {highlight}%player% {success}paid you {highlight}%amount%{success}.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}You cannot pay yourself.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}cannot be sent to other players.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}The least you can send is {highlight}%amount%{error}.",
@@ -184,7 +184,7 @@ public record EconomyMessages(
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}You may not use {highlight}%currency%{error}.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}is not available right now.",
                 "%prefix% {success}Gave {highlight}%amount% {success}to {highlight}%player%{success}. {letters_black}Now: %balance%",
-                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4]%prefix% {success}You received {highlight}%amount%{success}.",
+                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.4;hud:earned]%prefix% {success}You received {highlight}%amount%{success}.",
                 "%prefix% {warning}Took {highlight}%amount% {warning}from {highlight}%player%{warning}. {letters_black}Now: %balance%",
                 "[sound:BLOCK_NOTE_BLOCK_BASS|1.0|0.8]%prefix% {warning}{highlight}%amount% {warning}was taken from you.",
                 "%prefix% {success}{highlight}%player%{success}'s {highlight}%currency% {success}is now {highlight}%amount%{success}.",
@@ -242,7 +242,7 @@ public record EconomyMessages(
                         + " Run it again with {highlight}again{error}: nobody is paid twice.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%id% {error}already holds balances, so it"
                         + " cannot switch between networked and per-server: they would be left behind.",
-                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2]%prefix% {success}You paid {highlight}%amount% {success}to"
+                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.2;hud:paid]%prefix% {success}You paid {highlight}%amount% {success}to"
                         + " {highlight}%player%{success}. {letters_black}Tax: {info}%tax%",
                 "The payment was refused.",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}{highlight}%currency% {error}has no leaderboard.",
@@ -301,7 +301,7 @@ public record EconomyMessages(
                         + " · Already done: %skipped%",
                 "[sound:ENTITY_VILLAGER_NO|1.0|1.0]%prefix% {error}That is not a window. Try {highlight}1h{error},"
                         + " {highlight}2d {error}or an entry such as {highlight}#42{error}.",
-                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.6]%prefix% {success}Interest {highlight}+%amount%"
+                "[sound:ENTITY_EXPERIENCE_ORB_PICKUP|1.0|1.6;hud:earned]%prefix% {success}Interest {highlight}+%amount%"
                         + " {letters_black}· next in {info}%next% ⌚",
                 new Banknote(),
                 new CurrencyAdmin(),
