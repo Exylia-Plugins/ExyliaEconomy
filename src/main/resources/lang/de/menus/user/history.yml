@@ -1,0 +1,100 @@
+# Wo das Geld einer Person geblieben ist, in einer Währung.
+#
+# Du kannst die Datei frei anpassen: Änderungen bleiben bei Updates erhalten. Muss ein Release
+# das Layout ändern, erhöht es unten menu-version; die Datei wird dann ersetzt
+# und deine bisherige daneben aufbewahrt.
+#
+# Werte: %currency% %currency_icon% %history_owner% %history_size%
+# Jede Bewegung: %entry_icon% %entry_when% %entry_delta% %entry_reason% %entry_balance% %entry_server%
+
+menu-version: 3
+
+title: "{primary}&lVERLAUF {letters_black}» {highlight}%history_owner% {muted}%current_page%/%total_pages%"
+size: 54
+type: PAGINATION
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+  pagination:
+    material: LIGHT_GRAY_STAINED_GLASS_PANE
+    name: "{muted}Keine weiteren Bewegungen"
+    lore:
+      - "{letters_black}Nur Währungen, die dieser Server"
+      - "{letters_black}speichert, haben einen Verlauf."
+    hide_tooltip: false
+  custom:
+    page_first:
+      slots: '48'
+      material: GRAY_DYE
+      name: "{muted}← Erste Seite"
+    page_last:
+      slots: '50'
+      material: GRAY_DYE
+      name: "{muted}Letzte Seite →"
+
+pagination:
+  slots: '10-16,19-25,28-34,37-43'
+
+  item_template:
+    material: "%entry_icon%"
+    name: "%entry_delta%"
+    lore:
+      - "{letters_black}Wallet-Bewegung"
+      - ""
+      - "{info}✦ Status"
+      - "  {letters_black}· {highlight}{icon:book} {letters}Grund{letters_black}: {highlight}%entry_reason%"
+      - "  {letters_black}· {info}{icon:clock} {letters}Zeitpunkt{letters_black}: {info}%entry_when%"
+      - "  {letters_black}· {info}{icon:gold} {letters}Kontostand danach{letters_black}: {info}%entry_balance%"
+
+  navigation:
+    previous:
+      slot: 48
+      sound: "minecraft:item.book.page_turn|1.0|1.0"
+      material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGExZDU1YjNmOTg5NDEwYTM0NzUyNjUwZTI0OGM5YjZjMTc4M2E3ZWMyYWEzZmQ3Nzg3YmRjNGQwZTYzN2QzOSJ9fX0="
+      name: "{letters}Seite {letters_black}▸ <gradient:{error}:{error_light}>← Zurück</gradient>"
+      lore:
+        - "  {letters_black}· {letters}Seite{letters_black}: {info}%current_page%{letters_black}/{info}%total_pages%"
+      actions:
+        - "previous_page"
+    next:
+      slot: 50
+      sound: "minecraft:item.book.page_turn|1.0|1.0"
+      material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZmE4N2UzZDk2ZTFjZmViOWNjZmIzYmE1M2EyMTdmYWY1MjQ5ZTI4NTUzM2IyNzFhMmZiMjg0YzMwZGJkOTgyOSJ9fX0="
+      name: "{letters}Seite {letters_black}▸ <gradient:{success}:{success_light}>Weiter →</gradient>"
+      lore:
+        - "  {letters_black}· {letters}Seite{letters_black}: {info}%current_page%{letters_black}/{info}%total_pages%"
+      actions:
+        - "next_page"
+
+items:
+  currency:
+    slot: 46
+    material: "%currency_icon%"
+    name: "<gradient:{info}:{info_light}>%currency%</gradient>"
+    lore:
+      - "{letters_black}Wallet-Verlauf"
+      - ""
+      - "{info}✎ Information"
+      - " {letters}Neueste Bewegungen zuerst."
+      - ""
+      - "{info}✦ Status"
+      - "  {letters_black}· {info}{icon:iron} {letters}Bewegungen{letters_black}: {info}%history_size%"
+
+  back:
+    slot: 49
+    sound: "minecraft:item.bundle.remove_one|1.0|0.5"
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{letters}Zurück {letters_black}▸ <gradient:{error}:{error_light}>Wallet</gradient>"
+    lore:
+      - "{error}{icon:click} Klicken, um zurückzugehen"
+    actions:
+      - "exyliaeconomy:economy_wallet %history_owner_id%"

@@ -1,0 +1,94 @@
+# DO NOT EDIT — REGENERIERT BEI JEDEM START.
+#
+# Eine Ledger-Zeile mit dem Button, der sie zurückrollt.
+#
+# Werte: %ledger_owner% %currency% %entry_id% %entry_icon% %entry_delta% %entry_balance%
+# %entry_reason% %entry_initiator% %entry_server% %entry_when%
+
+title: "{primary}&lEINTRAG {letters_black}» {highlight}#%entry_id%"
+size: 27
+type: SIMPLE
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  header:
+    slot: 4
+    material: "%entry_icon%"
+    name: "<gradient:{info}:{info_light}>Eintrag #%entry_id%</gradient> &8[%entry_delta%&8]"
+    lore:
+      - "{letters_black}Ledger-Eintrag"
+      - ""
+      - "{info}✦ Status"
+      - "  {letters_black}· {highlight}{icon:tag} {letters}Spieler{letters_black}: {highlight}%ledger_owner%"
+      - "  {letters_black}· {highlight}{icon:coin} {letters}Währung{letters_black}: {highlight}%currency%"
+
+  amount:
+    slot: 12
+    material: GOLD_NUGGET
+    name: "{letters}Eintrag {letters_black}▸ <gradient:{info}:{info_light}>Betrag</gradient>"
+    lore:
+      - "{letters_black}Eintragsdetail"
+      - ""
+      - "{info}✦ Status"
+      - "  {letters_black}· {info}{icon:gold} {letters}Bewegt{letters_black}: %entry_delta%"
+      - "  {letters_black}· {info}{icon:gold} {letters}Kontostand danach{letters_black}: {info}%entry_balance%"
+
+  when:
+    slot: 13
+    material: CLOCK
+    name: "{letters}Eintrag {letters_black}▸ <gradient:{info}:{info_light}>Zeitpunkt</gradient>"
+    lore:
+      - "{letters_black}Eintragsdetail"
+      - ""
+      - "{info}✦ Status"
+      - "  {letters_black}· {info}{icon:clock} {letters}Geschrieben{letters_black}: {info}%entry_when%"
+      - "  {letters_black}· {info}{icon:map} {letters}Server{letters_black}: {info}%entry_server%"
+
+  source:
+    slot: 14
+    material: NAME_TAG
+    name: "{letters}Eintrag {letters_black}▸ <gradient:{info}:{info_light}>Quelle</gradient>"
+    lore:
+      - "{letters_black}Eintragsdetail"
+      - ""
+      - "{info}✦ Status"
+      - "  {letters_black}· {highlight}{icon:book} {letters}Grund{letters_black}: {highlight}%entry_reason%"
+      - "  {letters_black}· {highlight}{icon:tag} {letters}Ausgelöst von{letters_black}: {highlight}%entry_initiator%"
+
+  back:
+    slot: 22
+    sound: "minecraft:item.bundle.remove_one|1.0|0.5"
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{letters}Zurück {letters_black}▸ <gradient:{error}:{error_light}>Ledger</gradient>"
+    lore:
+      - "{error}{icon:click} Klicken, um zurückzugehen"
+    actions:
+      - "exyliaeconomy:ledger_admin_list %ledger_owner% %currency_id%"
+
+  rollback:
+    slot: 26
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUwZmQxMDE5OWU4ZTRmY2RhYmNhZTRmODVjODU5MTgxMjdhN2M1NTUzYWQyMzVmMDFjNTZkMThiYjk0NzBkMyJ9fX0="
+    name: "{letters}Eintrag {letters_black}▸ <gradient:{error}:{error_light}>Zurückrollen</gradient>"
+    lore:
+      - "{letters_black}Gefahrenzone"
+      - ""
+      - "{error}✎ Information"
+      - " {letters}Macht diese Bewegung einmalig"
+      - " {letters}rückgängig. Zahlungen, Tausch"
+      - " {letters}und Banknoten bleiben bestehen."
+      - ""
+      - "{error}{icon:click} Klicken zum Zurückrollen"
+      - "{letters_black}Du musst es bestätigen."
+    actions:
+      - "exyliaeconomy:ledger_admin_rollback %ledger_owner% %entry_id% %currency_id%"

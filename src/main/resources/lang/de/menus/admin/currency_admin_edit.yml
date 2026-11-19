@@ -1,0 +1,320 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# Eine Währung: eine Übersicht, die jeden Bereich davon öffnet. Eine
+# gespeicherte Währung hat alle Bereiche; eine Item-Währung ihr Item,
+# Befehle und die Zahlungsbestätigung; eine reine Anzeigewährung ihr
+# Aussehen und die Zahlungsbestätigung.
+
+title: "{primary}&lWÄHRUNG {letters_black}» {highlight}%currency_id%"
+size: 36
+type: SIMPLE
+refresh:
+  mode: ON_CLICK
+  click_delay: 4
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  summary:
+    slot: 4
+    material: "%currency_icon%"
+    name: "<gradient:{primary}:{secondary_light}>%currency_plural%</gradient>"
+    lore:
+      - "{letters_black}Währungsübersicht"
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:tag} {letters}ID{letters_black}: {info}%currency_id%"
+      - "  {letters_black}· {info}{icon:tag} {letters}Art{letters_black}: {info}%currency_kind_label%"
+      - ""
+      - "{primary}✦ Vorschau"
+      - "  {letters_black}· {info}{icon:eye} {letters}Voll{letters_black}: {letters}%currency_preview%"
+      - "  {letters_black}· {info}{icon:eye} {letters}Kompakt{letters_black}: {letters}%currency_preview_compact%"
+
+  general:
+    slot: 11
+    material: "NAME_TAG"
+    condition: "%currency_kind% == STORED"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Allgemein</gradient>"
+    lore:
+      - "{letters_black}Einrichtungsbereich"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Namen, Beträge, Icon und Reihenfolge."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:tag} {letters}Name{letters_black}: {info}%currency_name%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Öffnen"
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% general"
+
+  commands:
+    slot: 12
+    material: "COMMAND_BLOCK"
+    condition: "%currency_kind% == STORED"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Befehle</gradient>"
+    lore:
+      - "{letters_black}Einrichtungsbereich"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Was Spieler tippen, um sie zu nutzen."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:tag} {letters}Namen{letters_black}: {info}%currency_aliases%"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Aktiviert{letters_black}: %commands_status%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Öffnen"
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% commands"
+
+  rules:
+    slot: 14
+    material: "BOOK"
+    condition: "%currency_kind% == STORED"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Regeln</gradient>"
+    lore:
+      - "{letters_black}Währungseinstellung"
+      - ""
+      - "{primary}♦ Kontostände"
+      - "  {letters_black}· {info}{icon:gold} {letters}Start{letters_black}: {info}%currency_start%"
+      - "  {letters_black}· {info}{icon:hopper} {letters}Obergrenze{letters_black}: {info}%currency_max%"
+      - "  {letters_black}· {info}{icon:key} {letters}Berechtigung{letters_black}: {info}%currency_permission%"
+      - ""
+      - "{primary}♦ Überweisungen"
+      - "  {letters_black}· {info}{icon:hopper} {letters}Minimum{letters_black}: {info}%currency_minimum_transfer%"
+      - "  {letters_black}· {info}{icon:gold} {letters}Steuer{letters_black}: {info}%currency_tax%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Bearbeiten"
+    actions:
+      - "exyliaeconomy:currency_admin_rules %currency_id%"
+
+  payments:
+    slot: 15
+    material: "GOLD_NUGGET"
+    condition: "%currency_kind% == STORED"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Zahlungen</gradient>"
+    lore:
+      - "{letters_black}Einrichtungsbereich"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Überweisungen, Bestätigungen, Notizen."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Überweisungen{letters_black}: %transferable_status%"
+      - "  {letters_black}· {info}{icon:hopper} {letters}Fragt ab{letters_black}: {info}%currency_pay_confirm%"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Geldscheine{letters_black}: %banknotes_status%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Öffnen"
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% payments"
+
+  exchange:
+    slot: 21
+    material: "SUNFLOWER"
+    condition: "%currency_kind% == STORED"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Umtausch</gradient>"
+    lore:
+      - "{letters_black}Einrichtungsbereich"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Tausch gegen andere Währungen."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Umtausch{letters_black}: %exchangeable_status%"
+      - "  {letters_black}· {info}{icon:emerald} {letters}Kurse{letters_black}: {info}%currency_rates%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Öffnen"
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% exchange"
+
+  interest:
+    slot: 22
+    material: "EXPERIENCE_BOTTLE"
+    condition: "%currency_kind% == STORED"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Zinsen</gradient>"
+    lore:
+      - "{letters_black}Einrichtungsbereich"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Was sie Besitzern mit der Zeit zahlt."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:gold} {letters}Satz{letters_black}: {info}%currency_interest_rate%"
+      - "  {letters_black}· {info}{icon:clock} {letters}Alle{letters_black}: {info}%currency_interest_interval%"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Offline{letters_black}: %interest_offline_status%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Öffnen"
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% interest"
+
+  integrations:
+    slot: 23
+    material: "ENDER_EYE"
+    condition: "%currency_kind% == STORED"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Integrationen</gradient>"
+    lore:
+      - "{letters_black}Einrichtungsbereich"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Rangliste, Vault"
+      - " {letters}und das Netzwerk."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Rangliste{letters_black}: %leaderboard_status%"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Netzwerk{letters_black}: %networked_status%"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Vault{letters_black}: %vault_status%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Öffnen"
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% integrations"
+
+  general-item:
+    slot: 11
+    material: "NAME_TAG"
+    condition: "%currency_kind% == ITEM"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Allgemein</gradient>"
+    lore:
+      - "{letters_black}Einrichtungsbereich"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Namen, Beträge, Icon und Reihenfolge."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:tag} {letters}Name{letters_black}: {info}%currency_name%"
+      - "  {letters_black}· {info}{icon:eye} {letters}Sieht so aus{letters_black}: {letters}%currency_preview%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Öffnen"
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% general"
+
+  commands-item:
+    slot: 12
+    material: "COMMAND_BLOCK"
+    condition: "%currency_kind% == ITEM"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Befehle</gradient>"
+    lore:
+      - "{letters_black}Währungseinstellung"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Der erste ist der Befehl,"
+      - " {letters}die übrigen sind Aliase."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:tag} {letters}Namen{letters_black}: {info}%currency_aliases%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Bearbeiten"
+    actions:
+      - "exyliaeconomy:currency_admin_aliases %currency_id%"
+
+  item:
+    slot: 14
+    material: "%currency_item_icon%"
+    condition: "%currency_kind% == ITEM"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Item</gradient>"
+    lore:
+      - "{letters_black}Währungseinstellung"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Nur exakt gleiche Stacks zählen:"
+      - " {letters}inkl. Name, Lore und Modell."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:check} {letters}Item{letters_black}: %currency_item_state%"
+      - ""
+      - "{primary}{icon:click} Klicken, um ein neues einzulegen"
+    actions:
+      - "exyliaeconomy:currency_admin_item %currency_id%"
+
+  pay-confirm-item:
+    slot: 15
+    material: "PAPER"
+    condition: "%currency_kind% == ITEM"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Zahlungsbestätigung</gradient>"
+    lore:
+      - "{letters_black}Währungseinstellung"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Ein /pay darüber fragt"
+      - " {letters}den Zahler vorher."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:hopper} {letters}Fragt ab{letters_black}: {info}%currency_pay_confirm%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Bearbeiten"
+    actions:
+      - "exyliaeconomy:currency_admin_pay_confirm %currency_id%"
+
+  general-display:
+    slot: 12
+    material: "NAME_TAG"
+    condition: "%currency_kind% == DISPLAY"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Allgemein</gradient>"
+    lore:
+      - "{letters_black}Einrichtungsbereich"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Namen, Beträge, Icon und Reihenfolge."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:tag} {letters}Name{letters_black}: {info}%currency_name%"
+      - "  {letters_black}· {info}{icon:eye} {letters}Sieht so aus{letters_black}: {letters}%currency_preview%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Öffnen"
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% general"
+
+  pay-confirm-display:
+    slot: 14
+    material: "PAPER"
+    condition: "%currency_kind% == DISPLAY"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Zahlungsbestätigung</gradient>"
+    lore:
+      - "{letters_black}Währungseinstellung"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Ein /pay darüber fragt"
+      - " {letters}den Zahler vorher."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:hopper} {letters}Fragt ab{letters_black}: {info}%currency_pay_confirm%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Bearbeiten"
+    actions:
+      - "exyliaeconomy:currency_admin_pay_confirm %currency_id%"
+
+  back:
+    slot: 31
+    sound: "minecraft:item.bundle.remove_one|1.0|0.5"
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{letters}Zurück {letters_black}▸ <gradient:{error}:{error_light}>Währungen</gradient>"
+    lore:
+      - "{error}{icon:click} Klicken zum Zurückgehen"
+    actions:
+      - "exyliaeconomy:currency_admin_open_list"
+
+  delete:
+    slot: 35
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmUwZmQxMDE5OWU4ZTRmY2RhYmNhZTRmODVjODU5MTgxMjdhN2M1NTUzYWQyMzVmMDFjNTZkMThiYjk0NzBkMyJ9fX0="
+    name: "{letters}Währung {letters_black}▸ <gradient:{error}:{error_light}>Löschen</gradient>"
+    lore:
+      - "{letters_black}Gefahrenzone"
+      - ""
+      - "{error}✎ Information"
+      - " {letters}Entfernt die Währung."
+      - " {letters}Gespeicherte Kontostände"
+      - " {letters}bleiben ungenutzt in der DB."
+      - ""
+      - "{error}{icon:click} Klicken zum Löschen"
+      - "{letters_black}Du wirst um Bestätigung gebeten."
+    actions:
+      - "exyliaeconomy:currency_admin_delete %currency_id%"

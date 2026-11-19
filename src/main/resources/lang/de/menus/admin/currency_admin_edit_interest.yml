@@ -1,0 +1,71 @@
+# DO NOT EDIT — REGENERIERT BEI JEDEM START.
+#
+# Die Zinsen, die eine gespeicherte Währung ihren Besitzern zahlt.
+
+title: "{primary}&lZINSEN {letters_black}» {highlight}%currency_id%"
+size: 27
+type: SIMPLE
+refresh:
+  mode: ON_CLICK
+  click_delay: 4
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  interest:
+    slot: 12
+    material: "EXPERIENCE_BOTTLE"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Zinsen</gradient>"
+    lore:
+      - "{letters_black}Währungseinstellung"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Wird an Spieler mit der"
+      - " {letters}Zins-Permission gezahlt."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:gold} {letters}Satz{letters_black}: {info}%currency_interest_rate%"
+      - "  {letters_black}· {info}{icon:clock} {letters}Intervall{letters_black}: {info}%currency_interest_interval%"
+      - "  {letters_black}· {info}{icon:hopper} {letters}Max. pro Auszahlung{letters_black}: {info}%currency_interest_max%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Bearbeiten"
+    actions:
+      - "exyliaeconomy:currency_admin_interest %currency_id%"
+
+  interest-offline:
+    slot: 14
+    material: "%interest_offline_material%"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Zinsen offline</gradient>"
+    lore:
+      - "{letters_black}Währungseinstellung"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Zahlt auch an Offline-Spieler,"
+      - " {letters}ohne ihre Permission zu prüfen."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Aktuell{letters_black}: %interest_offline_status%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Umschalten"
+    actions:
+      - "exyliaeconomy:currency_admin_toggle %currency_id% interest_offline"
+
+  back:
+    slot: 22
+    sound: "minecraft:item.bundle.remove_one|1.0|0.5"
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{letters}Zurück {letters_black}▸ <gradient:{error}:{error_light}>Währung</gradient>"
+    lore:
+      - "{error}{icon:click} Klicken zum Zurückgehen"
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% hub"

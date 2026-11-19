@@ -1,0 +1,86 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# Das Aussehen einer Währung: Namen, Beträge, Icon und Platz in Listen.
+
+title: "{primary}&lALLGEMEIN {letters_black}» {highlight}%currency_id%"
+size: 27
+type: SIMPLE
+refresh:
+  mode: ON_CLICK
+  click_delay: 4
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  icon:
+    slot: 12
+    material: "%currency_icon%"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Icon</gradient>"
+    lore:
+      - "{letters_black}Währungseinstellung"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}So zeigen Wallets und Listen sie an."
+      - ""
+      - "{primary}{icon:click} Klicken zum Auswählen"
+    actions:
+      - "exyliaeconomy:currency_admin_icon %currency_id%"
+
+  appearance:
+    slot: 13
+    material: "NAME_TAG"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Darstellung</gradient>"
+    lore:
+      - "{letters_black}Währungseinstellung"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Wie jeder Betrag geschrieben wird."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:tag} {letters}Name{letters_black}: {letters}%currency_name%"
+      - "  {letters_black}· {info}{icon:tag} {letters}Plural{letters_black}: {letters}%currency_plural%"
+      - "  {letters_black}· {info}{icon:tag} {letters}Symbol{letters_black}: {letters}%currency_symbol%"
+      - "  {letters_black}· {info}{icon:iron} {letters}Dezimalstellen{letters_black}: {info}%currency_decimals%"
+      - "  {letters_black}· {info}{icon:eye} {letters}Sieht aus wie{letters_black}: {letters}%currency_preview%"
+      - "  {letters_black}· {info}{icon:eye} {letters}Kompakt{letters_black}: {letters}%currency_preview_compact%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Bearbeiten"
+    actions:
+      - "exyliaeconomy:currency_admin_appearance %currency_id%"
+
+  sort-order:
+    slot: 14
+    material: "HOPPER"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Reihenfolge</gradient>"
+    lore:
+      - "{letters_black}Währungseinstellung"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Niedrigere stehen zuerst in Listen."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:iron} {letters}Aktuell{letters_black}: {info}%currency_sort_order%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Festlegen"
+    actions:
+      - "exyliaeconomy:currency_admin_sort %currency_id%"
+
+  back:
+    slot: 22
+    sound: "minecraft:item.bundle.remove_one|1.0|0.5"
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{letters}Zurück {letters_black}▸ <gradient:{error}:{error_light}>Währung</gradient>"
+    lore:
+      - "{error}{icon:click} Klicken, um zurückzugehen"
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% hub"

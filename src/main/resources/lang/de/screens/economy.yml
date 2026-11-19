@@ -1,0 +1,30 @@
+# Words of the economy screen (screens/economy.html), one per t="key" there. Colour tokens such as {info} work
+# here; keep the %placeholders%. Edits show on open screens within seconds.
+keys: '{highlight}Klick {letters_black}öffnen   {highlight}A/D {letters_black}Seite   {highlight}<key:key.sneak> {letters_black}schließen'
+side:
+  subtitle: '{letters_black}Geldbeutel'
+  currencies: '{letters_black}Währungen'
+nav:
+  wallet: 'Guthaben'
+tab:
+  history: 'Verlauf'
+  top: 'Top'
+wallet:
+  title: 'Guthaben'
+  subtitle: '{letters_black}Alles, was dieser Geldbeutel hält, hier und im ganzen Netzwerk'
+  history: 'Verlauf'
+  top: 'Top'
+  empty: 'Noch keine Währungen'
+  empty_hint: 'Währungen, die du halten kannst, erscheinen hier'
+top:
+  place: 'Dein Platz'
+  amount: 'Du besitzt'
+  total: 'Im Umlauf'
+  empty: 'Noch niemand platziert'
+  empty_hint: 'Verdiene etwas, um der Erste zu sein'
+history:
+  balance: 'Kontostand'
+  in: 'Erhalten'
+  out: 'Ausgegeben'
+  empty: 'Noch keine Bewegungen'
+  empty_hint: 'Zahlungen und Belohnungen erscheinen hier'

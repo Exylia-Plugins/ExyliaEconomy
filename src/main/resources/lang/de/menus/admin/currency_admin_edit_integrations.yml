@@ -1,0 +1,92 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# Wo eine gespeicherte Währung sonst noch auftaucht: ihre Bestenliste, das Netzwerk und Vault.
+
+title: "{primary}&lINTEGRATIONEN {letters_black}» {highlight}%currency_id%"
+size: 27
+type: SIMPLE
+refresh:
+  mode: ON_CLICK
+  click_delay: 4
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  leaderboard:
+    slot: 12
+    material: "%leaderboard_material%"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Bestenliste</gradient>"
+    lore:
+      - "{letters_black}Währungseinstellung"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Ob die Top-Liste und"
+      - " {letters}die Placeholder laufen."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Aktuell{letters_black}: %leaderboard_status%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Umschalten"
+    actions:
+      - "exyliaeconomy:currency_admin_toggle %currency_id% leaderboard"
+
+  networked:
+    slot: 13
+    material: "%networked_material%"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Netzwerk-Bereich</gradient>"
+    lore:
+      - "{letters_black}Währungseinstellung"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Welche Server sich ein"
+      - " {letters}Guthaben teilen: alle Server,"
+      - " {letters}die Servergruppe oder nur"
+      - " {letters}dieser. Jeder Bereich ist getrennt."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Geteilt von{letters_black}: %networked_status%"
+      - "  {letters_black}· {info}{icon:compass} {letters}Existiert auf{letters_black}: %available_status%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Ändern"
+      - "{letters_black}Alle Server, Gruppe, Server."
+    actions:
+      - "exyliaeconomy:currency_admin_toggle %currency_id% networked"
+
+  vault:
+    slot: 14
+    material: "%vault_material%"
+    name: "{letters}Währung {letters_black}▸ <gradient:{primary}:{secondary_light}>Vault-Wirtschaft</gradient>"
+    lore:
+      - "{letters_black}Währungseinstellung"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Veröffentlicht sie als"
+      - " {letters}Vault-Wirtschaft des Servers"
+      - " {letters}und ersetzt die bisherige."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:redstone} {letters}Aktuell{letters_black}: %vault_status%"
+      - ""
+      - "{primary}{icon:click} Klicken zum Umschalten"
+    actions:
+      - "exyliaeconomy:currency_admin_toggle %currency_id% vault"
+
+  back:
+    slot: 22
+    sound: "minecraft:item.bundle.remove_one|1.0|0.5"
+    material: "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0="
+    name: "{letters}Zurück {letters_black}▸ <gradient:{error}:{error_light}>Währung</gradient>"
+    lore:
+      - "{error}{icon:click} Klicken, um zurückzugehen"
+    actions:
+      - "exyliaeconomy:currency_admin_page %currency_id% hub"
